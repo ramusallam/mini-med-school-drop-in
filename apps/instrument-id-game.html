@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang=  "en  ">
+<head>
+  <meta charset=  "UTF-8  ">
+  <meta name=  "viewport  " content=  "width=device-width, initial-scale=1.0  ">
+  <title>Instrument ID Game  -  Woven Learning Mini Med School</title>
+  <script crossorigin src=  "https://unpkg.com/react@18/umd/react.production.min.js  "></script>
+  <script crossorigin src=  "https://unpkg.com/react-dom@18/umd/react-dom.production.min.js  "></script>
+  <script src=  "https://unpkg.com/@babel/standalone/babel.min.js  "></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont,   "Segoe UI  ", Roboto,   "Helvetica Neue  ", Arial, sans-serif; background: #F0F4F8; min-height: 100vh; padding: 16px; }
+
+    @keyframes scorePop {
+      0% { transform: scale(0.8); opacity: 0; }
+      50% { transform: scale(1.15); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes streakGlow {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(212,168,67,0.4); }
+      50% { box-shadow: 0 0 0 10px rgba(212,168,67,0); }
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-6px); }
+      40% { transform: translateX(6px); }
+      60% { transform: translateX(-4px); }
+      80% { transform: translateX(4px); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    @media (max-width: 600px) {
+      body { padding: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <div id=  "root  "></div>
+  <script type=  "text/babel  ">
+    const { useState, useCallback, useEffect, useRef } = React;
+
+    const NAVY =   "#1B3A5C  ";
+    const TEAL =   "#2A9D8F  ";
+    const GOLD =   "#D4A843  ";
+    const DARK =   "#333333  ";
+    const MED =   "#555555  ";
+    const LIGHT_BG =   "#F0F4F8  ";
+    const TEAL_BG =   "#E8F5F2  ";
+    const CASE_BG =   "#FFF8E1  ";
+    const ALERT_BG =   "#FDE8E8  ";
+    const WHITE =   "#FFFFFF  ";
+
+    // Professional colored badge with instrument initials
+    const InstrumentBadge = ({ name, category, size = 48 }) => {
+      const colors = {
+          "Cutting  ":   "#E74C3C  ",
+          "Suturing  ":   "#3498DB  ",
+          "Grasping  ":   "#2ECC71  ",
+          "Clamping  ":   "#E67E22  ",
+          "Exposure  ":   "#9B59B6  ",
+          "Laparoscopic  ":   "#1ABC9C  ",
+          "Diagnostic  ":   "#F39C12  "
+      };
+      const initials = name.split(/[\s(]/)[0].substring(0, 2).toUpperCase();
+      const color = colors[category] ||   "#666  ";
+      return (
+        <div style={{
+          width: size, height: size, borderRadius:   "50%  ",
+          background: `linear-gradient(135deg, ${color}22, ${color}44)`,
+          border: `3px solid ${color}`,
+          display:   "flex  ", alignItems:   "center  ", justifyContent:   "center  ",
+          fontSize: size * 0.35, fontWeight: 800, color: color,
+          letterSpacing: -0.5,
+          boxShadow: `0 2px 8px ${color}33`,
+          flexShrink: 0
+        }}>
+          {initials}
+        </div>
+      );
+    };
+
+    const instruments = [
+      {
+        name:   "Scalpel (#10 Blade)  ",
+        category:   "Cutting  ",
+        desc:   "The surgeon  's primary cutting tool. The #10 blade has a curved cutting edge, used for making skin incisions. Held like a violin bow for long incisions or like a pencil for precise cuts.  ",
+        use:   "Making the initial incision to access the surgical site.  ",
+        funFact:   "Surgeons change blades frequently during a case  -  a dull blade causes more tissue damage than a sharp one.  ",
+        session:   "Session 3 & 4  "
+      },
+      {
+        name:   "Needle Driver (Needle Holder)  ",
+        category:   "Suturing  ",
+        desc:   "Looks like a locking clamp with a flat, cross-hatched jaw surface. Used to grip the suture needle while stitching. The lock mechanism keeps the needle secure.  ",
+        use:   "Driving a curved needle through tissue during suturing. The most-used instrument during wound closure.  ",
+        funFact:   "You grip it with thumb and ring finger in the finger rings, using your index finger to guide  -  never with your whole fist.  ",
+        session:   "Session 3  "
+      },
+      {
+        name:   "Tissue Forceps (Adson)  ",
+        category:   "Grasping  ",
+        desc:   "Tweezer-like instrument with small teeth at the tip. Held like a pencil between thumb and index finger. Used to gently hold tissue while suturing or dissecting.  ",
+        use:   "Stabilizing wound edges while the needle passes through, or lifting tissue to inspect beneath it.  ",
+        funFact:   "The teeth grip tissue without crushing  -  smooth forceps require more squeezing force, which actually causes more damage.  ",
+        session:   "Session 3  "
+      },
+      {
+        name:   "Hemostat (Kelly Clamp)  ",
+        category:   "Clamping  ",
+        desc:   "A locking clamp with serrated jaws. Looks like scissors but the blades don  't have a cutting edge  -  they  're designed to crush and hold. Has a ratchet lock mechanism.  ",
+        use:   "Clamping blood vessels to stop bleeding. Also used to hold tissue, clamp drapes, or grab small objects in the surgical field.  ",
+        funFact:   "Named after Howard Kelly, one of the   'Big Four  ' founders of Johns Hopkins Hospital. The clamp literally saved lives by controlling hemorrhage during surgery.  ",
+        session:   "Session 4  "
+      },
+      {
+        name:   "Suture Scissors (Mayo)  ",
+        category:   "Cutting  ",
+        desc:   "Heavy-duty scissors with blunt tips. The blades are thicker than regular scissors and designed to cut suture material cleanly without fraying.  ",
+        use:   "Cutting suture threads after tying knots. The blunt tips prevent accidentally cutting nearby tissue.  ",
+        funFact:   "Never use suture scissors to cut anything else  -  cutting drapes, tape, or bandages will dull the blades and ruin them for suture cutting.  ",
+        session:   "Session 3 & 4  "
+      },
+      {
+        name:   "Retractor (Army-Navy)  ",
+        category:   "Exposure  ",
+        desc:   "A double-ended handheld retractor with flat, curved blades at each end. One end is narrower than the other, giving you two sizes in one instrument.  ",
+        use:   "Pulling back tissue or wound edges to give the surgeon a clear view of the operating area. An assistant holds it while the surgeon works.  ",
+        funFact:   "Called   'Army-Navy  ' because it was designed to be simple enough for both Army and Navy field surgeons  -  no frills, just works.  ",
+        session:   "Session 4  "
+      },
+      {
+        name:   "Laparoscopic Grasper  ",
+        category:   "Laparoscopic  ",
+        desc:   "A long, thin instrument (30+ cm) with a pistol-grip handle and small jaws at the tip. Inserted through a trocar port during minimally invasive surgery.  ",
+        use:   "Grasping and manipulating tissue inside the body during laparoscopic procedures. The fulcrum effect means your hand moves opposite to the jaw tip.  ",
+        funFact:   "The   'fulcrum effect  ' is what makes laparoscopic surgery so challenging  -  move your hand left and the tip goes right. It takes hundreds of hours to master.  ",
+        session:   "Session 5  "
+      },
+      {
+        name:   "Trocar  ",
+        category:   "Laparoscopic  ",
+        desc:   "A sharp-pointed instrument inside a hollow tube (cannula). Used to puncture the abdominal wall to create a port for laparoscopic instruments.  ",
+        use:   "Creating access ports. Once the trocar punctures through, it  's removed and the cannula stays in place as a channel for instruments and the camera.  ",
+        funFact:   "Modern trocars have blade shields that spring forward after penetration to prevent the sharp tip from damaging organs inside.  ",
+        session:   "Session 5  "
+      },
+      {
+        name:   "Laparoscope (Camera)  ",
+        category:   "Laparoscopic  ",
+        desc:   "A rigid telescope with a camera attached, inserted through a trocar port. Transmits a magnified image to monitors in the OR. Available in 0° (straight) and 30° (angled) views.  ",
+        use:   "The surgeon  's eyes during laparoscopic surgery. Everything they see comes through this camera. An assistant or robotic arm holds and aims it.  ",
+        funFact:   "A 30° scope lets you   'look around corners  ' inside the body by rotating it  -  a skill that takes significant practice to master.  ",
+        session:   "Session 5  "
+      },
+      {
+        name:   "Pulse Oximeter  ",
+        category:   "Diagnostic  ",
+        desc:   "A small clip that attaches to the fingertip. Uses light wavelengths to measure blood oxygen saturation (SpO2) and pulse rate through the skin.  ",
+        use:   "Continuous monitoring of a patient  's oxygen levels and heart rate. Normal SpO2 is 95-100%. Below 92% is concerning.  ",
+        funFact:   "It works by shining red and infrared light through your finger  -  oxygenated blood absorbs different wavelengths than deoxygenated blood.  ",
+        session:   "Session 1  "
+      },
+      {
+        name:   "Sphygmomanometer (BP Cuff)  ",
+        category:   "Diagnostic  ",
+        desc:   "The blood pressure cuff. Consists of an inflatable cuff, a pressure gauge, and a bulb for inflation. Wraps around the upper arm above the elbow.  ",
+        use:   "Measuring systolic and diastolic blood pressure. The cuff compresses the brachial artery, and pressure is slowly released while listening with a stethoscope.  ",
+        funFact:   "The word   'sphygmomanometer  ' comes from the Greek   'sphygmos  ' (pulse) +   'manometer  ' (pressure meter). Most people just say   'BP cuff.  '  ",
+        session:   "Session 1  "
+      },
+      {
+        name:   "Reflex Hammer  ",
+        category:   "Diagnostic  ",
+        desc:   "A small hammer with a triangular rubber head. Designed to elicit deep tendon reflexes by striking tendons. The handle is weighted for a pendulum-like swing.  ",
+        use:   "Testing the patellar reflex (knee jerk) and other deep tendon reflexes. Assesses nerve pathway integrity between the spinal cord and extremities.  ",
+        funFact:   "Hold it loosely at the end and let gravity do the work  -  if you grip it tightly and swing hard, you  'll actually get a worse response (and hurt the patient).  ",
+        session:   "Session 1  "
+      },
+    ];
+
+    const categories = [...new Set(instruments.map(i => i.category))];
+
+    // ========== PROGRESS BAR ==========
+    function ProgressBar({ value, max, color = TEAL }) {
+      const pct = Math.round((value / max) * 100);
+      return (
+        <div style={{ height: 8, background:   "#E0E0E0  ", borderRadius: 4, overflow:   "hidden  ", marginBottom: 16 }}>
+          <div style={{
+            height:   "100%  ",
+            background: `linear-gradient(90deg, ${color} 0%, ${NAVY} 100%)`,
+            width: `${pct}%`,
+            transition:   "width 0.3s ease  "
+          }} />
+        </div>
+      );
+    }
+
+    // ========== STUDY MODE ==========
+    function StudyMode({ instrument, index, total, onNext, onPrev, onRestart }) {
+      const [flipped, setFlipped] = useState(false);
+
+      return (
+        <div>
+          <div style={{ display:   "flex  ", justifyContent:   "space-between  ", alignItems:   "center  ", marginBottom: 16, flexWrap:   "wrap  ", gap: 8 }}>
+            <span style={{ fontSize: 12, color: MED, fontWeight: 600 }}>{index + 1} of {total}</span>
+            <div style={{ display:   "flex  ", gap: 6 }}>
+              <span style={{ fontSize: 11, fontWeight: 600, color: TEAL, background: TEAL_BG, padding:   "3px 12px  ", borderRadius: 12 }}>{instrument.category}</span>
+              <span style={{ fontSize: 10, fontWeight: 600, color: GOLD, background: CASE_BG, padding:   "3px 12px  ", borderRadius: 12 }}>{instrument.session}</span>
+            </div>
+          </div>
+
+          <ProgressBar value={index + 1} max={total} />
+
+          <div onClick={() => setFlipped(!flipped)}
+            style={{
+              background: WHITE,
+              border: `2px solid ${flipped ? TEAL :   "#E0E0E0  "}`,
+              borderRadius: 12,
+              padding: 32,
+              cursor:   "pointer  ",
+              minHeight: 320,
+              transition:   "all 0.3s ease  ",
+              textAlign:   "center  ",
+              animation:   "slideIn 0.4s ease  "
+            }}>
+            {!flipped ? (
+              <>
+                <div style={{ marginBottom: 24, display:   "flex  ", justifyContent:   "center  " }}>
+                  <InstrumentBadge name={instrument.name} category={instrument.category} size={56} />
+                </div>
+                <div style={{ fontSize: 24, fontWeight: 800, color: NAVY, marginBottom: 12 }}>{instrument.name}</div>
+                <div style={{ fontSize: 14, color: MED, marginBottom: 20, lineHeight: 1.6 }}>{instrument.desc}</div>
+                <div style={{ fontSize: 12, color: TEAL, fontWeight: 600, animation:   "pulse 2s ease infinite  " }}>Tap card to see clinical use →</div>
+              </>
+            ) : (
+              <>
+                <div style={{ marginBottom: 16, display:   "flex  ", justifyContent:   "center  " }}>
+                  <InstrumentBadge name={instrument.name} category={instrument.category} size={48} />
+                </div>
+                <div style={{ fontSize: 20, fontWeight: 800, color: NAVY, marginBottom: 16 }}>{instrument.name}</div>
+                <div style={{ textAlign:   "left  ", maxWidth: 520, margin:   "0 auto  " }}>
+                  <div style={{ marginBottom: 16, padding: 12, background: TEAL_BG, borderRadius: 8, borderLeft: `4px solid ${TEAL}` }}>
+                    <div style={{ fontSize: 11, fontWeight: 800, color: TEAL, marginBottom: 6, textTransform:   "uppercase  ", letterSpacing: 1 }}>Clinical Use</div>
+                    <div style={{ fontSize: 14, color: DARK, lineHeight: 1.6 }}>{instrument.use}</div>
+                  </div>
+                  <div style={{ marginBottom: 16, padding: 12, background: CASE_BG, borderRadius: 8, borderLeft: `4px solid ${GOLD}` }}>
+                    <div style={{ fontSize: 11, fontWeight: 800, color: GOLD, marginBottom: 6, textTransform:   "uppercase  ", letterSpacing: 1 }}>Pro Tip</div>
+                    <div style={{ fontSize: 14, color: DARK, lineHeight: 1.6, fontStyle:   "italic  " }}>{instrument.funFact}</div>
+                  </div>
+                </div>
+                <div style={{ fontSize: 12, color: TEAL, fontWeight: 600, marginTop: 12 }}>← Tap to flip back</div>
+              </>
+            )}
+          </div>
+
+          <div style={{ display:   "flex  ", justifyContent:   "space-between  ", marginTop: 20, gap: 8, flexWrap:   "wrap  " }}>
+            <button onClick={() => { setFlipped(false); onPrev(); }} disabled={index === 0}
+              style={{
+                background: index === 0 ?   "#E0E0E0  " : LIGHT_BG,
+                border:   "none  ", borderRadius: 8, padding:   "10px 20px  ",
+                fontSize: 13, fontWeight: 600, color: index === 0 ?   "#BBB  " : NAVY,
+                cursor: index === 0 ?   "default  " :   "pointer  ", transition:   "all 0.2s  "
+              }}>← Previous</button>
+            <button onClick={onRestart}
+              style={{
+                background: WHITE, border: `2px solid ${NAVY}`, borderRadius: 8,
+                padding:   "10px 20px  ", fontSize: 13, fontWeight: 600, color: NAVY,
+                cursor:   "pointer  ", transition:   "all 0.2s  "
+              }}> Start Over</button>
+            <button onClick={() => { setFlipped(false); onNext(); }} disabled={index === total - 1}
+              style={{
+                background: index === total - 1 ?   "#E0E0E0  " : TEAL,
+                border:   "none  ", borderRadius: 8, padding:   "10px 20px  ",
+                fontSize: 13, fontWeight: 600, color: index === total - 1 ?   "#BBB  " : WHITE,
+                cursor: index === total - 1 ?   "default  " :   "pointer  ", transition:   "all 0.2s  "
+              }}>Next →</button>
+          </div>
+        </div>
+      );
+    }
+
+    // ========== QUIZ MODE ==========
+    function QuizMode({ onComplete, onRestart }) {
+      const [questionIdx, setQuestionIdx] = useState(0);
+      const [score, setScore] = useState(0);
+      const [streak, setStreak] = useState(0);
+      const [bestStreak, setBestStreak] = useState(0);
+      const [selected, setSelected] = useState(null);
+      const [showAnswer, setShowAnswer] = useState(false);
+      const [answered, setAnswered] = useState(0);
+      const [results, setResults] = useState([]);
+      const [questions] = useState(() => {
+        const shuffled = [...instruments].sort(() => Math.random() - 0.5);
+        return shuffled.map(inst => {
+          const wrong = instruments.filter(i => i.name !== inst.name).sort(() => Math.random() - 0.5).slice(0, 3);
+          const options = [inst, ...wrong].sort(() => Math.random() - 0.5);
+          const questionTypes = [
+            { q: `Which instrument is described as:   "${inst.desc.split(  '.  ')[0]}  "?`, type:   "desc  " },
+            { q: `Which instrument is used for:   "${inst.use.split(  '.  ')[0]}  "?`, type:   "use  " },
+          ];
+          const qt = questionTypes[Math.floor(Math.random() * questionTypes.length)];
+          return { correct: inst, options, question: qt.q };
+        });
+      });
+
+      const total = Math.min(10, questions.length);
+      const q = questions[questionIdx];
+      const progressPercent = Math.round((answered / total) * 100);
+
+      const handleSelect = (inst) => {
+        if (showAnswer) return;
+        setSelected(inst.name);
+        setShowAnswer(true);
+        const isCorrect = inst.name === q.correct.name;
+        const newResults = [...results, { correct: q.correct, chosen: inst, isCorrect }];
+        setResults(newResults);
+        if (isCorrect) {
+          const newStreak = streak + 1;
+          setScore(s => s + 1);
+          setStreak(newStreak);
+          if (newStreak > bestStreak) setBestStreak(newStreak);
+        } else {
+          setStreak(0);
+        }
+      };
+
+      const handleNext = () => {
+        const newAnswered = answered + 1;
+        setAnswered(newAnswered);
+        if (questionIdx >= total - 1) {
+          const finalScore = score + (selected === q.correct.name ? 0 : 0);
+          onComplete({ score, total, bestStreak, results });
+          return;
+        }
+        setQuestionIdx(i => i + 1);
+        setSelected(null);
+        setShowAnswer(false);
+      };
+
+      return (
+        <div>
+          <div style={{ display:   "flex  ", justifyContent:   "space-between  ", alignItems:   "center  ", marginBottom: 12, flexWrap:   "wrap  ", gap: 8 }}>
+            <span style={{ fontSize: 13, color: MED, fontWeight: 600 }}>Question {questionIdx + 1}/{total}</span>
+            <div style={{ display:   "flex  ", gap: 12, alignItems:   "center  " }}>
+              <span style={{ fontSize: 13, color: TEAL, fontWeight: 700 }}>Score: {score}</span>
+              {streak > 1 && (
+                <span style={{
+                  fontSize: 12, fontWeight: 700, color: GOLD,
+                  background: CASE_BG, padding:   "4px 12px  ", borderRadius: 12,
+                  animation:   "streakGlow 2s infinite  "
+                }}> {streak} streak!</span>
+              )}
+            </div>
+          </div>
+
+          <ProgressBar value={questionIdx + 1} max={total} />
+
+          <div style={{ background: CASE_BG, border:   "1px solid #E6D280  ", borderRadius: 8, padding: 16, marginBottom: 16 }}>
+            <p style={{ fontSize: 14, color: DARK, margin: 0, lineHeight: 1.6 }}>{q.question}</p>
+          </div>
+
+          <div style={{ display:   "grid  ", gridTemplateColumns:   "repeat(2, 1fr)  ", gap: 10, marginBottom: 16 }}>
+            {q.options.map((opt) => {
+              const isCorrect = opt.name === q.correct.name;
+              const isSelected = selected === opt.name;
+              let bg = WHITE, border =   "#E0E0E0  ", color = DARK;
+              if (showAnswer) {
+                if (isCorrect) { bg = TEAL_BG; border = TEAL; color = TEAL; }
+                else if (isSelected) { bg = ALERT_BG; border =   "#C0392B  "; color =   "#C0392B  "; }
+              }
+              return (
+                <button key={opt.name} onClick={() => handleSelect(opt)}
+                  style={{
+                    padding: 14, borderRadius: 10,
+                    border: `2px solid ${border}`, background: bg,
+                    cursor: showAnswer ?   "default  " :   "pointer  ",
+                    textAlign:   "center  ", transition:   "all 0.2s  ",
+                    animation: showAnswer && isSelected && !isCorrect ?   "shake 0.4s ease  " :   "none  "
+                  }}>
+                  <div style={{ marginBottom: 8, display:   "flex  ", justifyContent:   "center  " }}>
+                    <InstrumentBadge name={opt.name} category={opt.category} size={40} />
+                  </div>
+                  <div style={{ fontSize: 12, fontWeight: 600, color, lineHeight: 1.3 }}>{opt.name}</div>
+                </button>
+              );
+            })}
+          </div>
+
+          {showAnswer && (
+            <div style={{ animation:   "slideIn 0.3s ease  " }}>
+              <div style={{
+                padding: 12, borderRadius: 8, fontSize: 14, fontWeight: 600,
+                background: selected === q.correct.name ? TEAL_BG : ALERT_BG,
+                color: selected === q.correct.name ? TEAL :   "#C0392B  ",
+                marginBottom: 12, animation:   "scorePop 0.4s ease  "
+              }}>
+                {selected === q.correct.name
+                  ? (streak > 2 ? ` Correct!  ${streak} in a row!` :   " Correct!  ")
+                  : ` The answer was: ${q.correct.name}`}
+              </div>
+              {selected !== q.correct.name && (
+                <div style={{ padding: 10, background: LIGHT_BG, borderRadius: 8, marginBottom: 12, fontSize: 12, color: MED, lineHeight: 1.5 }}>
+                  <strong style={{ color: NAVY }}>Remember:</strong> {q.correct.desc.split(  '.  ')[0]}.
+                </div>
+              )}
+              <div style={{ display:   "flex  ", gap: 10 }}>
+                <button onClick={onRestart}
+                  style={{
+                    flex: 1, background: WHITE, border: `2px solid ${NAVY}`, borderRadius: 8,
+                    padding:   "12px  ", fontSize: 13, fontWeight: 700, color: NAVY,
+                    cursor:   "pointer  ", transition:   "all 0.2s  "
+                  }}> Restart</button>
+                <button onClick={handleNext}
+                  style={{
+                    flex: 2, background: NAVY, color: WHITE, border:   "none  ", borderRadius: 8,
+                    padding:   "12px  ", fontSize: 13, fontWeight: 700,
+                    cursor:   "pointer  ", transition:   "all 0.2s  "
+                  }}>{questionIdx >= total - 1 ?   "See Results →  " :   "Next Question →  "}</button>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // ========== SPEED ROUND ==========
+    function SpeedRound({ onComplete, onRestart }) {
+      const [questionIdx, setQuestionIdx] = useState(0);
+      const [score, setScore] = useState(0);
+      const [streak, setStreak] = useState(0);
+      const [timeLeft, setTimeLeft] = useState(60);
+      const [started, setStarted] = useState(false);
+      const [finished, setFinished] = useState(false);
+      const [lastCorrect, setLastCorrect] = useState(null);
+      const timerRef = useRef(null);
+      const scoreRef = useRef(0);
+      const streakRef = useRef(0);
+      const [questions] = useState(() => {
+        const shuffled = [...instruments].sort(() => Math.random() - 0.5);
+        return shuffled.map(inst => {
+          const wrong = instruments.filter(i => i.name !== inst.name).sort(() => Math.random() - 0.5).slice(0, 3);
+          const options = [inst, ...wrong].sort(() => Math.random() - 0.5);
+          return { correct: inst, options };
+        });
+      });
+
+      const startSpeed = () => {
+        setStarted(true);
+        setScore(0);
+        scoreRef.current = 0;
+        streakRef.current = 0;
+        setStreak(0);
+        setQuestionIdx(0);
+        setTimeLeft(60);
+        setFinished(false);
+        setLastCorrect(null);
+        timerRef.current = setInterval(() => {
+          setTimeLeft(t => {
+            if (t <= 1) {
+              clearInterval(timerRef.current);
+              setFinished(true);
+              onComplete({ score: scoreRef.current, streak: streakRef.current, timeSpent: 60 });
+              return 0;
+            }
+            return t - 1;
+          });
+        }, 1000);
+      };
+
+      useEffect(() => {
+        return () => { if (timerRef.current) clearInterval(timerRef.current); };
+      }, []);
+
+      const handleAnswer = (inst) => {
+        if (finished) return;
+        const isCorrect = inst.name === questions[questionIdx % questions.length].correct.name;
+        setLastCorrect(isCorrect);
+        if (isCorrect) {
+          const pts = streakRef.current >= 3 ? 2 : 1;
+          scoreRef.current += pts;
+          streakRef.current += 1;
+          setScore(scoreRef.current);
+          setStreak(streakRef.current);
+        } else {
+          streakRef.current = 0;
+          setStreak(0);
+        }
+        const nextIdx = (questionIdx + 1) % questions.length;
+        setQuestionIdx(nextIdx);
+        setTimeout(() => setLastCorrect(null), 300);
+      };
+
+      if (!started) {
+        return (
+          <div style={{ textAlign:   "center  " }}>
+            <div style={{ background: CASE_BG, border: `2px solid ${GOLD}`, borderRadius: 12, padding: 24, marginBottom: 20 }}>
+              <p style={{ fontSize: 14, color: DARK, marginBottom: 12, lineHeight: 1.6 }}>Identify instruments as fast as you can! You have 60 seconds. Streaks of 3+ earn double points!</p>
+              <div style={{ fontSize: 32, fontWeight: 800, color: GOLD }}>60 seconds</div>
+            </div>
+            <button onClick={startSpeed}
+              style={{
+                background: GOLD, color: WHITE, border:   "none  ", borderRadius: 8,
+                padding:   "14px 32px  ", fontSize: 16, fontWeight: 700,
+                cursor:   "pointer  ", transition:   "all 0.2s  "
+              }}>Start Speed Round</button>
+          </div>
+        );
+      }
+
+      const q = questions[questionIdx % questions.length];
+
+      return (
+        <div>
+          <div style={{ display:   "flex  ", justifyContent:   "space-between  ", alignItems:   "center  ", marginBottom: 12, flexWrap:   "wrap  ", gap: 8 }}>
+            <div style={{
+              fontSize: 20, fontWeight: 800, fontVariantNumeric:   "tabular-nums  ",
+              color: timeLeft <= 10 ?   "#C0392B  " : NAVY,
+              animation: timeLeft <= 10 ?   "pulse 0.5s infinite  " :   "none  "
+            }}>{timeLeft}s</div>
+            <div style={{ display:   "flex  ", gap: 12, alignItems:   "center  " }}>
+              <span style={{ fontSize: 16, fontWeight: 800, color: TEAL }}>{score} pts</span>
+              {streak >= 3 && (
+                <span style={{
+                  fontSize: 12, fontWeight: 700, color: GOLD,
+                  background: CASE_BG, padding:   "4px 12px  ", borderRadius: 12,
+                  animation:   "streakGlow 1s infinite  "
+                }}> {streak}x (2x pts!)</span>
+              )}
+            </div>
+          </div>
+
+          <ProgressBar value={timeLeft} max={60} color={timeLeft <= 10 ?   "#C0392B  " : TEAL} />
+
+          {finished ? (
+            <div style={{ textAlign:   "center  ", animation:   "slideIn 0.4s ease  " }}>
+              <div style={{
+                background: score >= 15 ? TEAL_BG : score >= 8 ? CASE_BG : ALERT_BG,
+                border: `2px solid ${score >= 15 ? TEAL : score >= 8 ? GOLD :   "#C0392B  "}`,
+                borderRadius: 12, padding: 24, marginBottom: 16
+              }}>
+                <div style={{ fontSize: 40, fontWeight: 800, color: score >= 15 ? TEAL : score >= 8 ? GOLD :   "#C0392B  ", animation:   "scorePop 0.5s ease  " }}>
+                  {score} points
+                </div>
+                <div style={{ fontSize: 14, color: MED, marginTop: 8 }}>
+                  {score >= 15 ?   "Outstanding! Surgical-level recall!  " : score >= 8 ?   "Good speed! Keep practicing!  " :   "Room to improve. Try the study cards first!  "}
+                </div>
+              </div>
+              <button onClick={() => { setStarted(false); }}
+                style={{
+                  width:   "100%  ", background: NAVY, color: WHITE, border:   "none  ", borderRadius: 8,
+                  padding:   "14px  ", fontSize: 14, fontWeight: 700, cursor:   "pointer  "
+                }}> Try Again</button>
+            </div>
+          ) : (
+            <>
+              <div style={{
+                background: WHITE, borderRadius: 10, padding: 16, marginBottom: 16,
+                border: `2px solid ${lastCorrect === true ? TEAL : lastCorrect === false ?   "#C0392B  " :   "#E0E0E0  "}`,
+                textAlign:   "center  ", transition:   "border-color 0.2s  "
+              }}>
+                <div style={{ marginBottom: 8, display:   "flex  ", justifyContent:   "center  " }}>
+                  <InstrumentBadge name={q.correct.name} category={q.correct.category} size={44} />
+                </div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: MED, lineHeight: 1.5 }}>
+                  {q.correct.desc.split(  '.  ')[0]}
+                </div>
+              </div>
+              <div style={{ display:   "grid  ", gridTemplateColumns:   "repeat(2, 1fr)  ", gap: 8 }}>
+                {q.options.map(opt => (
+                  <button key={opt.name} onClick={() => handleAnswer(opt)}
+                    style={{
+                      padding: 12, borderRadius: 8, border: `2px solid #E0E0E0`,
+                      background: WHITE, cursor:   "pointer  ", textAlign:   "center  ",
+                      fontSize: 12, fontWeight: 600, color: DARK, transition:   "all 0.15s  "
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.borderColor = TEAL; e.currentTarget.style.background = TEAL_BG; }}
+                    onMouseLeave={e => { e.currentTarget.style.borderColor =   "#E0E0E0  "; e.currentTarget.style.background = WHITE; }}
+                  >{opt.name}</button>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
+      );
+    }
+
+    // ========== RESULTS SCREEN ==========
+    function ResultsScreen({ data, onRestart, onHome, personalBest }) {
+      const { score, total, bestStreak, results } = data;
+      const pct = Math.round((score / total) * 100);
+      const color = pct >= 80 ? TEAL : pct >= 60 ? GOLD :   "#C0392B  ";
+      const label = pct >= 90 ?   "Surgical Expert!  " : pct >= 80 ?   "Excellent Knowledge!  " : pct >= 60 ?   "Good Progress!  " :   "Keep Studying!  ";
+
+      // Category breakdown
+      const catStats = {};
+      results.forEach(r => {
+        const cat = r.correct.category;
+        if (!catStats[cat]) catStats[cat] = { correct: 0, total: 0 };
+        catStats[cat].total++;
+        if (r.isCorrect) catStats[cat].correct++;
+      });
+
+      const weakCategories = Object.entries(catStats)
+        .filter(([, s]) => s.correct < s.total)
+        .map(([cat]) => cat);
+
+      return (
+        <div style={{ animation:   "slideIn 0.5s ease  " }}>
+          <div style={{ textAlign:   "center  ", marginBottom: 24 }}>
+            <div style={{
+              display:   "inline-block  ", width: 120, height: 120, borderRadius:   "50%  ",
+              background: `conic-gradient(${color} ${pct}%, #E0E0E0 0%)`,
+              padding: 8, marginBottom: 16
+            }}>
+              <div style={{
+                width:   "100%  ", height:   "100%  ", borderRadius:   "50%  ", background: WHITE,
+                display:   "flex  ", flexDirection:   "column  ", alignItems:   "center  ", justifyContent:   "center  "
+              }}>
+                <div style={{ fontSize: 32, fontWeight: 800, color, animation:   "scorePop 0.6s ease  " }}>{score}/{total}</div>
+                <div style={{ fontSize: 11, color: MED }}>{pct}%</div>
+              </div>
+            </div>
+            <div style={{ fontSize: 20, fontWeight: 800, color, marginBottom: 4 }}>{label}</div>
+            {bestStreak > 1 && <div style={{ fontSize: 13, color: GOLD, fontWeight: 600 }}>Best streak:  {bestStreak} in a row</div>}
+            {personalBest !== null && <div style={{ fontSize: 12, color: MED, marginTop: 4 }}>Personal best: {personalBest}/{total}</div>}
+          </div>
+
+          {/* Question Breakdown */}
+          <div style={{ marginBottom: 20 }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: NAVY, marginBottom: 10 }}>Question Breakdown</div>
+            {results.map((r, i) => (
+              <div key={i} style={{
+                display:   "flex  ", alignItems:   "center  ", gap: 10, padding:   "8px 12px  ",
+                background: i % 2 === 0 ? WHITE : LIGHT_BG, borderRadius: 6, marginBottom: 2
+              }}>
+                <span style={{
+                  width: 24, height: 24, borderRadius:   "50%  ", fontSize: 12, fontWeight: 700,
+                  display:   "flex  ", alignItems:   "center  ", justifyContent:   "center  ",
+                  background: r.isCorrect ? TEAL_BG : ALERT_BG,
+                  color: r.isCorrect ? TEAL :   "#C0392B  "
+                }}>{r.isCorrect ?   "  " :   "  "}</span>
+                <div style={{ flex: 1, fontSize: 12, color: DARK }}>{r.correct.name}</div>
+                {!r.isCorrect && <div style={{ fontSize: 11, color:   "#C0392B  " }}>You: {r.chosen.name}</div>}
+              </div>
+            ))}
+          </div>
+
+          {/* Category Performance */}
+          <div style={{ marginBottom: 20 }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: NAVY, marginBottom: 10 }}>Category Performance</div>
+            <div style={{ display:   "grid  ", gridTemplateColumns:   "repeat(auto-fit, minmax(130px, 1fr))  ", gap: 8 }}>
+              {Object.entries(catStats).map(([cat, stats]) => {
+                const catPct = Math.round((stats.correct / stats.total) * 100);
+                const catColor = catPct === 100 ? TEAL : catPct >= 50 ? GOLD :   "#C0392B  ";
+                return (
+                  <div key={cat} style={{
+                    background: WHITE, border: `2px solid ${catColor}`, borderRadius: 8,
+                    padding: 10, textAlign:   "center  "
+                  }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: catColor, marginBottom: 4 }}>{cat}</div>
+                    <div style={{ fontSize: 18, fontWeight: 800, color: catColor }}>{stats.correct}/{stats.total}</div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {weakCategories.length > 0 && (
+            <div style={{ background: CASE_BG, border: `1px solid ${GOLD}`, borderRadius: 8, padding: 12, marginBottom: 16, fontSize: 13, color: DARK }}>
+              <strong>Areas to review:</strong> {weakCategories.join(  ",   ")} instruments. Try the Study Cards for these categories!
+            </div>
+          )}
+
+          <div style={{ display:   "flex  ", gap: 10 }}>
+            <button onClick={onHome}
+              style={{
+                flex: 1, background: WHITE, border: `2px solid ${NAVY}`, borderRadius: 8,
+                padding:   "14px  ", fontSize: 13, fontWeight: 700, color: NAVY, cursor:   "pointer  "
+              }}>Home</button>
+            <button onClick={onRestart}
+              style={{
+                flex: 2, background: TEAL, color: WHITE, border:   "none  ", borderRadius: 8,
+                padding:   "14px  ", fontSize: 14, fontWeight: 700, cursor:   "pointer  "
+              }}> Try Again</button>
+          </div>
+        </div>
+      );
+    }
+
+    // ========== MAIN COMPONENT ==========
+    function InstrumentIDGame() {
+      const [mode, setMode] = useState(null);
+      const [studyIdx, setStudyIdx] = useState(0);
+      const [quizResults, setQuizResults] = useState(null);
+      const [personalBest, setPersonalBest] = useState(null);
+      const [speedBest, setSpeedBest] = useState(null);
+
+      const handleQuizComplete = (data) => {
+        setQuizResults(data);
+        if (personalBest === null || data.score > personalBest) {
+          setPersonalBest(data.score);
+        }
+      };
+
+      const handleSpeedComplete = (data) => {
+        if (speedBest === null || data.score > speedBest) {
+          setSpeedBest(data.score);
+        }
+      };
+
+      const resetQuiz = () => {
+        setQuizResults(null);
+        setMode(  "quiz  ");
+      };
+
+      const goHome = () => {
+        setMode(null);
+        setQuizResults(null);
+        setStudyIdx(0);
+      };
+
+      return (
+        <div style={{ fontFamily:   "inherit  ", maxWidth: 680, margin:   "0 auto  ", padding:   "16px 0  ", minHeight:   "100vh  " }}>
+          {/* Header */}
+          <div style={{ textAlign:   "center  ", marginBottom: 20 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: TEAL, letterSpacing: 2, textTransform:   "uppercase  ", marginBottom: 6 }}>Woven Learning Mini Med School</div>
+            <h1 style={{ fontSize: 28, fontWeight: 900, color: NAVY, margin:   "0 0 6px  ", letterSpacing: -0.5 }}>Instrument ID Game</h1>
+            <p style={{ fontSize: 14, color: MED, margin: 0 }}>Master surgical & diagnostic instruments</p>
+          </div>
+
+          {/* Persistent nav bar */}
+          <div style={{
+            display:   "flex  ", justifyContent:   "space-between  ", alignItems:   "center  ",
+            gap: 8, marginBottom: 16, padding:   "10px 14px  ",
+            background: WHITE, borderRadius: 8, boxShadow:   "0 2px 4px rgba(0,0,0,0.06)  ",
+            flexWrap:   "wrap  "
+          }}>
+            <div style={{ display:   "flex  ", gap: 12 }}>
+              {personalBest !== null && (
+                <div>
+                  <div style={{ fontSize: 10, color: MED, fontWeight: 600 }}>Quiz Best</div>
+                  <div style={{ fontSize: 14, fontWeight: 800, color: TEAL }}>{personalBest}/10</div>
+                </div>
+              )}
+              {speedBest !== null && (
+                <div>
+                  <div style={{ fontSize: 10, color: MED, fontWeight: 600 }}>Speed Best</div>
+                  <div style={{ fontSize: 14, fontWeight: 800, color: GOLD }}>{speedBest} pts</div>
+                </div>
+              )}
+              {personalBest === null && speedBest === null && (
+                <div style={{ fontSize: 12, color: MED }}>12 instruments to learn</div>
+              )}
+            </div>
+            {mode !== null && (
+              <button onClick={goHome}
+                style={{
+                  background:   "none  ", border: `2px solid ${TEAL}`, color: TEAL,
+                  borderRadius: 6, padding:   "6px 14px  ", fontSize: 12, fontWeight: 700,
+                  cursor:   "pointer  ", transition:   "all 0.2s  "
+                }}>← Home</button>
+            )}
+          </div>
+
+          {/* HOME SCREEN */}
+          {mode === null && (
+            <div style={{ display:   "flex  ", flexDirection:   "column  ", gap: 12 }}>
+              {[
+                { id:   "study  ", icon:   "  ", title:   "Study Cards  ", desc:   "Browse all 12 instruments with descriptions, uses, and pro tips. Flip cards to learn!  ", color: TEAL },
+                { id:   "quiz  ", icon:   "  ", title:   "Knowledge Quiz  ", desc:   "10-question quiz from descriptions and clinical uses. Track your streak!  ", color: NAVY },
+                { id:   "speed  ", icon:   "  ", title:   "Speed Round  ", desc:   "60 seconds. How many can you identify? Streaks of 3+ earn double points!  ", color: GOLD },
+              ].map(m => (
+                <button key={m.id} onClick={() => { setMode(m.id); setQuizResults(null); setStudyIdx(0); }}
+                  style={{
+                    display:   "flex  ", alignItems:   "center  ", gap: 16, padding: 18,
+                    background: WHITE, border: `2px solid #E0E0E0`, borderRadius: 12,
+                    cursor:   "pointer  ", textAlign:   "left  ", transition:   "all 0.2s  "
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = m.color; e.currentTarget.style.background = `${m.color}08`; }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor =   "#E0E0E0  "; e.currentTarget.style.background = WHITE; }}
+                >
+                  <span style={{ fontSize: 32, width: 48, textAlign:   "center  " }}>{m.icon}</span>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontWeight: 700, color: NAVY, fontSize: 16, marginBottom: 4 }}>{m.title}</div>
+                    <div style={{ fontSize: 12, color: MED, lineHeight: 1.4 }}>{m.desc}</div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* STUDY MODE */}
+          {mode ===   "study  " && (
+            <StudyMode
+              instrument={instruments[studyIdx]}
+              index={studyIdx}
+              total={instruments.length}
+              onNext={() => setStudyIdx(i => Math.min(i + 1, instruments.length - 1))}
+              onPrev={() => setStudyIdx(i => Math.max(i - 1, 0))}
+              onRestart={() => setStudyIdx(0)}
+            />
+          )}
+
+          {/* QUIZ MODE */}
+          {mode ===   "quiz  " && !quizResults && (
+            <QuizMode onComplete={handleQuizComplete} onRestart={resetQuiz} />
+          )}
+          {mode ===   "quiz  " && quizResults && (
+            <ResultsScreen
+              data={quizResults}
+              onRestart={resetQuiz}
+              onHome={goHome}
+              personalBest={personalBest}
+            />
+          )}
+
+          {/* SPEED ROUND */}
+          {mode ===   "speed  " && (
+            <SpeedRound onComplete={handleSpeedComplete} onRestart={() => setMode(  "speed  ")} />
+          )}
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById(  'root  ')).render(<InstrumentIDGame />);
+  </script>
+  <div style="text-align:center; padding:14px; border-top:3px solid #D4A843; background:#fff; font-size:0.75rem; color:#999; margin-top:20px; display:flex; align-items:center; justify-content:center; gap:6px; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">
+  <svg viewBox="0 0 40 40" width="16" height="16"><polygon points="13,2 24,13 13,24 2,13" fill="#0ABAB5" opacity="0.85"/><polygon points="27,2 38,13 27,24 16,13" fill="#F5B731" opacity="0.85"/><polygon points="13,16 24,27 13,38 2,27" fill="#E65C3C" opacity="0.85"/><polygon points="27,16 38,27 27,38 16,27" fill="#7A2D4E" opacity="0.85"/></svg>
+  Built by <strong style="color:#1A6B6B;">Woven Learning &amp; Technology</strong>
+</div>
+</body>
+</html>

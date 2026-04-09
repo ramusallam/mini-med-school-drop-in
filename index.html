@@ -1,0 +1,1969 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mini Med School 2026 | Drop-In Station Program</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f5f7fa;
+      color: #333;
+      line-height: 1.7;
+      font-size: 15px;
+    }
+
+    .wrap {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .sb {
+      width: 240px;
+      min-width: 240px;
+      background: #fff;
+      border-right: 1px solid #e0ebe9;
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      overflow-y: auto;
+      z-index: 50;
+      transition: transform 0.3s;
+      box-shadow: 2px 0 12px rgba(0,0,0,0.04);
+    }
+
+    .sb-top {
+      background: linear-gradient(135deg, #1A6B6B 0%, #2A9D8F 100%);
+      padding: 12px 12px 10px;
+      color: #fff;
+      position: sticky;
+      top: 0;
+      z-index: 51;
+    }
+
+    .sb-logo {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .sb-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+      line-height: 1.2;
+    }
+
+    .sb-meta {
+      font-size: 0.62rem;
+      opacity: 0.8;
+      line-height: 1.3;
+      margin-top: 5px;
+      padding-top: 5px;
+      border-top: 1px solid rgba(255,255,255,0.15);
+    }
+
+    .nav-section {
+      padding: 6px 8px;
+    }
+
+    .nav-btn {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      padding: 7px 9px;
+      border: none;
+      background: #f8fafa;
+      text-align: left;
+      font-size: 0.74rem;
+      color: #555;
+      cursor: pointer;
+      transition: all 0.2s;
+      border-radius: 7px;
+      font-weight: 600;
+      gap: 8px;
+      margin-bottom: 3px;
+      border: 1px solid transparent;
+    }
+
+    .nav-btn:hover {
+      background: #edf5f4;
+      border-color: #d0e8e5;
+      transform: translateX(2px);
+    }
+
+    .nav-btn.active {
+      background: linear-gradient(135deg, rgba(42,157,143,0.12), rgba(42,157,143,0.05));
+      color: #1A6B6B;
+      font-weight: 700;
+      border-color: #2A9D8F;
+      box-shadow: 0 2px 6px rgba(42,157,143,0.1);
+    }
+
+    .nav-btn.done {
+      border-color: #D4A843;
+      background: rgba(212,168,67,0.06);
+    }
+
+    .nav-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 5px;
+      background: linear-gradient(135deg, #e0ebe9, #d5e5e3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.65rem;
+      font-weight: 800;
+      color: #1A6B6B;
+      flex-shrink: 0;
+    }
+
+    .nav-btn.active .nav-icon {
+      background: linear-gradient(135deg, #2A9D8F, #1A6B6B);
+      color: #fff;
+    }
+
+    .nav-btn.done .nav-icon {
+      background: linear-gradient(135deg, #D4A843, #c49a2f);
+      color: #fff;
+    }
+
+    .nav-label {
+      flex: 1;
+      line-height: 1.25;
+    }
+
+    .nav-pct {
+      font-size: 0.58rem;
+      color: #bbb;
+      font-weight: 500;
+      min-width: 22px;
+      text-align: right;
+    }
+
+    .nav-btn.active .nav-pct {
+      color: #2A9D8F;
+      font-weight: 700;
+    }
+
+    .sb-edit {
+      display: block;
+      margin: 12px 8px 8px;
+      padding: 6px 8px;
+      font-size: 0.65rem;
+      color: #2A9D8F;
+      text-decoration: none;
+      border: 1px dashed #2A9D8F;
+      border-radius: 4px;
+      text-align: center;
+      transition: all 0.2s;
+    }
+
+    .sb-edit:hover {
+      background: #f0f8f7;
+      color: #1A6B6B;
+    }
+
+    .mn {
+      margin-left: 240px;
+      flex: 1;
+      padding: 28px 36px;
+      min-width: 0;
+      max-width: 100%;
+    }
+
+    .content-wrap {
+      max-width: 900px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .day {
+      display: none;
+    }
+
+    .day.show {
+      display: block;
+    }
+
+    .day-hdr {
+      background: linear-gradient(135deg, #1A6B6B 0%, #2A9D8F 100%);
+      color: #fff;
+      padding: 28px 28px 20px;
+      border-radius: 14px;
+      margin-bottom: 8px;
+      box-shadow: 0 4px 16px rgba(26,107,107,0.2);
+    }
+
+    .day-hdr h1 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+
+    .day-hdr .subtitle {
+      font-size: 0.95rem;
+      opacity: 0.85;
+      font-weight: 400;
+    }
+
+    .pg-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 4px 20px;
+    }
+
+    .pg-track {
+      flex: 1;
+      background: #e4e8ec;
+      border-radius: 20px;
+      height: 6px;
+      overflow: hidden;
+    }
+
+    .pg-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #2A9D8F, #D4A843);
+      border-radius: 20px;
+      transition: width 0.5s ease;
+      width: 0%;
+    }
+
+    .pg-label {
+      font-size: 0.75rem;
+      color: #999;
+      font-weight: 600;
+      min-width: 32px;
+      text-align: right;
+    }
+
+    .sc {
+      background: #fff;
+      border-radius: 14px;
+      padding: 24px 26px;
+      margin-bottom: 16px;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+      border-left: 4px solid #e0e0e0;
+      transition: box-shadow 0.3s;
+    }
+
+    .sc:hover {
+      box-shadow: 0 3px 14px rgba(0,0,0,0.1);
+    }
+
+    .sc.type-hook {
+      border-left-color: #2A9D8F;
+    }
+
+    .sc.type-lab {
+      border-left-color: #E65C3C;
+    }
+
+    .sc.type-digital {
+      border-left-color: #D4A843;
+    }
+
+    .sc.type-wrap {
+      border-left-color: #7A2D4E;
+    }
+
+    .sc p {
+      font-size: 0.92rem;
+      margin-bottom: 10px;
+      color: #444;
+      line-height: 1.7;
+    }
+
+    .sc p:last-child {
+      margin-bottom: 0;
+    }
+
+    .part-heading {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+      margin-top: 0;
+    }
+
+    .part-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: #fff;
+      background: #e0ebe9;
+      color: #1A6B6B;
+    }
+
+    .part-num-hook {
+      background: #e8f5f3;
+      color: #1A6B6B;
+    }
+
+    .part-num-lab {
+      background: #fce8e4;
+      color: #c0392b;
+    }
+
+    .part-num-digital {
+      background: #fdf3e0;
+      color: #b8860b;
+    }
+
+    .part-num-wrap {
+      background: #f3e8ed;
+      color: #7A2D4E;
+    }
+
+    .part-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #1A6B6B;
+    }
+
+    .case-callout {
+      background: #f8fafa;
+      border-left: 4px solid #2A9D8F;
+      padding: 12px 16px;
+      border-radius: 0 10px 10px 0;
+      margin: 16px 0;
+    }
+
+    .case-callout-label {
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: #1A6B6B;
+      margin-bottom: 6px;
+    }
+
+    .case-callout p {
+      font-size: 0.9rem;
+      color: #444;
+      line-height: 1.7;
+      margin: 0;
+    }
+
+    .materials-box {
+      background: #f8fafa;
+      border: 1px solid #e0ebe9;
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-bottom: 20px;
+    }
+
+    .materials-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #2A9D8F;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 10px;
+    }
+
+    .materials-list {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px 16px;
+    }
+
+    .materials-list span {
+      font-size: 0.82rem;
+      color: #555;
+      padding: 2px 0;
+    }
+
+    .materials-list span::before {
+      content: "\25CB ";
+      color: #2A9D8F;
+    }
+
+    .step-card {
+      background: #fafcfc;
+      border: 1px solid #e8f1f0;
+      border-radius: 10px;
+      padding: 12px 16px;
+      margin-bottom: 12px;
+    }
+
+    .step-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .step-num {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #2A9D8F, #1A6B6B);
+      color: #fff;
+      font-size: 0.72rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .step-title {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #1A6B6B;
+      margin: 2px 0;
+    }
+
+    .step-desc {
+      font-size: 0.85rem;
+      color: #555;
+      margin-left: 38px;
+      line-height: 1.6;
+    }
+
+    .yt-wrap {
+      position: relative;
+      width: 100%;
+      padding-bottom: 56.25%;
+      background: #000;
+      border-radius: 12px;
+      overflow: hidden;
+      margin: 16px 0;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    }
+
+    .yt-wrap iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    .app-section {
+      margin: 16px 0 12px;
+    }
+
+    .step-instructions {
+      font-size: 0.85rem;
+      color: #555;
+      margin-bottom: 12px;
+      line-height: 1.6;
+      padding: 0 0 0 38px;
+    }
+
+    .app-toggle-btn {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 10px 14px;
+      background: linear-gradient(135deg, #2A9D8F, #1A6B6B);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 0.82rem;
+      font-weight: 700;
+      transition: all 0.3s;
+      margin-top: 8px;
+    }
+
+    .app-toggle-btn:hover {
+      box-shadow: 0 4px 12px rgba(42,157,143,0.3);
+      transform: translateY(-2px);
+    }
+
+    .app-arrow {
+      font-size: 0.7rem;
+      transition: transform 0.3s;
+    }
+
+    .app-toggle-btn.open .app-arrow {
+      transform: rotate(180deg);
+    }
+
+    .app-wrapper {
+      border: 2px solid #e0ebe9;
+      border-top: none;
+      border-radius: 0 0 10px 10px;
+      overflow: hidden;
+      max-height: 0;
+      transition: max-height 0.3s ease;
+      margin-bottom: 12px;
+    }
+
+    .app-wrapper.open {
+      max-height: 700px;
+    }
+
+    .app-iframe {
+      width: 100%;
+      height: 600px;
+      border: none;
+      display: block;
+    }
+
+    .part-check {
+      background: #f8fafa;
+      border: 1px solid #e0ebe9;
+      border-radius: 10px;
+      padding: 12px 16px;
+      margin-top: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .part-check input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      accent-color: #2A9D8F;
+    }
+
+    .part-check label {
+      font-size: 0.88rem;
+      color: #444;
+      font-weight: 500;
+      cursor: pointer;
+      flex: 1;
+    }
+
+    .part-check input[type="checkbox"]:checked + label {
+      color: #2A9D8F;
+      font-weight: 700;
+    }
+
+    .ftr {
+      background: #fff;
+      border-top: 3px solid #D4A843;
+      padding: 18px 36px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-left: 240px;
+      border-radius: 14px 14px 0 0;
+    }
+
+    .ftr-brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.75rem;
+      color: #555;
+    }
+
+    .ftr-edit {
+      font-size: 0.7rem;
+      color: #2A9D8F;
+      text-decoration: none;
+      border: 1px dashed #2A9D8F;
+      padding: 4px 8px;
+      border-radius: 4px;
+      transition: all 0.2s;
+    }
+
+    .ftr-edit:hover {
+      background: #f0f8f7;
+      color: #1A6B6B;
+    }
+
+    .hamburger {
+      display: none;
+      position: fixed;
+      top: 12px;
+      left: 12px;
+      z-index: 60;
+      background: #fff;
+      border: 1px solid #e0ebe9;
+      padding: 6px;
+      border-radius: 6px;
+      cursor: pointer;
+      flex-direction: column;
+      gap: 4px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .hamburger span {
+      width: 24px;
+      height: 2px;
+      background: #1A6B6B;
+      border-radius: 1px;
+    }
+
+    @media (max-width: 900px) {
+      .hamburger {
+        display: flex;
+      }
+
+      .sb {
+        transform: translateX(-100%);
+        width: 280px;
+        z-index: 55;
+      }
+
+      .sb.open {
+        transform: translateX(0);
+      }
+
+      .mn {
+        margin-left: 0;
+        padding: 60px 20px 28px;
+      }
+
+      .ftr {
+        margin-left: 0;
+        padding: 14px 20px;
+        font-size: 0.7rem;
+      }
+
+      .ftr-brand {
+        gap: 6px;
+      }
+    }
+
+    @media (min-width: 901px) and (max-width: 1100px) {
+      .sb {
+        width: 210px;
+      }
+
+      .mn {
+        margin-left: 210px;
+        padding: 20px 24px;
+      }
+
+      .ftr {
+        margin-left: 210px;
+        padding: 14px 24px;
+      }
+    }
+
+    @media (min-width: 1400px) {
+      .content-wrap {
+        max-width: 1000px;
+      }
+    }
+
+    .callout {
+      background: #fdf3e0;
+      border-left: 4px solid #D4A843;
+      padding: 14px 16px;
+      border-radius: 0 10px 10px 0;
+      margin: 16px 0;
+    }
+
+    .callout p {
+      font-size: 0.9rem;
+      color: #444;
+      margin: 0;
+      font-weight: 500;
+    }
+
+    .info-list {
+      margin: 12px 0;
+      padding-left: 38px;
+    }
+
+    .info-list li {
+      font-size: 0.85rem;
+      color: #555;
+      margin-bottom: 6px;
+      line-height: 1.6;
+    }
+
+    .fade {
+      animation: fadeIn 0.4s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .content-heading {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #1A6B6B;
+      margin: 16px 0 8px;
+    }
+
+    .cb-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 8px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <!-- SIDEBAR -->
+    <nav class="sb" id="sidebar">
+      <div class="sb-top">
+        <div class="sb-logo">
+          <svg viewBox="0 0 40 40" width="26" height="26"><polygon points="13,2 24,13 13,24 2,13" fill="#0ABAB5" opacity="0.85"/><polygon points="27,2 38,13 27,24 16,13" fill="#F5B731" opacity="0.85"/><polygon points="13,16 24,27 13,38 2,27" fill="#E65C3C" opacity="0.85"/><polygon points="27,16 38,27 27,38 16,27" fill="#7A2D4E" opacity="0.85"/></svg>
+          <span class="sb-title">Mini Med School 2026</div>
+        </div>
+        <div class="sb-meta">Drop-In Station Program - College</div>
+      </div>
+
+      <div class="nav-section">
+        <button class="nav-btn active" onclick="showDay(1)">
+          <div class="nav-icon">A</div>
+          <div class="nav-label">Station A<br>Vital Signs</div>
+          <div class="nav-pct">0%</div>
+        </button>
+        <button class="nav-btn" onclick="showDay(2)">
+          <div class="nav-icon">B</div>
+          <div class="nav-label">Station B<br>Suturing Lab</div>
+          <div class="nav-pct">0%</div>
+        </button>
+        <button class="nav-btn" onclick="showDay(3)">
+          <div class="nav-icon">C</div>
+          <div class="nav-label">Station C<br>Laparoscopic</div>
+          <div class="nav-pct">0%</div>
+        </button>
+        <button class="nav-btn" onclick="showDay(4)">
+          <div class="nav-icon">D</div>
+          <div class="nav-label">Station D<br>Neuro Assessment</div>
+          <div class="nav-pct">0%</div>
+        </button>
+        <button class="nav-btn" onclick="showDay(5)">
+          <div class="nav-icon">E</div>
+          <div class="nav-label">Station E<br>Medical Careers</div>
+          <div class="nav-pct">0%</div>
+        </button>
+        <button class="nav-btn" onclick="showDay(6)">
+          <div class="nav-icon">★</div>
+          <div class="nav-label">Bonus<br>Triage Challenge</div>
+          <div class="nav-pct">0%</div>
+        </button>
+      </div>
+
+      <a class="sb-edit" href="#" onclick="editAuth(event)">&#9998; Edit Workshop Content</a>
+    </nav>
+
+    <!-- HAMBURGER MENU -->
+    <div class="hamburger" id="hamburger" onclick="toggleSidebar()">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <main class="mn">
+      <div class="content-wrap">
+        <!-- ===== STATION A: VITAL SIGNS ===== -->
+        <div class="day show" id="day-1">
+          <div class="day-hdr">
+            <h1>Station A: Vital Signs Check</h1>
+            <div class="subtitle">Blood Pressure, Pulse Oximetry & Stethoscope</div>
+            <div class="pg-wrap">
+              <div class="pg-track"><div class="pg-fill" style="width: 0%"></div></div>
+              <div class="pg-label">0%</div>
+            </div>
+          </div>
+
+          <!-- PART I: The Hook -->
+          <div class="sc type-hook fade">
+            <div class="part-heading">
+              <span class="part-num part-num-hook">Part I</span>
+              <h2 class="part-title">The Hook</h2>
+            </div>
+            <p>Vital signs are the first language of a clinician. Three numbers - blood pressure, heart rate, oxygen - tell you in 60 seconds whether a patient is stable or crashing.</p>
+            <p>You're the clinician now.</p>
+            <div class="case-callout">
+              <div class="case-callout-label">Today's Case Briefing:</div>
+              <p>You're running a community health screening. People line up: athletes, middle-aged adults, someone's grandmother. You measure three vital signs on each. You interpret the results. You decide who needs follow-up care. The tools you're using? Same ones used in every ER on the planet.</p>
+            </div>
+            <div class="yt-wrap">
+              <iframe src="https://www.youtube.com/embed/llosVAoeojQ" allowfullscreen></iframe>
+            </div>
+            <div class="part-check">
+              <input type="checkbox" id="cb-1" onchange="saveState()">
+              <label for="cb-1">I read the briefing and watched the video</label>
+            </div>
+          </div>
+
+          <!-- PART II: The Hands-On Lab -->
+          <div class="sc type-lab fade">
+            <div class="part-heading">
+              <span class="part-num part-num-lab">Part II</span>
+              <h2 class="part-title">The Physical Lab</h2>
+            </div>
+            <div class="materials-box">
+              <div class="materials-title">Materials Needed</div>
+              <div class="materials-list">
+                <span>Automatic BP cuff</span>
+                <span>Fingertip pulse oximeter</span>
+                <span>Stethoscope</span>
+                <span>Alcohol wipes</span>
+                <span>Patient data recording sheet</span>
+                <span>Partner</span>
+              </div>
+            </div>
+
+            <!-- Step 1: App -->
+            <div class="step-card">
+              <div class="step-header">
+                <span class="step-num">1</span>
+                <span class="step-title">Vital Signs Interpreter App</span>
+              </div>
+              <div class="step-instructions">Explore the Vital Signs Interpreter app first. Enter different combinations - see how the color shifts from green to red as values move into dangerous territory.</div>
+              <div class="app-section">
+                <button class="app-toggle-btn" onclick="toggleApp('app-1')">
+                  <span>Launch App</span>
+                  <span class="app-arrow">▼</span>
+                </button>
+                <div class="app-wrapper" id="app-1">
+                  <iframe class="app-iframe" data-src="apps/vital-signs-interpreter.html" title="Vital Signs Interpreter App"></iframe>
+                </div>
+              </div>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="step-card">
+              <div class="step-header">
+                <span class="step-num">2</span>
+                <span class="step-title">Measure Blood Pressure</span>
+              </div>
+              <div class="step-desc">Sit quietly for 1 minute. Wrap the cuff snugly above the elbow. Press START and record both numbers. Normal for a young adult is around 110-120/70-80.</div>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="step-card">
+              <div class="step-header">
+                <span class="step-num">3</span>
+                <span class="step-title">Check Oxygen and Pulse</span>
+              </div>
+              <div class="step-desc">Clip the pulse ox onto your index finger. Wait 10 seconds for stabilization. Record the SpO2 (should be 96-100%) and pulse rate. Normal resting heart rate is 60-100 BPM.</div>
+            </div>
+
+            <!-- Step 4 -->
+            <div class="step-card">
+              <div class="step-header">
+                <span class="step-num">4</span>
+                <span class="step-title">Listen with the Stethoscope</span>
+              </div>
+              <div class="step-desc">Clean the earpieces. Insert angled forward. Listen to the upper left chest for LUB-DUB - AV valves (LUB) and semilunar valves (DUB). Listen to the back for lung sounds. You should hear quiet, even breathing.</div>
+            </div>
+
+            <!-- Step 5 -->
+            <div class="step-card">
+              <div class="step-header">
+                <span class="step-num">5</span>
+                <span class="step-title">Interpret Your Results</span>
+              </div>
+              <div class="step-desc">Enter your actual readings. Compare to normal ranges. If a patient came in with BP 155/95, SpO2 93%, HR 115 - what concerns you most and why?</div>
+            </div>
+
+            <div style="background:#f0faf9; border:1px solid #d0e8e5; border-radius:10px; padding:12px 16px; margin:14px 0; font-size:0.85rem; color:#1A6B6B;">
+              <strong>Did You Know?</strong> The stethoscope was invented in 1816 because a French doctor felt awkward pressing his ear directly against a woman's chest. He rolled up a piece of paper into a tube instead - and realized he could hear the heartbeat even better.
+            </div>
+            <div class="part-check">
+              <input type="checkbox" id="cb-2" onchange="saveState()">
+              <label for="cb-2">I measured all three vital signs and interpreted the results</label>
+            </div>
+          </div>
+
+          <!-- PART III: Knowledge Check -->
+          <div class="sc type-digital fade">
+            <div class="part-heading">
+              <span class="part-num part-num-digital">Part III</span>
+              <h2 class="part-title">AI & Digital Literacy</h2>
+            </div>
+            <div class="case-callout">
+              <div class="case-callout-label">Case Study:</div>
+              <p>Blood pressure is not just a number - it is a window into cardiovascular health. A reading of 155/95 puts a patient in Stage 2 Hypertension territory. At that level, the heart is working harder than it should with every single beat, and the walls of the arteries are under constant excess pressure. Over time, this damages blood vessels throughout the body - in the kidneys, the eyes, and the brain. The silent nature of hypertension is what makes it dangerous: most people feel completely fine until something catastrophic happens. One in three American adults has high blood pressure, and nearly half of them do not know it.</p>
+            </div>
+            <div class="yt-wrap">
+              <iframe src="https://www.youtube.com/embed/SSr0ORHVVG4" allowfullscreen></iframe>
+            </div>
+
+            <!-- Step 1 -->
+            <div class="step-card">
+              <div class="step-header">
+                <span class="step-num">1</span>
+                <span class="step-title">Clinical Scenario</span>
+              </div>
+              <div class="step-desc">A 50-year-old patient arrives at the community screening. Their BP reads 162/98, heart rate 104, SpO2 95%. Enter these into the Vital Signs Interpreter. Based on the classifications, what would you recommend this patient do next?</div>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="step-card">
+              <div class="step-header">
+                <span class="step-num">2</span>
+                <span class="step-title">Reflection</span>
+              </div>
+              <div class="step-desc">Which of your own readings was furthest from normal? What lifestyle factors could cause that? How would you explain blood pressure to someone who has never heard of it?</div>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="step-card">
+              <div class="step-header">
+                <span class="step-num">3</span>
+                <span class="step-title">Career Connection</span>
+              </div>
+              <div class="step-desc">EMTs and paramedics assess vital signs in the field under time pressure and make rapid decisions. Training takes 4 - 6 weeks for basic certification with a salary range of $30K - 50K. Consider: what would it be like to make life-or-death decisions based on the same numbers you just measured?</div>
+            </div>
+
+            <div class="part-check">
+              <input type="checkbox" id="cb-3" onchange="saveState()">
+              <label for="cb-3">I analyzed the clinical scenario and explored career connections</label>
+            </div>
+          </div>
+
+          <!-- PART IV: Station Complete -->
+          <div class="sc type-wrap fade">
+            <div class="part-heading">
+              <span class="part-num part-num-wrap">Part IV</span>
+              <h2 class="part-title">End of Day</h2>
+            </div>
+            <div class="callout">
+              <p>Your vital signs data is the foundation of clinical assessment. These same three measurements are the first thing checked on every patient in every hospital.</p>
+            </div>
+            <div class="part-check">
+              <input type="checkbox" id="cb-4" onchange="saveState()">
+              <label for="cb-4">I completed Station A</label>
+            </div>
+          </div>
+
+        <div class="ftr"><svg viewBox="0 0 40 40" width="18" height="18"><polygon points="13,2 24,13 13,24 2,13" fill="#0ABAB5" opacity="0.85"/><polygon points="27,2 38,13 27,24 16,13" fill="#F5B731" opacity="0.85"/><polygon points="13,16 24,27 13,38 2,27" fill="#E65C3C" opacity="0.85"/><polygon points="27,16 38,27 27,38 16,27" fill="#7A2D4E" opacity="0.85"/></svg> Built by <strong>Woven Learning &amp; Technology</strong><a class="ftr-edit" href="#" onclick="editAuth(event)">&#9998; Edit</a></div>
+        </div>
+
+        <!-- ===== STATION B: SUTURING LAB ===== -->
+        <div class="day" id="day-2">
+          <div class="day-hdr">
+            <h1>Station B: Suturing Lab</h1>
+            <div class="subtitle">Simple Interrupted Suture Technique</div>
+            <div class="pg-wrap">
+              <div class="pg-track"><div class="pg-fill" style="width: 0%"></div></div>
+              <div class="pg-label">0%</div>
+            </div>
+          </div>
+
+          <!-- PART I: The Hook -->
+          <div class="sc type-hook fade">
+            <div class="part-heading">
+              <span class="part-num part-num-hook">Part I</span>
+              <h2 class="part-title">The Hook</h2>
+            </div>
+            <p>Suturing hasn't changed in 5,000 years because it works. The simple interrupted suture - individual stitches that stand alone - is the standard closure worldwide.</p>
+            <p>Today you learn to close a wound.</p>
+            <div class="case-callout">
+              <div class="case-callout-label">Today's Case Briefing:</div>
+              <p>A college student cuts their forearm on broken glass - 4cm laceration, clean but deep. You see fatty tissue. The window to close it without infection? 6 hours. Learn the instruments. Master the technique. You'll practice on material that simulates real tissue.</p>
+            </div>
+            <div class="yt-wrap">
+              <iframe src="https://www.youtube.com/embed/z8oWv-nVO6g" allowfullscreen></iframe>
+            </div>
+            <div class="part-check">
+              <input type="checkbox" id="cb-5" onchange="saveState()">
+              <label for="cb-5">I read the briefing and watched the video</label>
+            </div>
+          </div>
+
+          <!-- PART II: The Hands-On Lab -->
+          <div class="sc type-lab fade">
+            <div class="part-heading">
+              <span class="part-num part-num-lab">Part II</span>
+              <h2 class="part-title">The Physical Lab</h2>
+            </div>
+            <div class="materials-box">
+              <div class="materials-title">Materials Needed</div>
+              <div class="materials-list">
+                <span>Suture practice kit</span>
+                <span>Suture packets (3-0 nylon)</span>
+                <span>Silicone suture practice pad</span>
+                <span>Bananas (initial practice)</span>
+                <span>Sharps container</span>
+                <span>Gloves</span>
+                <span>Ruler for spacing</span>
+                <span>Alcohol wipes</span>
+              </div>
+            </div>
+
+            <!-- Step 1: App -->
+            <div class="step-card">
+              <div class="step-header">
+                <span class="step-num">1</span>
+                <span class="step-title">Surgical Dexterity Trainer App</span>
+              </div>
+              <div class="step-instructions">Warm up your fine motor skills with the digital trainer. Two rounds of the steady-hand trace, one round of precision targeting. This is harder than it looks.</div>
+              <div class="app-section">
+                <button class="app-toggle-btn" onclick="toggleApp('app-2')">
+                  <span>Launch App</span>
+                  <span class="app-arrow">▼</span>
+                </button>
+                <div class="app-wrapper" id="app-2">
+                  <iframe class="app-iframe" data-src="apps/surgical-dexterity-trainer.html" title="Surgical Dexterity Trainer App"></iframe>
+                </div>
+              </div>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="step-card">
+              <div class="step-header">
+                <span class="step-num">2</span>
+                <span class="step-title">Learn the Instruments</span>
+              </div>
+              <div class="step-desc">Hold the needle driver like a pen - needle 2/3 from the tip. Forceps like tweezers. Scissors with blunt tips. These grips aren't about style - they're about control.</div>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="step-card">
+              <div class="step-header">
+                <span class="step-num">3</span>
+                <span class="step-title">Banana Practice</span>
+              </div>
+              <div class="step-desc">Start on a banana - the skin feels like human tissue and is forgiving. Make a small cut, then place 5 simple interrupted sutures. 90 degrees, even passage, 5mm spacing. Get the motion right first.</div>
+            </div>
+
+            <!-- Step 4 -->
+            <div class="step-card">
+              <div class="step-header">
+                <span class="step-num">4</span>
+                <span class="step-title">Suture Pad Practice</span>
+              </div>
+              <div class="step-desc">Move to the silicone pad - it feels more like real tissue resistance. Place 3 simple interrupted sutures. Edges meet, spacing even, tension even - no blanching or bunching.</div>
+            </div>
+
+            <!-- Step 5 -->
+            <div class="step-card">
+              <div class="step-header">
+                <span class="step-num">5</span>
+                <span class="step-title">Instrument Tie</span>
+              </div>
+              <div class="step-desc">The hardest part: the instrument knot. First throw counterclockwise - wrap, grab, pull. Second throw clockwise - same motion, opposite direction. Creates a square knot. Practice until your hands know the motion.</div>
+            </div>
+
+            <div style="background:#f0faf9; border:1px solid #d0e8e5; border-radius:10px; padding:12px 16px; margin:14px 0; font-size:0.85rem; color:#1A6B6B;">
+              <strong>Did You Know?</strong> Surgeons in training typically place over 10,000 practice sutures before they close a wound on a real patient. The muscle memory required is similar to learning a musical instrument.
+            </div>
+            <div class="part-check">
+              <input type="checkbox" id="cb-6" onchange="saveState()">
+              <label for="cb-6">I practiced suturing on banana and pad and tied instrument knots</label>
+            </div>
+          </div>
+
+          <!-- PART III: Knowledge Check -->
+          <div class="sc type-digital fade">
+            <div class="part-heading">
+              <span class="part-num part-num-digital">Part III</span>
+              <h2 class="part-title">AI & Digital Literacy</h2>
+            </div>
+            <div class="case-callout">
+              <div class="case-callout-label">Case Study:</div>
+              <p>The laceration you are treating - 4cm on the forearm - is a bread-and-butter ER case. The attending physician chooses 3-0 non-absorbable nylon because the forearm is not a high-tension area and the sutures will be removed in 5 - 7 days. But suture selection is not always this simple. A facial laceration might use 5-0 or 6-0 suture (thinner thread, closer spacing) because cosmetic outcome matters more on the face. An abdominal wound after surgery uses absorbable suture internally because the body breaks it down naturally - no one wants to reopen a surgical site just to remove stitches. The size number system runs backwards: 6-0 is the thinnest, 0 is thicker, and 2-0 is thicker still.</p>
+            </div>
+            <div class="yt-wrap">
+              <iframe src="https://www.youtube.com/embed/4QAXNIJvjyU" allowfullscreen></iframe>
+            </div>
+
+            <!-- Step 1 -->
+            <div class="step-card">
+              <div class="step-header">
+                <span class="step-num">1</span>
+                <span class="step-title">Self-Assessment</span>
+              </div>
+              <div class="step-desc">Score yourself 1 - 5 on four criteria: spacing (even ~5mm apart), depth (consistent across stitches), tension (edges meet without blanching), and knot quality (flat and secure). Be honest - this assessment is for your own improvement.</div>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="step-card">
+              <div class="step-header">
+                <span class="step-num">2</span>
+                <span class="step-title">Treatment Planning</span>
+              </div>
+              <div class="step-desc">For the 4cm forearm laceration: what suture size would you use? How many stitches (rule of thumb: one stitch per 5mm of wound length)? What post-care instructions would you give the patient? When should they return for suture removal?</div>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="step-card">
+              <div class="step-header">
+                <span class="step-num">3</span>
+                <span class="step-title">Career Connection</span>
+              </div>
+              <div class="step-desc">Surgeons perform operations ranging from wound closures to 12-hour transplant procedures. The path is long (13 - 15 years of education) but specialization options are vast: orthopedic, cardiac, plastic, neuro, and more. Salary range: $200K - 600K+. What surgical specialty interests you most?</div>
+            </div>
+
+            <div class="part-check">
+              <input type="checkbox" id="cb-7" onchange="saveState()">
+              <label for="cb-7">I assessed my technique and planned the treatment</label>
+            </div>
+          </div>
+
+          <!-- PART IV: Station Complete -->
+          <div class="sc type-wrap fade">
+            <div class="part-heading">
+              <span class="part-num part-num-wrap">Part IV</span>
+              <h2 class="part-title">End of Day</h2>
+            </div>
+            <div class="callout">
+              <p>Suturing is a skill that improves with repetition. The difference between your first stitch and your hundredth will be dramatic.</p>
+            </div>
+            <div class="part-check">
+              <input type="checkbox" id="cb-8" onchange="saveState()">
+              <label for="cb-8">I completed Station B</label>
+            </div>
+          </div>
+
+        <div class="ftr"><svg viewBox="0 0 40 40" width="18" height="18"><polygon points="13,2 24,13 13,24 2,13" fill="#0ABAB5" opacity="0.85"/><polygon points="27,2 38,13 27,24 16,13" fill="#F5B731" opacity="0.85"/><polygon points="13,16 24,27 13,38 2,27" fill="#E65C3C" opacity="0.85"/><polygon points="27,16 38,27 27,38 16,27" fill="#7A2D4E" opacity="0.85"/></svg> Built by <strong>Woven Learning &amp; Technology</strong><a class="ftr-edit" href="#" onclick="editAuth(event)">&#9998; Edit</a></div>
+        </div>
+
+        <!-- ===== STATION C: LAPAROSCOPIC TRAINING ===== -->
+        <div class="day" id="day-3">
+          <div class="day-hdr">
+            <h1>Station C: Laparoscopic Training</h1>
+            <div class="subtitle">The Fulcrum Effect & Surgical Skill Challenges</div>
+            <div class="pg-wrap">
+              <div class="pg-track"><div class="pg-fill" style="width: 0%"></div></div>
+              <div class="pg-label">0%</div>
+            </div>
+          </div>
+
+          <!-- PART I: The Hook -->
+          <div class="sc type-hook fade">
+            <div class="part-heading">
+              <span class="part-num part-num-hook">Part I</span>
+              <h2 class="part-title">The Hook</h2>
+            </div>
+            <p>Laparoscopic surgery changed everything - tiny cuts, faster recovery. But it breaks your brain. You lose depth perception. You lose direct touch. Every movement is reversed. And your hands have to relearn how to move.</p>
+            <p>Prepare for your brain to get confused.</p>
+            <div class="case-callout">
+              <div class="case-callout-label">Today's Case Briefing:</div>
+              <p>You're a surgical resident facing your first lap procedure. The training box simulates a patient's abdomen. Camera on the monitor. Instruments through ports on the sides. Here's the thing: push left, the tip goes right. Push down, the tip goes up. The port reverses everything. Complete five skill challenges that test how fast your brain can adapt.</p>
+            </div>
+            <div class="yt-wrap">
+              <iframe src="https://www.youtube.com/embed/IB_NMkMF-qU" allowfullscreen></iframe>
+            </div>
+            <div class="part-check">
+              <input type="checkbox" id="cb-9" onchange="saveState()">
+              <label for="cb-9">I read the briefing and watched the video</label>
+            </div>
+          </div>
+
+          <!-- PART II: The Hands-On Lab -->
+          <div class="sc type-lab fade">
+            <div class="part-heading">
+              <span class="part-num part-num-lab">Part II</span>
+              <h2 class="part-title">The Physical Lab</h2>
+            </div>
+            <div class="materials-box">
+              <div class="materials-title">Materials Needed</div>
+              <div class="materials-list">
+                <span>Laparoscopic training box</span>
+                <span>Camera with display monitor</span>
+                <span>Laparoscopic graspers</span>
+                <span>Laparoscopic scissors</span>
+                <span>Training modules (shapes, pegs)</span>
+                <span>Gauze pads</span>
+                <span>Timer</span>
+                <span>LED clip light (optional)</span>
+              </div>
+            </div>
+
+            <!-- Step 1: App -->
+            <div class="step-card">
+              <div class="step-header">
+                <span class="step-num">1</span>
+                <span class="step-title">Surgical Dexterity Trainer App</span>
+              </div>
+              <div class="step-instructions">Before touching the training box, warm up with the digital trainer. Complete 2 rounds of precision targeting. Even on a flat screen, the coordination demands are real. This prepares your brain for the reversed movements ahead.</div>
+              <div class="app-section">
+                <button class="app-toggle-btn" onclick="toggleApp('app-3')">
+                  <span>Launch App</span>
+                  <span class="app-arrow">▼</span>
+                </button>
+                <div class="app-wrapper" id="app-3">
+                  <iframe class="app-iframe" data-src="apps/surgical-dexterity-trainer.html" title="Surgical Dexterity Trainer App"></iframe>
+                </div>
+              </div>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="step-card">
+              <div class="step-header">
+                <span class="step-num">2</span>
+                <span class="step-title">Challenge 1 - Object Transfer</span>
+              </div>
+              <div class="step-desc">Pick up 6 colored shapes from the left row using one grasper. Transfer each shape hand-to-hand in mid-air (pass from one instrument to the other). Place on the right row. Time yourself. Benchmarks: under 4 minutes is excellent, 4 - 6 minutes is good, over 6 minutes means keep practicing.</div>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="step-card">
+              <div class="step-header">
+                <span class="step-num">3</span>
+                <span class="step-title">Challenge 2 - Shape Removal and Replacement</span>
+              </div>
+              <div class="step-desc">Remove all shapes from the board (memorize their positions). Then replace them in their original spots. This tests spatial memory combined with precision placement - all while watching on a 2D screen.</div>
+            </div>
+
+            <!-- Step 4 -->
+            <div class="step-card">
+              <div class="step-header">
+                <span class="step-num">4</span>
+                <span class="step-title">Challenge 3 - Precision Cutting</span>
+              </div>
+              <div class="step-desc">Using laparoscopic scissors, cut along a marked line on gauze. Stay as close to the line as possible. Every movement is reversed, so cutting straight requires constant mental adjustment.</div>
+            </div>
+
+            <!-- Step 5 -->
+            <div class="step-card">
+              <div class="step-header">
+                <span class="step-num">5</span>
+                <span class="step-title">Challenge 4 - Knot Tying (Advanced)</span>
+              </div>
+              <div class="step-desc">If time permits, attempt to tie a surgeon's knot using only the laparoscopic graspers while watching the screen. This is one of the hardest tasks in surgical training - tying a knot through a keyhole with reversed movements and no depth perception.</div>
+            </div>
+
+            <div style="background:#f0faf9; border:1px solid #d0e8e5; border-radius:10px; padding:12px 16px; margin:14px 0; font-size:0.85rem; color:#1A6B6B;">
+              <strong>Did You Know?</strong> The first laparoscopic surgery on a human was performed in 1910 in Sweden. The surgeon used a cystoscope (a bladder camera) and a light source heated by a small flame.
+            </div>
+            <div class="part-check">
+              <input type="checkbox" id="cb-10" onchange="saveState()">
+              <label for="cb-10">I completed the laparoscopic skill challenges</label>
+            </div>
+          </div>
+
+          <!-- PART III: Knowledge Check -->
+          <div class="sc type-digital fade">
+            <div class="part-heading">
+              <span class="part-num part-num-digital">Part III</span>
+              <h2 class="part-title">AI & Digital Literacy</h2>
+            </div>
+            <div class="case-callout">
+              <div class="case-callout-label">Case Study:</div>
+              <p>When laparoscopic surgery was introduced in the 1980s, it was revolutionary for patients but brutally difficult for surgeons. Early studies showed that surgeons made significan'tly more errors during their first 50 laparoscopic cases compared to open surgery. The fulcrum effect, combined with 2D visualization and reduced tactile feedback, created a steep learning curve. Today, simulation training like what you just experienced is mandatory before surgical residents operate on real patients. The da Vinci surgical robot was developed partly to solve the fulcrum problem: it translates 1:1 hand movements (no reversal), provides 3D stereoscopic vision, and filters out hand tremor. The trade-off? Each system costs about $2 million.</p>
+            </div>
+            <div class="yt-wrap">
+              <iframe src="https://www.youtube.com/embed/ILuQqEt_wUw" allowfullscreen></iframe>
+            </div>
+
+            <!-- Step 1 -->
+            <div class="step-card">
+              <div class="step-header">
+                <span class="step-num">1</span>
+                <span class="step-title">Performance Review</span>
+              </div>
+              <div class="step-desc">Record your times for each challenge. Did you improve between your first and last attempts? What does this tell you about how the brain adapts to reversed spatial mapping?</div>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="step-card">
+              <div class="step-header">
+                <span class="step-num">2</span>
+                <span class="step-title">Robot vs. Training Debate</span>
+              </div>
+              <div class="step-desc">The da Vinci robot eliminates the fulcrum effect entirely but costs $2 million per unit. Should hospitals invest in robots or invest in training surgeons to master traditional laparoscopy? Write 2 - 3 sentences defending your position.</div>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="step-card">
+              <div class="step-header">
+                <span class="step-num">3</span>
+                <span class="step-title">Career Connection</span>
+              </div>
+              <div class="step-desc">Robotic surgeons combine traditional surgical skill with advanced technology. They specialize in gynecology, urology, general surgery, and thoracic surgery. Salary range: $350K - 550K after 13 - 15 years of training. Would you rather be the surgeon or the engineer who designs the robot?</div>
+            </div>
+
+            <div class="part-check">
+              <input type="checkbox" id="cb-11" onchange="saveState()">
+              <label for="cb-11">I reviewed my performance and explored surgical technology</label>
+            </div>
+          </div>
+
+          <!-- PART IV: Station Complete -->
+          <div class="sc type-wrap fade">
+            <div class="part-heading">
+              <span class="part-num part-num-wrap">Part IV</span>
+              <h2 class="part-title">End of Day</h2>
+            </div>
+            <div class="callout">
+              <p>The frustration you felt is real - and it is exactly what every surgeon experiences during training. The difference is practice. Thousands of hours of it.</p>
+            </div>
+            <div class="part-check">
+              <input type="checkbox" id="cb-12" onchange="saveState()">
+              <label for="cb-12">I completed Station C</label>
+            </div>
+          </div>
+
+        <div class="ftr"><svg viewBox="0 0 40 40" width="18" height="18"><polygon points="13,2 24,13 13,24 2,13" fill="#0ABAB5" opacity="0.85"/><polygon points="27,2 38,13 27,24 16,13" fill="#F5B731" opacity="0.85"/><polygon points="13,16 24,27 13,38 2,27" fill="#E65C3C" opacity="0.85"/><polygon points="27,16 38,27 27,38 16,27" fill="#7A2D4E" opacity="0.85"/></svg> Built by <strong>Woven Learning &amp; Technology</strong><a class="ftr-edit" href="#" onclick="editAuth(event)">&#9998; Edit</a></div>
+        </div>
+
+        <!-- ===== STATION D: NEUROLOGICAL ASSESSMENT ===== -->
+        <div class="day" id="day-4">
+          <div class="day-hdr">
+            <h1>Station D: Neurological Assessment</h1>
+            <div class="subtitle">PERRLA Protocol & Patellar Reflex</div>
+            <div class="pg-wrap">
+              <div class="pg-track"><div class="pg-fill" style="width: 0%"></div></div>
+              <div class="pg-label">0%</div>
+            </div>
+          </div>
+
+          <!-- PART I: The Hook -->
+          <div class="sc type-hook fade">
+            <div class="part-heading">
+              <span class="part-num part-num-hook">Part I</span>
+              <h2 class="part-title">The Hook</h2>
+            </div>
+            <p>The nervous system is your body's electrical network - billions of neurons carrying signals between your brain, spinal cord, and every organ and muscle. When something goes wrong (stroke, head injury, spinal cord damage), doctors find clues by testing how the nervous system responds to simple stimuli.</p>
+            <p>Today you test the nervous system.</p>
+            <div class="case-callout">
+              <div class="case-callout-label">Today's Case Briefing:</div>
+              <p>A car accident victim arrives in the ER, conscious but confused. The trauma doctor needs answers fast: is the brain swelling? Is there spinal cord damage? Are the nerve pathways intact? Two bedside tests - taking less than 60 seconds combined - can reveal life-threatening conditions. Your mission: perform the PERRLA pupil assessment and the patellar reflex test on your partner, record the results, and interpret what they mean clinically.</p>
+            </div>
+            <div class="yt-wrap">
+              <iframe src="https://www.youtube.com/embed/YqL6IMGE5os" allowfullscreen></iframe>
+            </div>
+            <div class="part-check">
+              <input type="checkbox" id="cb-13" onchange="saveState()">
+              <label for="cb-13">I read the briefing and watched the video</label>
+            </div>
+          </div>
+
+          <!-- PART II: The Hands-On Lab -->
+          <div class="sc type-lab fade">
+            <div class="part-heading">
+              <span class="part-num part-num-lab">Part II</span>
+              <h2 class="part-title">The Physical Lab</h2>
+            </div>
+            <div class="materials-box">
+              <div class="materials-title">Materials Needed</div>
+              <div class="materials-list">
+                <span>Penlight</span>
+                <span>Reflex hammer</span>
+                <span>Pupil gauge card</span>
+                <span>Recording sheet</span>
+                <span>Partner</span>
+              </div>
+            </div>
+
+            <!-- Step 1 -->
+            <div class="step-card">
+              <div class="step-header">
+                <span class="step-num">1</span>
+                <span class="step-title">PERRLA Step 1 - Estimate Pupil Size</span>
+              </div>
+              <div class="step-desc">Sit facing your partner in good lighting. Using the pupil gauge card, estimate each pupil's size in millimeters. Normal pupils are 2 - 4mm in standard room light. Record the size for both the right and left eye.</div>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="step-card">
+              <div class="step-header">
+                <span class="step-num">2</span>
+                <span class="step-title">PERRLA Step 2 - Light Reactivity</span>
+              </div>
+              <div class="step-desc">Shine the penlight into the right eye from the side (not straight ahead). Hold for 1 - 2 seconds. Watch the pupil constrict (shrink). Repeat for the left eye. Both pupils should react equally and briskly. If one pupil does not constrict, or constricts more slowly, that is an abnormal finding.</div>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="step-card">
+              <div class="step-header">
+                <span class="step-num">3</span>
+                <span class="step-title">PERRLA Step 3 - Check Accommodation</span>
+              </div>
+              <div class="step-desc">Hold a finger about 6 inches from your partner's nose. Have them focus on it, then slowly move your finger toward their nose. Both pupils should constrict as they focus on the closer object. This is the Accommodation part of PERRLA.</div>
+            </div>
+
+            <!-- Step 4 -->
+            <div class="step-card">
+              <div class="step-header">
+                <span class="step-num">4</span>
+                <span class="step-title">Patellar Reflex Test</span>
+              </div>
+              <div class="step-desc">Have your partner sit with legs dangling freely (feet off the ground). Place your non-dominant hand flat under the patellar tendon (just below the kneecap). With a smooth, quick wrist motion, tap the tendon with the reflex hammer. Watch for the quadriceps contraction and foot kick. Grade the response: 0 (absent), 1+ (weak), 2+ (normal), 3+ (brisk), 4+ (hyperreflexia). Test both knees and compare.</div>
+            </div>
+
+            <!-- Step 5 -->
+            <div class="step-card">
+              <div class="step-header">
+                <span class="step-num">5</span>
+                <span class="step-title">Interpret Your Findings</span>
+              </div>
+              <div class="step-desc">Were your partner's pupils equal in size? Did both react to light? Were reflexes present and equal in both knees? Record all findings. In the trauma scenario, if the right pupil was 8mm and non-reactive while the left was 3mm and normal, that indicates increased intracranial pressure - a neurological emergency requiring immediate CT scan.</div>
+            </div>
+
+            <div style="background:#f0faf9; border:1px solid #d0e8e5; border-radius:10px; padding:12px 16px; margin:14px 0; font-size:0.85rem; color:#1A6B6B;">
+              <strong>Did You Know?</strong> Your patellar reflex happens in about 50 milliseconds - faster than you can blink. The signal never reaches your brain. It travels only to the spinal cord and back.
+            </div>
+            <div class="part-check">
+              <input type="checkbox" id="cb-14" onchange="saveState()">
+              <label for="cb-14">I completed the PERRLA exam and patellar reflex test</label>
+            </div>
+          </div>
+
+          <!-- PART III: Knowledge Check -->
+          <div class="sc type-digital fade">
+            <div class="part-heading">
+              <span class="part-num part-num-digital">Part III</span>
+              <h2 class="part-title">AI & Digital Literacy</h2>
+            </div>
+            <div class="case-callout">
+              <div class="case-callout-label">Case Study:</div>
+              <p>The pupil check takes 30 seconds. The reflex test takes 15 seconds per knee. These are among the simplest tests in medicine, yet they can reveal conditions that kill within hours if missed. Unequal pupils after trauma (one dilated, one normal) suggest the brain is swelling on one side - herniation that compresses the third cranial nerve. Absent reflexes can indicate spinal cord injury or peripheral nerve damage. Hyperactive reflexes suggest a problem with the brain's descending control pathways. Emergency medicine physicians and neurologists rely on these basic assessments every single day, even with access to MRI, CT, and advanced imaging. The bedside exam is always first.</p>
+            </div>
+            <div class="yt-wrap">
+              <iframe src="https://www.youtube.com/embed/qpcp3j9I_LY" allowfullscreen></iframe>
+            </div>
+
+            <!-- Step 1 -->
+            <div class="step-card">
+              <div class="step-header">
+                <span class="step-num">1</span>
+                <span class="step-title">Clinical Analysis</span>
+              </div>
+              <div class="step-desc">Based on your partner's results: were all findings normal (PERRLA intact, reflexes 2+ bilaterally)? If one pupil had been fixed and dilated, what would your immediate concern be? What would you do next?</div>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="step-card">
+              <div class="step-header">
+                <span class="step-num">2</span>
+                <span class="step-title">Reflection</span>
+              </div>
+              <div class="step-desc">Why do you think these quick bedside tests are still used when hospitals have CT scanners and MRI machines? What advantage does a 30-second physical exam have over a 30-minute imaging study in a trauma scenario?</div>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="step-card">
+              <div class="step-header">
+                <span class="step-num">3</span>
+                <span class="step-title">Career Connection</span>
+              </div>
+              <div class="step-desc">Neurologists diagnose and treat diseases of the brain, spinal cord, and nerves. Specializations include stroke, epilepsy, Parkinson's, Alzheimer's, and multiple sclerosis. Salary range: $250K - 400K after 11 - 13 years of training. Emergency medicine physicians ($300K - 450K) also rely heavily on these neurological assessments.</div>
+            </div>
+
+            <div class="part-check">
+              <input type="checkbox" id="cb-15" onchange="saveState()">
+              <label for="cb-15">I analyzed the clinical findings and explored neurology careers</label>
+            </div>
+          </div>
+
+          <!-- PART IV: Station Complete -->
+          <div class="sc type-wrap fade">
+            <div class="part-heading">
+              <span class="part-num part-num-wrap">Part IV</span>
+              <h2 class="part-title">End of Day</h2>
+            </div>
+            <div class="callout">
+              <p>You just performed the same neurological assessments used in every emergency room in the world. A 30-second test that can save a life.</p>
+            </div>
+            <div class="part-check">
+              <input type="checkbox" id="cb-16" onchange="saveState()">
+              <label for="cb-16">I completed Station D</label>
+            </div>
+          </div>
+
+        <div class="ftr"><svg viewBox="0 0 40 40" width="18" height="18"><polygon points="13,2 24,13 13,24 2,13" fill="#0ABAB5" opacity="0.85"/><polygon points="27,2 38,13 27,24 16,13" fill="#F5B731" opacity="0.85"/><polygon points="13,16 24,27 13,38 2,27" fill="#E65C3C" opacity="0.85"/><polygon points="27,16 38,27 27,38 16,27" fill="#7A2D4E" opacity="0.85"/></svg> Built by <strong>Woven Learning &amp; Technology</strong><a class="ftr-edit" href="#" onclick="editAuth(event)">&#9998; Edit</a></div>
+        </div>
+
+        <!-- ===== STATION E: MEDICAL CAREERS EXPLORATION ===== -->
+        <div class="day" id="day-5">
+          <div class="day-hdr">
+            <h1>Station E: Medical Careers</h1>
+            <div class="subtitle">Find Your Fit in Healthcare</div>
+            <div class="pg-wrap">
+              <div class="pg-track"><div class="pg-fill" style="width: 0%"></div></div>
+              <div class="pg-label">0%</div>
+            </div>
+          </div>
+
+          <!-- PART I: The Hook -->
+          <div class="sc type-hook fade">
+            <div class="part-heading">
+              <span class="part-num part-num-hook">Part I</span>
+              <h2 class="part-title">The Hook</h2>
+            </div>
+            <p>Healthcare is not just doctors and nurses. It is a vast ecosystem of over 350 different career paths - from biomedical engineers designing surgical robots to genetic counselors helping families understand inherited conditions. The question is not whether there is a career for you in healthcare. The question is which one fits your personality.</p>
+            <p>Today you discover where you fit.</p>
+            <div class="case-callout">
+              <div class="case-callout-label">Today's Case Briefing:</div>
+              <p>You have spent the day measuring vital signs, suturing wounds, navigating laparoscopic training boxes, and testing neurological reflexes. Each of those skills connects to a specific set of healthcare careers. Your mission: explore 20 healthcare careers organized by personality type, identify the 2 - 3 that interest you most, and map out one concrete next step you can take this semester.</p>
+            </div>
+            <div class="yt-wrap">
+              <iframe src="https://www.youtube.com/embed/d2zPOQRHitk" allowfullscreen></iframe>
+            </div>
+            <div class="part-check">
+              <input type="checkbox" id="cb-17" onchange="saveState()">
+              <label for="cb-17">I read the briefing and watched the video</label>
+            </div>
+          </div>
+
+          <!-- PART II: The Hands-On Lab -->
+          <div class="sc type-lab fade">
+            <div class="part-heading">
+              <span class="part-num part-num-lab">Part II</span>
+              <h2 class="part-title">The Physical Lab</h2>
+            </div>
+            <div class="materials-box">
+              <div class="materials-title">Materials Needed</div>
+              <div class="materials-list">
+                <span>Career exploration worksheet</span>
+                <span>Printed career cards</span>
+                <span>Highlighters</span>
+                <span>Pen</span>
+              </div>
+            </div>
+
+            <!-- Step 1 -->
+            <div class="step-card">
+              <div class="step-header">
+                <span class="step-num">1</span>
+                <span class="step-title">Find Your Category</span>
+              </div>
+              <div class="step-desc">Read through the four personality categories and pick the one that sounds most like you. The Robotics and Tech Experts love building, coding, and engineering. The High-Stakes Specialists thrive under pressure and adrenaline. The Lab Detectives are detail-oriented and love puzzles. The Patient Champions are people-persons who care deeply about helping others.</div>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="step-card">
+              <div class="step-header">
+                <span class="step-num">2</span>
+                <span class="step-title">Explore Five Careers in Your Category</span>
+              </div>
+              <div class="step-desc">Each category contains five healthcare careers with salary ranges and education timelines. Read all five in your chosen category. For each career, note: what draws you to it, what the daily work looks like, and whether the education timeline is realistic for you.</div>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="step-card">
+              <div class="step-header">
+                <span class="step-num">3</span>
+                <span class="step-title">Cross-Category Exploration</span>
+              </div>
+              <div class="step-desc">Read at least two careers from a DIFFERENT category than your primary one. Many healthcare professionals combine traits from multiple categories. A trauma surgeon needs high-stakes decision-making AND technical precision. A genetic counselor needs lab detective skills AND patient champion empathy.</div>
+            </div>
+
+            <!-- Step 4 -->
+            <div class="step-card">
+              <div class="step-header">
+                <span class="step-num">4</span>
+                <span class="step-title">Map Your Top Three</span>
+              </div>
+              <div class="step-desc">Write down your top 3 career choices in rank order. For each one, list: the career title, salary range, years of education required, and one specific thing that appeals to you about that career.</div>
+            </div>
+
+            <!-- Step 5 -->
+            <div class="step-card">
+              <div class="step-header">
+                <span class="step-num">5</span>
+                <span class="step-title">Plan One Next Step</span>
+              </div>
+              <div class="step-desc">Choose one concrete action you can take this semester: join HOSA (Health Occupations Students of America), get CNA certification (6 - 8 weeks, fastest path to paid patient care), volunteer at a hospital, shadow a healthcare professional, or enroll in a prerequisite course (Biology, Chemistry, Anatomy and Physiology, Statistics).</div>
+            </div>
+
+            <div class="part-check">
+              <input type="checkbox" id="cb-18" onchange="saveState()">
+              <label for="cb-18">I explored the career categories and identified my top choices</label>
+            </div>
+          </div>
+
+          <!-- PART III: Knowledge Check -->
+          <div class="sc type-digital fade">
+            <div class="part-heading">
+              <span class="part-num part-num-digital">Part III</span>
+              <h2 class="part-title">AI & Digital Literacy</h2>
+            </div>
+            <div class="case-callout">
+              <div class="case-callout-label">Case Study:</div>
+              <p>Healthcare workforce shortages are real and growing. The Association of American Medical Colleges projects a shortage of up to 86,000 physicians by 2036. Nursing shortages are even more severe in rural areas. But the demand is not limited to traditional roles. Biomedical engineering is one of the fastest-growing fields in the country. Health informatics specialists are in demand as every hospital system digitizes patient records. Surgical robotics technicians maintain the $2 million da Vinci systems that are now in over 6,000 hospitals worldwide. The career landscape in healthcare is broader and more diverse than most people realize.</p>
+            </div>
+            <div class="yt-wrap">
+              <iframe src="https://www.youtube.com/embed/p-cOdoy43WA" allowfullscreen></iframe>
+            </div>
+
+            <!-- Step 1 -->
+            <div class="step-card">
+              <div class="step-header">
+                <span class="step-num">1</span>
+                <span class="step-title">Salary vs. Timeline Analysis</span>
+              </div>
+              <div class="step-desc">Look at the careers you selected. Plot them mentally: is there a relationship between salary and years of education? Are there any careers that offer a strong salary with relatively short training (under 4 years)?</div>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="step-card">
+              <div class="step-header">
+                <span class="step-num">2</span>
+                <span class="step-title">Reflection</span>
+              </div>
+              <div class="step-desc">Which category fit you best and why? If money were not a factor, which career would you choose? What is the ONE thing standing between you and starting on that path?</div>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="step-card">
+              <div class="step-header">
+                <span class="step-num">3</span>
+                <span class="step-title">Commit to Action</span>
+              </div>
+              <div class="step-desc">Write down your one next step and a deadline. Be specific: not "I will look into it" but "I will visit hosa.org and find my local chapter by [date]" or "I will email the volunteer coordinator at [hospital] by [date]."</div>
+            </div>
+
+            <div style="background:#f0faf9; border:1px solid #d0e8e5; border-radius:10px; padding:12px 16px; margin:14px 0; font-size:0.85rem; color:#1A6B6B;">
+              <strong>Did You Know?</strong> The fastest-growing healthcare job in the United States is not a doctor or nurse - it is a home health aide. But the fastest-growing high-salary healthcare job is nurse practitioner, projected to grow 40 percent by 2032.
+            </div>
+            <div class="part-check">
+              <input type="checkbox" id="cb-19" onchange="saveState()">
+              <label for="cb-19">I completed my career analysis and committed to a next step</label>
+            </div>
+          </div>
+
+          <!-- PART IV: Station Complete -->
+          <div class="sc type-wrap fade">
+            <div class="part-heading">
+              <span class="part-num part-num-wrap">Part IV</span>
+              <h2 class="part-title">End of Day</h2>
+            </div>
+            <div class="callout">
+              <p>The skills you practiced today - vital signs, suturing, laparoscopy, neurological assessment - are real entry points into real careers. The path starts with one step.</p>
+            </div>
+            <div class="part-check">
+              <input type="checkbox" id="cb-20" onchange="saveState()">
+              <label for="cb-20">I completed Station E</label>
+            </div>
+          </div>
+
+        <div class="ftr"><svg viewBox="0 0 40 40" width="18" height="18"><polygon points="13,2 24,13 13,24 2,13" fill="#0ABAB5" opacity="0.85"/><polygon points="27,2 38,13 27,24 16,13" fill="#F5B731" opacity="0.85"/><polygon points="13,16 24,27 13,38 2,27" fill="#E65C3C" opacity="0.85"/><polygon points="27,16 38,27 27,38 16,27" fill="#7A2D4E" opacity="0.85"/></svg> Built by <strong>Woven Learning &amp; Technology</strong><a class="ftr-edit" href="#" onclick="editAuth(event)">&#9998; Edit</a></div>
+        </div>
+
+        <!-- ===== BONUS STATION: TRIAGE CHALLENGE ===== -->
+        <div class="day" id="day-6">
+          <div class="day-hdr">
+            <h1>Bonus: Triage Challenge</h1>
+            <div class="subtitle">Emergency Patient Prioritization</div>
+            <div class="pg-wrap">
+              <div class="pg-track"><div class="pg-fill" style="width: 0%"></div></div>
+              <div class="pg-label">0%</div>
+            </div>
+          </div>
+
+          <!-- PART I: The Hook -->
+          <div class="sc type-hook fade">
+            <div class="part-heading">
+              <span class="part-num part-num-hook">Part I</span>
+              <h2 class="part-title">The Hook</h2>
+            </div>
+            <p>When multiple patients arrive at the emergency room simultaneously, someone has to decide who gets treated first. That decision is called triage. It is not based on who is in the most pain or who arrived first. It is based on one question: who will get worse fastest without treatment?</p>
+            <p>Welcome to the ultimate test.</p>
+            <div class="case-callout">
+              <div class="case-callout-label">Today's Case Briefing:</div>
+              <p>It is a busy night in the ER. Four patients arrive within minutes of each other. Each has different symptoms, different vital signs, and different levels of urgency. You have limited resources - one doctor, one nurse, one treatment room available immediately. Your mission: use the 5-level triage system to rank each patient from most urgent (Level 1) to least urgent (Level 5), then test your decisions against the simulator's clinical reasoning.</p>
+            </div>
+            <div class="yt-wrap">
+              <iframe src="https://www.youtube.com/embed/73kJ-4gEsnA" allowfullscreen></iframe>
+            </div>
+            <div class="part-check">
+              <input type="checkbox" id="cb-21" onchange="saveState()">
+              <label for="cb-21">I read the briefing and watched the video</label>
+            </div>
+          </div>
+
+          <!-- PART II: The Hands-On Lab -->
+          <div class="sc type-lab fade">
+            <div class="part-heading">
+              <span class="part-num part-num-lab">Part II</span>
+              <h2 class="part-title">The Physical Lab</h2>
+            </div>
+            <div class="materials-box">
+              <div class="materials-title">Materials Needed</div>
+              <div class="materials-list">
+                <span>Triage scenario cards</span>
+                <span>Triage color tags</span>
+                <span>Timer</span>
+                <span>Recording sheet</span>
+              </div>
+            </div>
+
+            <!-- Step 1: App -->
+            <div class="step-card">
+              <div class="step-header">
+                <span class="step-num">1</span>
+                <span class="step-title">Triage Simulator App</span>
+              </div>
+              <div class="step-instructions">Launch the Triage Simulator and select your first scenario (Day Shift). Four patients arrive with names, ages, symptoms, and vital signs. Rank them from most urgent (1) to least urgent (4). Submit your answer and read the clinical reasoning feedback carefully. Complete all four scenarios: Day Shift, Night Shift, The Big Game, and Winter Ski Trip.</div>
+              <div class="app-section">
+                <button class="app-toggle-btn" onclick="toggleApp('app-6')">
+                  <span>Launch App</span>
+                  <span class="app-arrow">▼</span>
+                </button>
+                <div class="app-wrapper" id="app-6">
+                  <iframe class="app-iframe" data-src="apps/triage-simulator.html" title="Triage Simulator App"></iframe>
+                </div>
+              </div>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="step-card">
+              <div class="step-header">
+                <span class="step-num">2</span>
+                <span class="step-title">Learn the 5-Level System</span>
+              </div>
+              <div class="step-desc">Review the triage levels: Level 1 (Resuscitation - no pulse, not breathing), Level 2 (Emergent - chest pain, severe bleeding, difficulty breathing), Level 3 (Urgent - moderate pain, possible fractures), Level 4 (Minor - scrapes, mild headaches), Level 5 (Non-Urgent - follow-up care, routine visits). The key principle: severity combined with time sensitivity equals priority.</div>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="step-card">
+              <div class="step-header">
+                <span class="step-num">3</span>
+                <span class="step-title">Apply to Real Cases</span>
+              </div>
+              <div class="step-desc">Consider these two patients arriving at the same time: a college athlete with a clearly broken arm (severe pain, obvious swelling) and a 50-year-old with chest pain and shortness of breath (less obvious, but pale and sweating). Who gets seen first? The chest pain patient. Why? Because a heart attack kills in minutes. A broken arm, while painful, is not immediately life-threatening.</div>
+            </div>
+
+            <!-- Step 4 -->
+            <div class="step-card">
+              <div class="step-header">
+                <span class="step-num">4</span>
+                <span class="step-title">Record Your Simulator Results</span>
+              </div>
+              <div class="step-desc">Write down your ranking for each of the four scenarios. Note which patients were hardest to rank and why. Compare your accuracy across scenarios - did you improve from Day Shift to Winter Ski Trip?</div>
+            </div>
+
+            <div style="background:#f0faf9; border:1px solid #d0e8e5; border-radius:10px; padding:12px 16px; margin:14px 0; font-size:0.85rem; color:#1A6B6B;">
+              <strong>Did You Know?</strong> The word "triage" comes from the French verb "trier," meaning "to sort." It was first used by Napoleon's chief surgeon, who sorted wounded soldiers by severity instead of by military rank - a radical idea at the time.
+            </div>
+            <div class="part-check">
+              <input type="checkbox" id="cb-22" onchange="saveState()">
+              <label for="cb-22">I completed all four triage scenarios in the simulator</label>
+            </div>
+          </div>
+
+          <!-- PART III: Knowledge Check -->
+          <div class="sc type-digital fade">
+            <div class="part-heading">
+              <span class="part-num part-num-digital">Part III</span>
+              <h2 class="part-title">AI & Digital Literacy</h2>
+            </div>
+            <div class="case-callout">
+              <div class="case-callout-label">Case Study:</div>
+              <p>Triage is not a modern invention. The word comes from the French "trier" meaning "to sort." It was first used systematically by Napoleon's chief surgeon, Dominique Jean Larrey, who sorted wounded soldiers on the battlefield by severity rather than rank. Today, the Emergency Severity Index (ESI) is the standard triage system used in most American emergency departments. Triage nurses make these decisions hundreds of times per shift. They are trained to look past the obvious (a screaming patient with a minor injury) and find the subtle (a quiet patient whose vital signs are silently crashing). It is one of the most cognitively demanding roles in healthcare.</p>
+            </div>
+            <div class="yt-wrap">
+              <iframe src="https://www.youtube.com/embed/RaWl6-l-t4g" allowfullscreen></iframe>
+            </div>
+
+            <!-- Step 1 -->
+            <div class="step-card">
+              <div class="step-header">
+                <span class="step-num">1</span>
+                <span class="step-title">Hardest Decision</span>
+              </div>
+              <div class="step-desc">Which patient across all four scenarios was the most difficult to rank? What made that decision hard? Was it because the symptoms were ambiguous, or because two patients seemed equally urgent?</div>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="step-card">
+              <div class="step-header">
+                <span class="step-num">2</span>
+                <span class="step-title">Reflection</span>
+              </div>
+              <div class="step-desc">In real triage, you often have incomplete information. A patient may not be able to tell you their symptoms. Vital signs may not be available immediately. How do you make a decision with incomplete data? What do you prioritize?</div>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="step-card">
+              <div class="step-header">
+                <span class="step-num">3</span>
+                <span class="step-title">Career Connection</span>
+              </div>
+              <div class="step-desc">ER triage nurses are the first healthcare providers patients see. They assess vital signs, determine urgency, and manage patient flow. Salary range: $65K - 95K with 4 years of nursing education plus 6 - 12 months of ER experience. Paramedics perform field triage at accident scenes using color-coded tags: Red (urgent), Yellow (moderate), Green (minor), Black (deceased). Salary range: $35K - 60K.</div>
+            </div>
+
+            <div class="part-check">
+              <input type="checkbox" id="cb-23" onchange="saveState()">
+              <label for="cb-23">I analyzed my triage decisions and explored emergency careers</label>
+            </div>
+          </div>
+
+          <!-- PART IV: Station Complete -->
+          <div class="sc type-wrap fade">
+            <div class="part-heading">
+              <span class="part-num part-num-wrap">Part IV</span>
+              <h2 class="part-title">End of Day</h2>
+            </div>
+            <div class="callout">
+              <p>Triage combines everything: vital signs knowledge, clinical reasoning, calm under pressure, and the ability to make decisions with incomplete information. It is the ultimate test of a healthcare professional.</p>
+            </div>
+            <div class="part-check">
+              <input type="checkbox" id="cb-24" onchange="saveState()">
+              <label for="cb-24">I completed the Bonus Station</label>
+            </div>
+          </div>
+
+        <div class="ftr"><svg viewBox="0 0 40 40" width="18" height="18"><polygon points="13,2 24,13 13,24 2,13" fill="#0ABAB5" opacity="0.85"/><polygon points="27,2 38,13 27,24 16,13" fill="#F5B731" opacity="0.85"/><polygon points="13,16 24,27 13,38 2,27" fill="#E65C3C" opacity="0.85"/><polygon points="27,16 38,27 27,38 16,27" fill="#7A2D4E" opacity="0.85"/></svg> Built by <strong>Woven Learning &amp; Technology</strong><a class="ftr-edit" href="#" onclick="editAuth(event)">&#9998; Edit</a></div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    var STORAGE_KEY = 'woven-mms-dropin-2026';
+    var STORAGE_DAY_KEY = STORAGE_KEY + '-day';
+    var TOTAL_DAYS = 6;
+    var currentDay = 1;
+
+    function showDay(n) {
+      if (n < 1 || n > TOTAL_DAYS) return;
+
+      // Hide all days
+      for (var i = 1; i <= TOTAL_DAYS; i++) {
+        var dayEl = document.getElementById('day-' + i);
+        if (dayEl) dayEl.classList.remove('show');
+      }
+
+      // Show selected day
+      var selectedDay = document.getElementById('day-' + n);
+      if (selectedDay) selectedDay.classList.add('show');
+
+      // Update nav buttons
+      var buttons = document.querySelectorAll('.nav-btn');
+      buttons.forEach(function(btn, idx) {
+        if (idx === n - 1) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+
+      currentDay = n;
+      saveState();
+      updateProgress();
+
+      // Close sidebar on mobile
+      if (window.innerWidth <= 900) {
+        var sidebar = document.getElementById('sidebar');
+        if (sidebar) sidebar.classList.remove('open');
+      }
+
+      // Scroll to top
+      window.scrollTo(0, 0);
+    }
+
+    function toggleSidebar() {
+      var sidebar = document.getElementById('sidebar');
+      if (sidebar) sidebar.classList.toggle('open');
+    }
+
+    function toggleApp(appId) {
+      var btn = event.target.closest('.app-toggle-btn');
+      var wrapper = document.getElementById(appId);
+      if (btn && wrapper) {
+        btn.classList.toggle('open');
+        wrapper.classList.toggle('open');
+        var iframe = wrapper.querySelector('iframe');
+        if (iframe && iframe.dataset.src && !iframe.src) {
+          iframe.src = iframe.dataset.src;
+        }
+      }
+    }
+
+    function updateProgress() {
+      for (var i = 1; i <= TOTAL_DAYS; i++) {
+        var checkboxCount = 0;
+        var checkedCount = 0;
+        for (var j = 1; j <= 4; j++) {
+          var checkId = 'cb-' + ((i - 1) * 4 + j);
+          var checkbox = document.getElementById(checkId);
+          if (checkbox) {
+            checkboxCount++;
+            if (checkbox.checked) checkedCount++;
+          }
+        }
+
+        var percent = checkboxCount > 0 ? Math.round((checkedCount / checkboxCount) * 100) : 0;
+        var navBtn = document.querySelectorAll('.nav-btn')[i - 1];
+        if (navBtn) {
+          var pctEl = navBtn.querySelector('.nav-pct');
+          if (pctEl) pctEl.textContent = percent + '%';
+
+          if (percent === 100) {
+            navBtn.classList.add('done');
+          } else {
+            navBtn.classList.remove('done');
+          }
+        }
+
+        var dayHdr = document.getElementById('day-' + i);
+        if (dayHdr) {
+          var pgFill = dayHdr.querySelector('.pg-fill');
+          var pgLabel = dayHdr.querySelector('.pg-label');
+          if (pgFill) pgFill.style.width = percent + '%';
+          if (pgLabel) pgLabel.textContent = percent + '%';
+        }
+      }
+    }
+
+    function saveState() {
+      localStorage.setItem(STORAGE_DAY_KEY, currentDay);
+      var state = {};
+      for (var i = 1; i <= 24; i++) {
+        var checkbox = document.getElementById('cb-' + i);
+        if (checkbox) {
+          state['cb-' + i] = checkbox.checked;
+        }
+      }
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      updateProgress();
+    }
+
+    function loadState() {
+      var savedDay = localStorage.getItem(STORAGE_DAY_KEY);
+      if (savedDay) {
+        currentDay = parseInt(savedDay, 10);
+      } else {
+        currentDay = 1;
+      }
+
+      var savedState = localStorage.getItem(STORAGE_KEY);
+      if (savedState) {
+        try {
+          var state = JSON.parse(savedState);
+          for (var key in state) {
+            if (state.hasOwnProperty(key)) {
+              var checkbox = document.getElementById(key);
+              if (checkbox) {
+                checkbox.checked = state[key];
+              }
+            }
+          }
+        } catch (e) {
+          console.error('Error parsing saved state:', e);
+        }
+      }
+
+      showDay(currentDay);
+      updateProgress();
+    }
+
+    // Initialize on page load
+    window.addEventListener('DOMContentLoaded', function() {
+      loadState();
+    });
+
+    // Handle responsive sidebar toggle
+    window.addEventListener('resize', function() {
+      if (window.innerWidth > 900) {
+        var sidebar = document.getElementById('sidebar');
+        if (sidebar) sidebar.classList.remove('open');
+      }
+    });
+  
+    function editAuth(e) {
+      if (e) e.preventDefault();
+      var p = prompt('Enter edit password:');
+      if (p === 'w0ven') window.open('https://woven-workshop-studio.vercel.app/', '_blank');
+    }
+  </script>
+</body>
+</html>

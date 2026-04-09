@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang=  "en  ">
+<head>
+  <meta charset=  "UTF-8  ">
+  <meta name=  "viewport  " content=  "width=device-width, initial-scale=1.0  ">
+  <title>Triage Simulator  -  Woven Learning Mini Med School</title>
+  <script crossorigin src=  "https://unpkg.com/react@18/umd/react.production.min.js  "></script>
+  <script crossorigin src=  "https://unpkg.com/react-dom@18/umd/react-dom.production.min.js  "></script>
+  <script src=  "https://unpkg.com/@babel/standalone/babel.min.js  "></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family:   'Segoe UI  ', Arial, sans-serif;
+      background: linear-gradient(135deg, #F0F4F8 0%, #E8F5F2 100%);
+      min-height: 100vh;
+      padding: 12px;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(-8px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.05); opacity: 0.8; }
+    }
+    @keyframes timeWarning {
+      0%, 100% { background: #FDE8E8; }
+      50% { background: #FFC6C6; }
+    }
+    .fade-in { animation: fadeIn 0.3s ease-out; }
+    .slide-in { animation: slideIn 0.3s ease-out; }
+    .pulse { animation: pulse 0.8s ease-in-out infinite; }
+    .time-warning { animation: timeWarning 0.6s ease-in-out; }
+  </style>
+</head>
+<body>
+  <div id=  "root  "></div>
+  <script type=  "text/babel  ">
+    const { useState, useEffect, useRef } = React;
+
+    // Color scheme
+    const NAVY =   "#1B3A5C  ";
+    const TEAL =   "#2A9D8F  ";
+    const GOLD =   "#D4A843  ";
+    const LIGHT_BG =   "#F0F4F8  ";
+    const RED =   "#C0392B  ";
+    const GREEN =   "#27AE60  ";
+    const YELLOW =   "#F39C12  ";
+    const DARK =   "#333333  ";
+    const MED =   "#666666  ";
+    const WHITE =   "#FFFFFF  ";
+
+    // Triage categories with colors
+    const TRIAGE_CATS = {
+      RED: { label:   "RED - Immediate  ", color: RED, bgColor:   "#FADBD8  ", priority: 0, desc:   "Life-threatening  " },
+      YELLOW: { label:   "YELLOW - Delayed  ", color: YELLOW, bgColor:   "#FFF9E6  ", priority: 1, desc:   "Urgent but stable  " },
+      GREEN: { label:   "GREEN - Minor  ", color: GREEN, bgColor:   "#E8F8F1  ", priority: 2, desc:   "Walking wounded  " },
+      BLACK: { label:   "BLACK - Expectant  ", color:   "#666  ", bgColor:   "#E8E8E8  ", priority: 3, desc:   "Comfort care  " }
+    };
+
+    const scenarios = [
+      {
+        id:   "highway  ",
+        title:   "Highway Pileup  ",
+        setting:   "15-car collision on I-95. You  're the incident commander. EMS arrives with 8 patients within 5 minutes.  ",
+        description:   "Multi-vehicle collision with mixed injuries  ",
+        timeLimit: 120,
+        patients: [
+          {
+            id:   "A  ",
+            name:   "Driver (Car 1)  ",
+            age: 45,
+            desc:   "Unconscious, unresponsive to pain. Severe head trauma, exposed brain matter. Barely breathing.  ",
+            vitals: { bp:   "70/45  ", pulse: 140, spo2: 78, temp:   "96.2  " },
+            symptoms: [  "Unresponsive  ",   "Head trauma  ",   "Severe blood loss  ",   "Agonal breathing  "],
+            correctTriage:   "BLACK  ",
+            reasoning:   "Catastrophic head injury with minimal prognosis. Expectant care.  "
+          },
+          {
+            id:   "B  ",
+            name:   "Passenger (Car 1)  ",
+            age: 42,
+            desc:   "Chest trauma, breathing only 6/min, cyanotic. Likely tension pneumothorax.  ",
+            vitals: { bp:   "88/60  ", pulse: 135, spo2: 82, temp:   "98.1  " },
+            symptoms: [  "Severe dyspnea  ",   "Cyanosis  ",   "Chest pain  ",   "Hypotension  "],
+            correctTriage:   "RED  ",
+            reasoning:   "Tension pneumothorax. Needs immediate intervention or will die.  "
+          },
+          {
+            id:   "C  ",
+            name:   "SUV Driver  ",
+            age: 38,
+            desc:   "Alert, abdominal pain, bruising. Bleeding from lacerated spleen likely. Pale, sweaty.  ",
+            vitals: { bp:   "102/68  ", pulse: 118, spo2: 97, temp:   "98.8  " },
+            symptoms: [  "Abdominal trauma  ",   "Tachycardia  ",   "Hypotension trending  ",   "Diaphoretic  "],
+            correctTriage:   "YELLOW  ",
+            reasoning:   "Probable intra-abdominal bleeding. Stable now but needs rapid transport.  "
+          },
+          {
+            id:   "D  ",
+            name:   "Truck Driver  ",
+            age: 52,
+            desc:   "Conscious, calm. Arm fracture, significant bleeding from arm laceration.  ",
+            vitals: { bp:   "140/82  ", pulse: 96, spo2: 99, temp:   "98.4  " },
+            symptoms: [  "Arm fracture  ",   "Controlled bleeding  ",   "Alert  ",   "Good vitals  "],
+            correctTriage:   "GREEN  ",
+            reasoning:   "Stable vitals, alert, bleeding controlled. Can wait.  "
+          },
+          {
+            id:   "E  ",
+            name:   "Backseat Child  ",
+            age: 8,
+            desc:   "Conscious, frightened but alert. Minor leg laceration. Good cap refill.  ",
+            vitals: { bp:   "106/64  ", pulse: 102, spo2: 99, temp:   "98.6  " },
+            symptoms: [  "Minor laceration  ",   "Frightened  ",   "Normal vitals  ",   "Good perfusion  "],
+            correctTriage:   "GREEN  ",
+            reasoning:   "Pediatric but stable. Monitor but low priority.  "
+          },
+          {
+            id:   "F  ",
+            name:   "Motorcyclist  ",
+            age: 28,
+            desc:   "Severe leg fracture, femur likely broken. Heavy bleeding from wound.  ",
+            vitals: { bp:   "94/58  ", pulse: 126, spo2: 96, temp:   "98.2  " },
+            symptoms: [  "Femur fracture  ",   "Massive bleeding  ",   "Hypotension  ",   "Tachycardia  "],
+            correctTriage:   "RED  ",
+            reasoning:   "Femur fracture with ongoing hemorrhage. Life-threatening.  "
+          },
+          {
+            id:   "G  ",
+            name:   "Elderly Passenger  ",
+            age: 72,
+            desc:   "Stable but confused. Chest pain, history of MI. Breath sounds diminished.  ",
+            vitals: { bp:   "148/92  ", pulse: 88, spo2: 92, temp:   "98.5  " },
+            symptoms: [  "Chest pain  ",   "Confusion  ",   "Breath sounds down  ",   "Low SpO2  "],
+            correctTriage:   "YELLOW  ",
+            reasoning:   "Potential MI + trauma. Elderly = fragile. High-priority delayed.  "
+          },
+          {
+            id:   "H  ",
+            name:   "Bystander  ",
+            age: 35,
+            desc:   "Minor abrasions, anxiety attack. Vitals stable, hyperventilating.  ",
+            vitals: { bp:   "132/78  ", pulse: 110, spo2: 99, temp:   "98.6  " },
+            symptoms: [  "Anxiety  ",   "Hyperventilation  ",   "Stable vitals  ",   "Psychological trauma  "],
+            correctTriage:   "GREEN  ",
+            reasoning:   "Psychological, not physical. Can be managed after priority patients.  "
+          }
+        ]
+      },
+      {
+        id:   "building  ",
+        title:   "Building Collapse  ",
+        setting:   "Partial collapse of 4-story office building. Estimated 15+ injured. 6 patients extricated so far.  ",
+        description:   "Structural disaster with crush injuries and entrapment  ",
+        timeLimit: 180,
+        patients: [
+          {
+            id:   "A  ",
+            name:   "Manager (Office 2nd floor)  ",
+            age: 55,
+            desc:   "Pinned under desk for 3 hours. Severe crush injury to legs. Dark urine (rhabdo).  ",
+            vitals: { bp:   "110/72  ", pulse: 104, spo2: 98, temp:   "97.1  " },
+            symptoms: [  "Crush injury  ",   "Rhabdomyolysis  ",   "Dark urine  ",   "Compartment syndrome risk  "],
+            correctTriage:   "RED  ",
+            reasoning:   "Crush syndrome with rhabdo risk. Needs immediate IV fluids to prevent acute kidney injury.  "
+          },
+          {
+            id:   "B  ",
+            name:   "Security Guard  ",
+            age: 48,
+            desc:   "Buried in rubble, extricated 30 min ago. Severe head trauma, periods of unconsciousness.  ",
+            vitals: { bp:   "128/82  ", pulse: 82, spo2: 95, temp:   "98.3  " },
+            symptoms: [  "Head trauma  ",   "Altered mental status  ",   "On/off consciousness  ",   "Epidural hematoma?  "],
+            correctTriage:   "YELLOW  ",
+            reasoning:   "Head injury with altered consciousness. Stable now but high risk for deterioration.  "
+          },
+          {
+            id:   "C  ",
+            name:   "Receptionist  ",
+            age: 29,
+            desc:   "Multiple lacerations, impaled object in left thigh. Bright blood spurting. Alert but pale.  ",
+            vitals: { bp:   "98/65  ", pulse: 132, spo2: 97, temp:   "98.4  " },
+            symptoms: [  "Arterial bleeding  ",   "Impaled object  ",   "Hypotension  ",   "Tachycardia  "],
+            correctTriage:   "RED  ",
+            reasoning:   "Likely femoral artery. Do not remove object. Immediate transport.  "
+          },
+          {
+            id:   "D  ",
+            name:   "Intern  ",
+            age: 22,
+            desc:   "Minor injuries, scraped up. Alert, walking around, helping others.  ",
+            vitals: { bp:   "118/74  ", pulse: 88, spo2: 99, temp:   "98.6  " },
+            symptoms: [  "Minor abrasions  ",   "Alert  ",   "Stable vitals  ",   "Able to assist  "],
+            correctTriage:   "GREEN  ",
+            reasoning:   "Walking wounded. No life threat.  "
+          },
+          {
+            id:   "E  ",
+            name:   "Accountant  ",
+            age: 58,
+            desc:   "Crushed under beam for 2+ hours. Lower extremities unresponsive. No pulse in foot.  ",
+            vitals: { bp:   "95/60  ", pulse: 130, spo2: 94, temp:   "96.8  " },
+            symptoms: [  "Crush injury  ",   "Limb death  ",   "Profound shock  ",   "Hypotension  "],
+            correctTriage:   "BLACK  ",
+            reasoning:   "Dead limb + shock. Expect death within hours without massive intervention. Expectant care given limited resources.  "
+          },
+          {
+            id:   "F  ",
+            name:   "Maintenance Worker  ",
+            age: 61,
+            desc:   "Stable, alert. Fractured ribs, respiratory compromise. Breath sounds diminished bilaterally.  ",
+            vitals: { bp:   "142/88  ", pulse: 96, spo2: 91, temp:   "98.7  " },
+            symptoms: [  "Rib fractures  ",   "Low SpO2  ",   "Respiratory compromise  ",   "Risk of pneumonia  "],
+            correctTriage:   "YELLOW  ",
+            reasoning:   "Significant respiratory injury but stable. Risk of decompensation. Needs monitoring.  "
+          }
+        ]
+      },
+      {
+        id:   "school  ",
+        title:   "School Shooting  ",
+        setting:   "Active shooter at high school. Police secure scene. 7 patients identified for triage.  ",
+        description:   "Mass casualty violence event  ",
+        timeLimit: 150,
+        patients: [
+          {
+            id:   "A  ",
+            name:   "Student (Hallway)  ",
+            age: 16,
+            desc:   "Gunshot wound to chest, left side. No breath sounds on left. Collapsed lung.  ",
+            vitals: { bp:   "105/70  ", pulse: 120, spo2: 89, temp:   "98.2  " },
+            symptoms: [  "GSW chest  ",   "Pneumothorax  ",   "Hypoxia  ",   "Tachycardia  "],
+            correctTriage:   "RED  ",
+            reasoning:   "Pneumothorax. Needs needle decompression or chest tube immediately.  "
+          },
+          {
+            id:   "B  ",
+            name:   "Student (Classroom)  ",
+            age: 17,
+            desc:   "Gunshot wound to abdomen. Stable vitals but guarding. Alert and oriented.  ",
+            vitals: { bp:   "132/80  ", pulse: 104, spo2: 99, temp:   "98.5  " },
+            symptoms: [  "GSW abdomen  ",   "Guarding  ",   "Stable now  ",   "Likely intra-abdominal bleed  "],
+            correctTriage:   "YELLOW  ",
+            reasoning:   "Penetrating abdominal trauma. Stable now but needs OR urgently.  "
+          },
+          {
+            id:   "C  ",
+            name:   "Student (Cafeteria)  ",
+            age: 15,
+            desc:   "Grazing wound to arm. Minor bleeding. Scared but alert. Excellent vitals.  ",
+            vitals: { bp:   "118/76  ", pulse: 92, spo2: 99, temp:   "98.6  " },
+            symptoms: [  "Grazing wound  ",   "Minor bleeding  ",   "Alert  ",   "Good vitals  "],
+            correctTriage:   "GREEN  ",
+            reasoning:   "Superficial wound. Stable. Psychological support needed but not life-threatening.  "
+          },
+          {
+            id:   "D  ",
+            name:   "Teacher  ",
+            age: 42,
+            desc:   "Gunshot to head. Unresponsive, pupils fixed and dilated. Massive head trauma.  ",
+            vitals: { bp:   "72/48  ", pulse: 48, spo2: 85, temp:   "96.1  " },
+            symptoms: [  "GSW head  ",   "Fixed dilated pupils  ",   "Profound shock  ",   "Brainstem death likely  "],
+            correctTriage:   "BLACK  ",
+            reasoning:   "Unsurvivable head wound. Brainstem involvement. Expectant care.  "
+          },
+          {
+            id:   "E  ",
+            name:   "Security Officer  ",
+            age: 52,
+            desc:   "Gunshot wound to leg. Bright red spurting blood. High tourniquet applied by police.  ",
+            vitals: { bp:   "108/66  ", pulse: 115, spo2: 99, temp:   "98.4  " },
+            symptoms: [  "GSW leg  ",   "Arterial bleeding  ",   "Tourniquet in place  ",   "Salvageable  "],
+            correctTriage:   "YELLOW  ",
+            reasoning:   "Arterial injury but tourniquet applied. Salvageable with rapid transport.  "
+          },
+          {
+            id:   "F  ",
+            name:   "Student (Gym)  ",
+            age: 14,
+            desc:   "Gunshot to shoulder. Pain but stable. Good distal pulse and cap refill.  ",
+            vitals: { bp:   "124/78  ", pulse: 98, spo2: 99, temp:   "98.3  " },
+            symptoms: [  "GSW shoulder  ",   "Pain  ",   "Stable vitals  ",   "Distal perfusion intact  "],
+            correctTriage:   "YELLOW  ",
+            reasoning:   "Significant injury but stable perfusion. Needs evaluation but not immediately life-threatening.  "
+          },
+          {
+            id:   "G  ",
+            name:   "Student (Hidden)  ",
+            age: 16,
+            desc:   "No physical injury. Severe panic attack, hyperventilating, chest pain from anxiety.  ",
+            vitals: { bp:   "138/82  ", pulse: 128, spo2: 99, temp:   "98.7  " },
+            symptoms: [  "Psychological trauma  ",   "Panic attack  ",   "Hyperventilation  ",   "Stable vitals  "],
+            correctTriage:   "GREEN  ",
+            reasoning:   "Psychological, not physical injury. Needs support but lower priority than physical trauma.  "
+          }
+        ]
+      }
+    ];
+
+    function formatTime(seconds) {
+      const mins = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      return `${mins}:${String(secs).padStart(2,   "0  ")}`;
+    }
+
+    function PatientCard({ patient, showTriage, selectedDecision, onTriageChoice }) {
+      const getAlertLevel = (vitals) => {
+        const sys = parseInt(vitals.bp.split(  "/  ")[0]);
+        const spo2 = vitals.spo2;
+        if (sys < 90 || spo2 < 90) return   "critical  ";
+        if (sys > 160 || spo2 < 93) return   "alert  ";
+        return   "normal  ";
+      };
+
+      const alertLevel = getAlertLevel(patient.vitals);
+      const borderColor = alertLevel ===   "critical  " ? RED : alertLevel ===   "alert  " ? YELLOW :   "#D0D8E0  ";
+
+      return (
+        <div
+          className=  "fade-in  "
+          style={{
+            background: WHITE,
+            borderRadius: 10,
+            padding: 14,
+            marginBottom: 10,
+            border: `3px solid ${selectedDecision ? TEAL : borderColor}`,
+            boxShadow: selectedDecision ? `0 0 0 4px ${TEAL}33` :   "0 2px 6px rgba(0,0,0,0.08)  ",
+            transition:   "all 0.2s  "
+          }}
+        >
+          <div style={{ display:   "flex  ", justifyContent:   "space-between  ", alignItems:   "flex-start  ", marginBottom: 8 }}>
+            <div style={{ display:   "flex  ", alignItems:   "center  ", gap: 10 }}>
+              <div style={{
+                background: NAVY, color: WHITE, width: 32, height: 32, borderRadius:   "50%  ",
+                display:   "flex  ", alignItems:   "center  ", justifyContent:   "center  ", fontSize: 16, fontWeight: 700
+              }}>
+                {patient.id}
+              </div>
+              <div>
+                <div style={{ fontWeight: 700, color: DARK, fontSize: 14 }}>{patient.name}</div>
+                <div style={{ fontSize: 11, color: MED }}>Age {patient.age}</div>
+              </div>
+            </div>
+            {alertLevel ===   "critical  " && (
+              <span className=  "pulse  " style={{ fontSize: 20 }}></span>
+            )}
+          </div>
+
+          <p style={{ fontSize: 12, color: MED, margin:   "0 0 8px  ", lineHeight: 1.4 }}>
+            {patient.desc}
+          </p>
+
+          <div style={{ display:   "flex  ", gap: 8, flexWrap:   "wrap  ", marginBottom: 8 }}>
+            <span style={{
+              fontSize: 11, fontWeight: 600, padding:   "3px 8px  ", borderRadius: 4,
+              background: alertLevel ===   "critical  " ?   "#FADBD8  " : alertLevel ===   "alert  " ?   "#FFF9E6  " :   "#E8F8F1  ",
+              color: alertLevel ===   "critical  " ? RED : alertLevel ===   "alert  " ? YELLOW : GREEN
+            }}>
+              BP: {patient.vitals.bp}
+            </span>
+            <span style={{
+              fontSize: 11, fontWeight: 600, padding:   "3px 8px  ", borderRadius: 4,
+              background: LIGHT_BG, color: MED
+            }}>
+               {patient.vitals.pulse}
+            </span>
+            <span style={{
+              fontSize: 11, fontWeight: 600, padding:   "3px 8px  ", borderRadius: 4,
+              background: patient.vitals.spo2 < 93 ?   "#FADBD8  " :   "#E8F8F1  ",
+              color: patient.vitals.spo2 < 93 ? RED : GREEN
+            }}>
+              O₂: {patient.vitals.spo2}%
+            </span>
+          </div>
+
+          {showTriage && (
+            <div style={{ display:   "grid  ", gridTemplateColumns:   "1fr 1fr  ", gap: 6 }}>
+              {Object.entries(TRIAGE_CATS).map(([key, cat]) => (
+                <button
+                  key={key}
+                  onClick={() => onTriageChoice(patient.id, key)}
+                  style={{
+                    background: selectedDecision === key ? cat.color : cat.bgColor,
+                    color: selectedDecision === key ? WHITE : cat.color,
+                    border: `2px solid ${cat.color}`,
+                    borderRadius: 6,
+                    padding:   "6px 8px  ",
+                    fontSize: 11,
+                    fontWeight: 700,
+                    cursor:   "pointer  ",
+                    transition:   "all 0.2s  "
+                  }}
+                  onMouseOver={(e) => {
+                    if (selectedDecision !== key) {
+                      e.currentTarget.style.background = cat.bgColor;
+                      e.currentTarget.style.opacity =   "0.8  ";
+                    }
+                  }}
+                  onMouseOut={(e) => {
+                    e.currentTarget.style.opacity =   "1  ";
+                  }}
+                >
+                  {key}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    function TriageSimulator() {
+      const [scenarioIdx, setScenarioIdx] = useState(0);
+      const [phase, setPhase] = useState(  "select  ");
+      const [seconds, setSeconds] = useState(0);
+      const [timeLeft, setTimeLeft] = useState(0);
+      const [triageDecisions, setTriageDecisions] = useState({});
+      const [score, setScore] = useState(0);
+      const [roundsCompleted, setRoundsCompleted] = useState(0);
+      const [bestScores, setBestScores] = useState({});
+      const intervalRef = useRef(null);
+
+      const scenario = scenarios[scenarioIdx];
+
+      useEffect(() => {
+        if (phase ===   "playing  ") {
+          if (timeLeft <= 0) {
+            setPhase(  "review  ");
+            if (intervalRef.current) clearInterval(intervalRef.current);
+            return;
+          }
+          if (!intervalRef.current) {
+            intervalRef.current = setInterval(() => {
+              setTimeLeft((t) => t - 1);
+              setSeconds((s) => s + 1);
+            }, 1000);
+          }
+        }
+        return () => {
+          if (intervalRef.current) clearInterval(intervalRef.current);
+        };
+      }, [phase, timeLeft]);
+
+      const handleStartRound = () => {
+        setTriageDecisions({});
+        setSeconds(0);
+        setTimeLeft(scenario.timeLimit);
+        setPhase(  "playing  ");
+        setScore(0);
+      };
+
+      const handleTriageChoice = (patientId, category) => {
+        setTriageDecisions((prev) => ({
+          ...prev,
+          [patientId]: category
+        }));
+      };
+
+      const handleSubmit = () => {
+        if (intervalRef.current) clearInterval(intervalRef.current);
+
+        let pts = 0;
+        let redCorrect = 0;
+        let redTotal = 0;
+
+        scenario.patients.forEach((patient) => {
+          const userChoice = triageDecisions[patient.id];
+          const correctChoice = patient.correctTriage;
+
+          if (correctChoice ===   "RED  ") redTotal++;
+          if (userChoice ===   "RED  " && correctChoice ===   "RED  ") redCorrect++;
+
+          if (userChoice === correctChoice) {
+            pts += 25;
+            if (correctChoice ===   "RED  ") pts += 15;
+          } else if (userChoice && correctChoice) {
+            const userPriority = TRIAGE_CATS[userChoice].priority;
+            const correctPriority = TRIAGE_CATS[correctChoice].priority;
+            if (Math.abs(userPriority - correctPriority) === 1) {
+              pts += 10;
+            }
+          }
+        });
+
+        let timeBonus = 0;
+        if (timeLeft > scenario.timeLimit / 2) {
+          timeBonus = 15;
+        } else if (timeLeft > 0) {
+          timeBonus = 8;
+        }
+
+        const roundScore = pts + timeBonus;
+        setScore(roundScore);
+        setRoundsCompleted((prev) => prev + 1);
+
+        const newBestScores = { ...bestScores };
+        if (!newBestScores[scenario.id] || roundScore > newBestScores[scenario.id]) {
+          newBestScores[scenario.id] = roundScore;
+        }
+        setBestScores(newBestScores);
+
+        setPhase(  "review  ");
+      };
+
+      const handleNextScenario = () => {
+        const nextIdx = (scenarioIdx + 1) % scenarios.length;
+        setScenarioIdx(nextIdx);
+        setPhase(  "select  ");
+      };
+
+      const handleFinishAll = () => {
+        setPhase(  "final  ");
+      };
+
+      const handleRestartAll = () => {
+        setScenarioIdx(0);
+        setPhase(  "select  ");
+        setTriageDecisions({});
+        setScore(0);
+        setRoundsCompleted(0);
+        setBestScores({});
+        if (intervalRef.current) clearInterval(intervalRef.current);
+      };
+
+      const allTriaged = Object.keys(triageDecisions).length === scenario.patients.length;
+      const timeWarning = timeLeft < 30 && timeLeft > 0;
+
+      const totalAccuracy = roundsCompleted > 0 ? Math.round((score / (roundsCompleted * 200)) * 100) : 0;
+
+      // Final dashboard after all scenarios
+      if (phase ===   "final  ") {
+        let redAccuracy = 0;
+        let yellowAccuracy = 0;
+        let greenAccuracy = 0;
+        let totalByCategory = { RED: 0, YELLOW: 0, GREEN: 0, BLACK: 0 };
+        let correctByCategory = { RED: 0, YELLOW: 0, GREEN: 0, BLACK: 0 };
+
+        scenarios.forEach((scen) => {
+          scen.patients.forEach((patient) => {
+            const correct = patient.correctTriage;
+            totalByCategory[correct]++;
+          });
+        });
+
+        return (
+          <div style={{ fontFamily:   "  'Segoe UI  ', Arial, sans-serif  ", maxWidth: 700, margin:   "0 auto  ", padding:   "12px  " }}>
+            <div style={{ textAlign:   "center  ", marginBottom: 16 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: TEAL, letterSpacing: 2, textTransform:   "uppercase  ", marginBottom: 4 }}>
+                Woven Learning Mini Med School
+              </div>
+              <h1 style={{ fontSize: 28, fontWeight: 800, color: NAVY, margin:   "0 0 4px  " }}>
+                Overall Assessment
+              </h1>
+              <p style={{ fontSize: 14, color: MED, margin: 0 }}>
+                All 3 scenarios completed
+              </p>
+            </div>
+
+            <div style={{
+              textAlign:   "center  ",
+              padding: 24,
+              borderRadius: 10,
+              background: totalAccuracy >= 80 ?   "#E8F8F1  " : totalAccuracy >= 60 ?   "#FFF9E6  " :   "#FADBD8  ",
+              marginBottom: 16,
+              border: `2px solid ${totalAccuracy >= 80 ? GREEN : totalAccuracy >= 60 ? GOLD : RED}`
+            }}>
+              <div style={{
+                fontSize: 48,
+                fontWeight: 800,
+                color: totalAccuracy >= 80 ? GREEN : totalAccuracy >= 60 ? GOLD : RED,
+                marginBottom: 8
+              }}>
+                {totalAccuracy}%
+              </div>
+              <div style={{ fontSize: 16, fontWeight: 700, color: NAVY, marginBottom: 6 }}>
+                Triage Proficiency Rating
+              </div>
+              <div style={{ fontSize: 13, color: MED }}>
+                {totalAccuracy >= 90 &&   "Expert level - Exceptional triage decisions across all scenarios.  "}
+                {totalAccuracy >= 75 && totalAccuracy < 90 &&   "Proficient - Strong triage judgment with room for refinement.  "}
+                {totalAccuracy >= 60 && totalAccuracy < 75 &&   "Developing - Good foundational skills, continue practice.  "}
+                {totalAccuracy < 60 &&   "Review - Study the cases and try again to improve.  "}
+              </div>
+            </div>
+
+            <div style={{
+              background: WHITE,
+              border: `2px solid #E0E0E0`,
+              borderRadius: 10,
+              padding: 16,
+              marginBottom: 16
+            }}>
+              <div style={{ fontSize: 14, fontWeight: 700, color: NAVY, marginBottom: 14 }}>
+                 Breakdown by Triage Category
+              </div>
+
+              {Object.entries(TRIAGE_CATS).map(([key, cat]) => {
+                const total = totalByCategory[key] || 0;
+                return total > 0 ? (
+                  <div key={key} style={{ marginBottom: 12 }}>
+                    <div style={{ display:   "flex  ", justifyContent:   "space-between  ", marginBottom: 4 }}>
+                      <div style={{ fontSize: 13, fontWeight: 700, color: DARK }}>
+                        {cat.label}
+                      </div>
+                      <div style={{ fontSize: 13, fontWeight: 700, color: cat.color }}>
+                        {total} patients
+                      </div>
+                    </div>
+                    <div style={{
+                      background:   "#E0E0E0  ",
+                      borderRadius: 6,
+                      height: 8,
+                      overflow:   "hidden  "
+                    }}>
+                      <div style={{
+                        background: cat.color,
+                        height:   "100%  ",
+                        width:   "100%  "
+                      }} />
+                    </div>
+                  </div>
+                ) : null;
+              })}
+            </div>
+
+            <div style={{
+              background:   "#FFF9E6  ",
+              border: `2px solid ${GOLD}`,
+              borderRadius: 10,
+              padding: 14,
+              marginBottom: 16
+            }}>
+              <div style={{ fontWeight: 700, color: NAVY, fontSize: 14, marginBottom: 8 }}>
+                 Debrief Questions
+              </div>
+              <div style={{ fontSize: 13, color: DARK, lineHeight: 1.8 }}>
+                <p style={{ margin:   "0 0 8px  " }}>1. What was the hardest triage decision you made, and why?</p>
+                <p style={{ margin:   "0 0 8px  " }}>2. How did time pressure affect your decision-making?</p>
+                <p style={{ margin:   "0 0 0  " }}>3. Which scenario challenged you the most, and what would you do differently?</p>
+              </div>
+            </div>
+
+            <div style={{ textAlign:   "center  " }}>
+              <button
+                onClick={handleRestartAll}
+                style={{
+                  background: TEAL,
+                  color: WHITE,
+                  border:   "none  ",
+                  borderRadius: 8,
+                  padding:   "12px 32px  ",
+                  fontSize: 15,
+                  fontWeight: 700,
+                  cursor:   "pointer  ",
+                  transition:   "all 0.2s  "
+                }}
+                onMouseOver={(e) => {
+                  e.target.style.background =   "#1f8a7e  ";
+                  e.target.style.transform =   "scale(1.02)  ";
+                }}
+                onMouseOut={(e) => {
+                  e.target.style.background = TEAL;
+                  e.target.style.transform =   "scale(1)  ";
+                }}
+              >
+                Start Over
+              </button>
+            </div>
+          </div>
+        );
+      }
+
+      return (
+        <div style={{ fontFamily:   "  'Segoe UI  ', Arial, sans-serif  ", maxWidth: 700, margin:   "0 auto  ", padding:   "12px  " }}>
+          <div style={{ textAlign:   "center  ", marginBottom: 16 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: TEAL, letterSpacing: 2, textTransform:   "uppercase  ", marginBottom: 4 }}>
+              Woven Learning Mini Med School
+            </div>
+            <h1 style={{ fontSize: 28, fontWeight: 800, color: NAVY, margin:   "0 0 4px  " }}>
+              Triage Simulator
+            </h1>
+            <p style={{ fontSize: 14, color: MED, margin: 0 }}>
+              Prioritize patients in mass casualty events
+            </p>
+          </div>
+
+          <div style={{
+            display:   "flex  ",
+            justifyContent:   "space-between  ",
+            alignItems:   "center  ",
+            gap: 10,
+            marginBottom: 16,
+            padding: 12,
+            background: WHITE,
+            borderRadius: 8,
+            boxShadow:   "0 2px 4px rgba(0,0,0,0.05)  ",
+            flexWrap:   "wrap  "
+          }}>
+            <div>
+              <div style={{ fontSize: 11, color: MED, fontWeight: 600 }}>Scenarios</div>
+              <div style={{ fontSize: 16, fontWeight: 800, color: TEAL }}>
+                {roundsCompleted}/{scenarios.length}
+              </div>
+            </div>
+            {phase ===   "playing  " && (
+              <div
+                className={timeWarning ?   "time-warning  " :   "  "}
+                style={{
+                  textAlign:   "center  ",
+                  padding:   "8px 12px  ",
+                  borderRadius: 6,
+                  background: timeWarning ?   "#FDE8E8  " :   "#E8F8F1  ",
+                  border: `2px solid ${timeWarning ? RED : GREEN}`
+                }}
+              >
+                <div style={{ fontSize: 11, color: MED, fontWeight: 600 }}>Time Left</div>
+                <div
+                  style={{
+                    fontSize: 18,
+                    fontWeight: 800,
+                    color: timeWarning ? RED : TEAL,
+                    fontVariantNumeric:   "tabular-nums  "
+                  }}
+                >
+                  {formatTime(timeLeft)}
+                </div>
+              </div>
+            )}
+            {phase !==   "select  " && (
+              <button
+                onClick={handleRestartAll}
+                style={{
+                  background:   "none  ",
+                  border: `2px solid ${TEAL}`,
+                  color: TEAL,
+                  borderRadius: 6,
+                  padding:   "8px 14px  ",
+                  fontSize: 13,
+                  fontWeight: 700,
+                  cursor:   "pointer  ",
+                  transition:   "all 0.2s  "
+                }}
+                onMouseOver={(e) => {
+                  e.target.style.background = TEAL;
+                  e.target.style.color = WHITE;
+                }}
+                onMouseOut={(e) => {
+                  e.target.style.background =   "none  ";
+                  e.target.style.color = TEAL;
+                }}
+              >
+                 Start Over
+              </button>
+            )}
+          </div>
+
+          <div style={{
+            background:   "#FFF9E6  ",
+            border: `2px solid ${GOLD}`,
+            borderRadius: 10,
+            padding: 14,
+            marginBottom: 16
+          }}>
+            <div style={{ fontWeight: 700, color: NAVY, fontSize: 15, marginBottom: 4 }}>
+               {scenario.title}
+            </div>
+            <p style={{ fontSize: 13, color: DARK, margin: 0, lineHeight: 1.5 }}>
+              {scenario.setting}
+            </p>
+          </div>
+
+          {phase ===   "select  " && (
+            <div style={{ textAlign:   "center  " }}>
+              <button
+                onClick={handleStartRound}
+                style={{
+                  background: TEAL,
+                  color: WHITE,
+                  border:   "none  ",
+                  borderRadius: 8,
+                  padding:   "14px 36px  ",
+                  fontSize: 16,
+                  fontWeight: 700,
+                  cursor:   "pointer  ",
+                  transition:   "all 0.2s  "
+                }}
+                onMouseOver={(e) => {
+                  e.target.style.background =   "#1f8a7e  ";
+                  e.target.style.transform =   "scale(1.02)  ";
+                }}
+                onMouseOut={(e) => {
+                  e.target.style.background = TEAL;
+                  e.target.style.transform =   "scale(1)  ";
+                }}
+              >
+                 Start Triage Session
+              </button>
+            </div>
+          )}
+
+          {phase ===   "playing  " && (
+            <div>
+              <div style={{ fontSize: 13, fontWeight: 700, color: NAVY, marginBottom: 10 }}>
+                Triage all {scenario.patients.length} patients:
+              </div>
+
+              {scenario.patients.map((patient) => (
+                <PatientCard
+                  key={patient.id}
+                  patient={patient}
+                  showTriage={true}
+                  selectedDecision={triageDecisions[patient.id]}
+                  onTriageChoice={handleTriageChoice}
+                />
+              ))}
+
+              <div style={{
+                display:   "flex  ",
+                gap: 8,
+                marginTop: 16,
+                padding: 12,
+                background: allTriaged ?   "#E8F8F1  " : LIGHT_BG,
+                borderRadius: 8
+              }}>
+                <span style={{ fontSize: 12, color: MED, fontWeight: 600 }}>
+                  Triaged: <strong>{Object.keys(triageDecisions).length}/{scenario.patients.length}</strong>
+                </span>
+                {allTriaged && (
+                  <button
+                    onClick={handleSubmit}
+                    style={{
+                      marginLeft:   "auto  ",
+                      background: GREEN,
+                      color: WHITE,
+                      border:   "none  ",
+                      borderRadius: 6,
+                      padding:   "8px 16px  ",
+                      fontSize: 13,
+                      fontWeight: 700,
+                      cursor:   "pointer  "
+                    }}
+                  >
+                     Submit Triage
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
+
+          {phase ===   "review  " && (
+            <div>
+              <div style={{
+                textAlign:   "center  ",
+                padding: 16,
+                borderRadius: 10,
+                background: score >= 150 ?   "#E8F8F1  " : score >= 120 ?   "#FFF9E6  " :   "#FADBD8  ",
+                marginBottom: 16
+              }}>
+                <div style={{
+                  fontSize: 40,
+                  fontWeight: 800,
+                  color: score >= 150 ? GREEN : score >= 120 ? GOLD : RED
+                }}>
+                  {score} pts
+                </div>
+                <div style={{ fontSize: 13, color: MED, marginTop: 6 }}>
+                  {score >= 180 ?   "Perfect! Masterful triage decisions.  " :
+                   score >= 150 ?   "Excellent! Strong clinical judgment.  " :
+                   score >= 120 ?   "Good work. A few adjustments needed.  " :
+                   score >= 100 ?   "Decent. Study the reasoning below.  " :
+                     "Review carefully. Triage is critical.  "}
+                </div>
+                <div style={{ fontSize: 12, color: MED, marginTop: 4 }}>
+                  Time: {formatTime(seconds)} | Bonus: {timeLeft > scenario.timeLimit / 2 ?   "+15  " : timeLeft > 0 ?   "+8  " :   "+0  "}
+                </div>
+              </div>
+
+              <div style={{ fontSize: 13, fontWeight: 700, color: NAVY, marginBottom: 10 }}>
+                Triage Breakdown:
+              </div>
+
+              {scenario.patients.map((patient) => {
+                const userChoice = triageDecisions[patient.id];
+                const correctChoice = patient.correctTriage;
+                const isCorrect = userChoice === correctChoice;
+
+                return (
+                  <div
+                    key={patient.id}
+                    className=  "fade-in  "
+                    style={{
+                      background: isCorrect ?   "#E8F8F1  " :   "#FADBD8  ",
+                      border: `2px solid ${isCorrect ? GREEN : RED}`,
+                      borderRadius: 8,
+                      padding: 12,
+                      marginBottom: 8
+                    }}
+                  >
+                    <div style={{ display:   "flex  ", justifyContent:   "space-between  ", alignItems:   "flex-start  ", marginBottom: 6 }}>
+                      <div>
+                        <div style={{ fontWeight: 700, color: DARK, fontSize: 13 }}>
+                          Patient {patient.id}: {patient.name}
+                        </div>
+                        <div style={{ fontSize: 11, color: MED }}>
+                          Correct: <strong>{TRIAGE_CATS[correctChoice].label}</strong>
+                        </div>
+                      </div>
+                      <span style={{
+                        background: isCorrect ? GREEN : RED,
+                        color: WHITE,
+                        padding:   "4px 10px  ",
+                        borderRadius: 4,
+                        fontSize: 11,
+                        fontWeight: 700
+                      }}>
+                        {isCorrect ?   "  " : userChoice ? ` You: ${TRIAGE_CATS[userChoice].label}` :   "⊘ Not triaged  "}
+                      </span>
+                    </div>
+                    <p style={{ fontSize: 12, color: MED, margin: 0, lineHeight: 1.4 }}>
+                      {patient.reasoning}
+                    </p>
+                  </div>
+                );
+              })}
+
+              <div style={{ textAlign:   "center  ", marginTop: 16 }}>
+                <button
+                  onClick={scenarioIdx < scenarios.length - 1 ? handleNextScenario : handleFinishAll}
+                  style={{
+                    background: TEAL,
+                    color: WHITE,
+                    border:   "none  ",
+                    borderRadius: 8,
+                    padding:   "12px 32px  ",
+                    fontSize: 15,
+                    fontWeight: 700,
+                    cursor:   "pointer  "
+                  }}
+                >
+                  {scenarioIdx < scenarios.length - 1 ?   "Next Scenario →  " :   "View Overall Assessment  "}
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById(  'root  ')).render(<TriageSimulator />);
+  </script>
+  <div style="text-align:center; padding:14px; border-top:3px solid #D4A843; background:#fff; font-size:0.75rem; color:#999; margin-top:20px; display:flex; align-items:center; justify-content:center; gap:6px; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">
+  <svg viewBox="0 0 40 40" width="16" height="16"><polygon points="13,2 24,13 13,24 2,13" fill="#0ABAB5" opacity="0.85"/><polygon points="27,2 38,13 27,24 16,13" fill="#F5B731" opacity="0.85"/><polygon points="13,16 24,27 13,38 2,27" fill="#E65C3C" opacity="0.85"/><polygon points="27,16 38,27 27,38 16,27" fill="#7A2D4E" opacity="0.85"/></svg>
+  Built by <strong style="color:#1A6B6B;">Woven Learning &amp; Technology</strong>
+</div>
+</body>
+</html>
