@@ -1856,13 +1856,13 @@
     }
 
     function toggleApp(appId) {
-      var btn = event.target.closest('.app-toggle-btn');
+      var btn = document.querySelector('[onclick*="' + appId + '"]');
       var wrapper = document.getElementById(appId);
-      if (btn && wrapper) {
-        btn.classList.toggle('open');
+      if (wrapper) {
+        if (btn) btn.classList.toggle('open');
         wrapper.classList.toggle('open');
         var iframe = wrapper.querySelector('iframe');
-        if (iframe && iframe.dataset.src && !iframe.src) {
+        if (iframe && iframe.dataset.src && !iframe.getAttribute('src')) {
           iframe.src = iframe.dataset.src;
         }
       }
