@@ -1962,7 +1962,7 @@
     function editAuth(e) {
       if (e) e.preventDefault();
       var p = prompt('Enter edit password:');
-      if (p === 'w0ven') window.open('https://woven-workshop-studio.vercel.app/', '_blank');
+      if (p === 'w0ven') { var base = window.location.origin; window.open('https://woven-workshop-studio.vercel.app/?load=' + encodeURIComponent(base + '/content.json'), '_blank'); }
     }
   </script>
 </body>
