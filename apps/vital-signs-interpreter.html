@@ -465,8 +465,8 @@
             </div>
             <div style={{display:"grid",gap:12,marginBottom:20}}>
               {[
-                {key:"explore",icon:"\u{1F50D}",title:"Explore Mode",desc:"Adjust vital signs, toggle neuro findings, and load preset patient cases. Learn what normal looks like and where danger begins.",color:TEAL},
-                {key:"assess",icon:"\u{1F4CB}",title:"My Patient Findings",desc:"Enter the actual readings you collected at each station - BP (resting, stress, recovery), SpO2, pulse, pupils, and reflexes. Compare your patient to what you explored.",color:GOLD},
+                {key:"assess",icon:"\u{1F4CB}",title:"My Patient Findings",desc:"Enter the readings you collected at each station - BP (resting, stress, recovery), SpO2, pulse, pupils, and reflexes. See your complete clinical picture.",color:TEAL},
+                {key:"explore",icon:"\u{1F50D}",title:"Explore Mode",desc:"Load Marco Torres's real ER vitals and other patient cases. Adjust values and toggle neuro findings to see where normal ends and danger begins.",color:GOLD},
                 {key:"quiz",icon:"\u{1F3AF}",title:"Quiz Mode",desc:"8 clinical scenarios testing your ability to interpret vital signs and spot patterns. Can you think like a doctor?",color:"#C0392B"},
               ].map(m=>(<div key={m.key} onClick={()=>setScreen(m.key)} style={{background:WHITE,borderRadius:R,padding:"18px 20px",boxShadow:SHADOW,border:"2px solid #E0E8EE",cursor:"pointer",transition:"all .25s",display:"flex",alignItems:"center",gap:16}} onMouseOver={e=>{e.currentTarget.style.borderColor=m.color;e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow=`0 6px 20px ${m.color}20`}} onMouseOut={e=>{e.currentTarget.style.borderColor="#E0E8EE";e.currentTarget.style.transform="none";e.currentTarget.style.boxShadow=SHADOW}}>
                 <div style={{width:52,height:52,borderRadius:14,background:`${m.color}12`,border:`2px solid ${m.color}25`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:26,flexShrink:0}}>{m.icon}</div>
@@ -474,8 +474,8 @@
               </div>))}
             </div>
             <div style={{background:"#FFF9E6",border:`2px solid ${GOLD}`,borderRadius:R,padding:14,textAlign:"center"}}>
-              <div style={{fontSize:13,fontWeight:700,color:NAVY,marginBottom:4}}>{"\u{1F4A1}"} Start with Explore Mode</div>
-              <p style={{fontSize:12,color:MED,margin:0,lineHeight:1.5}}>Learn the ranges first by exploring different vital sign values. Then switch to My Patient Findings to enter your own readings and compare.</p>
+              <div style={{fontSize:13,fontWeight:700,color:NAVY,marginBottom:4}}>{"\u{1F4A1}"} Start with My Patient Findings</div>
+              <p style={{fontSize:12,color:MED,margin:0,lineHeight:1.5}}>Enter the readings you collected at each station first. Then use Explore Mode to test Marco's real vitals and other patients. Finish with the Quiz to see if you can think like a doctor.</p>
             </div>
           </div>
           <AppFooter/>
