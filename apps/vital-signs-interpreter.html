@@ -71,6 +71,12 @@
     const SectionLabel=({children})=>(<div style={{fontSize:10,fontWeight:700,color:MED,textTransform:"uppercase",letterSpacing:1.5,marginBottom:6}}>{children}</div>);
     const StatusBadge=({label,color,bg})=>(<span style={{fontSize:12,fontWeight:700,color:WHITE,background:color,borderRadius:10,padding:"3px 12px"}}>{label}</span>);
 
+    const Toggle=({label,value,onChange})=>(<div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"12px 0",borderBottom:"1px solid #F0F2F4",cursor:"pointer"}} onClick={()=>onChange(!value)}>
+      <span style={{fontSize:14,fontWeight:600,color:DARK}}>{label}</span>
+      <div style={{width:48,height:26,borderRadius:13,background:value?GREEN:"#CCC",position:"relative",transition:"background .2s"}}><div style={{width:22,height:22,borderRadius:11,background:WHITE,position:"absolute",top:2,left:value?24:2,transition:"left .2s",boxShadow:"0 1px 4px rgba(0,0,0,.2)"}}/></div>
+    </div>);
+    const RefOption=({label,selected,onClick,color})=>(<button onClick={onClick} style={{padding:"10px 16px",borderRadius:10,border:`2px solid ${selected?color:"#E0E0E0"}`,background:selected?`${color}12`:WHITE,color:selected?color:MED,fontWeight:700,fontSize:13,cursor:"pointer",fontFamily:"inherit",transition:"all .2s",flex:1}}>{label}</button>);
+
     const VitalInput=({label,value,onChange,min,max,unit,step=1})=>(<div style={{marginBottom:14}}><div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}><label style={{fontSize:13,fontWeight:700,color:NAVY}}>{label}</label><span style={{fontSize:12,color:MED,fontWeight:500}}>{unit}</span></div><div style={{display:"flex",alignItems:"center",gap:12}}><input type="range" min={min} max={max} step={step} value={value} onChange={e=>onChange(Number(e.target.value))} style={{flex:1}}/><input type="number" min={min} max={max} step={step} value={value} onChange={e=>onChange(Number(e.target.value))} style={{width:70,padding:"8px 10px",border:"2px solid #D0D8E0",borderRadius:8,fontSize:15,fontWeight:700,color:NAVY,textAlign:"center",fontFamily:"inherit"}}/></div></div>);
 
     const ResultBar=({title,value,classification})=>{
@@ -106,12 +112,7 @@
         {key:"summary",label:"Summary",icon:"\u{1F4CB}"}
       ];
 
-      const Toggle=({label,value,onChange})=>(<div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"12px 0",borderBottom:"1px solid #F0F2F4"}} onClick={()=>onChange(!value)}>
-        <span style={{fontSize:14,fontWeight:600,color:DARK}}>{label}</span>
-        <div style={{width:48,height:26,borderRadius:13,background:value?GREEN:"#CCC",cursor:"pointer",position:"relative",transition:"background .2s"}}><div style={{width:22,height:22,borderRadius:11,background:WHITE,position:"absolute",top:2,left:value?24:2,transition:"left .2s",boxShadow:"0 1px 4px rgba(0,0,0,.2)"}}/></div>
-      </div>);
-
-      const RefOption=({label,selected,onClick,color})=>(<button onClick={onClick} style={{padding:"10px 16px",borderRadius:10,border:`2px solid ${selected?color:"#E0E0E0"}`,background:selected?`${color}12`:WHITE,color:selected?color:MED,fontWeight:700,fontSize:13,cursor:"pointer",fontFamily:"inherit",transition:"all .2s",flex:1}}>{label}</button>);
+      // Toggle and RefOption are defined at shared scope above
 
       return(<div>
         <div style={{display:"flex",gap:4,marginBottom:16,background:WHITE,borderRadius:R,padding:4,boxShadow:SHADOW}}>
@@ -319,23 +320,35 @@
     function ExploreMode({onBack}){
       const[sys,setSys]=useState(120);const[dia,setDia]=useState(80);
       const[hr,setHr]=useState(75);const[spo2,setSpo2]=useState(98);
+      const[pupilEqual,setPupilEqual]=useState(true);const[pupilRound,setPupilRound]=useState(true);
+      const[pupilLeftReact,setPupilLeftReact]=useState(true);const[pupilRightReact,setPupilRightReact]=useState(true);
+      const[pupilAccom,setPupilAccom]=useState(true);
+      const[reflexLeft,setReflexLeft]=useState("normal");const[reflexRight,setReflexRight]=useState("normal");
       const[show,setShow]=useState(false);const[pearl,setPearl]=useState("");
       const presets=[
-        {name:"Marco Torres",age:"45 yrs",cat:"Session 1",sys:158,dia:94,hr:92,spo2:96,ctx:"Your patient from Mini Med School"},
-        {name:"Healthy Teen",age:"15 yrs",cat:"Pediatric",sys:110,dia:68,hr:72,spo2:99,ctx:"Routine checkup"},
-        {name:"Emma (Asthma)",age:"12 yrs",cat:"Pediatric",sys:104,dia:62,hr:98,spo2:92,ctx:"Respiratory distress"},
-        {name:"Sepsis Patient",age:"45 yrs",cat:"Adult",sys:88,dia:60,hr:130,spo2:94,ctx:"Shock presentation"},
-        {name:"Stroke Alert",age:"62 yrs",cat:"Adult",sys:198,dia:110,hr:88,spo2:96,ctx:"Neurological emergency"},
-        {name:"Hypothermic Hiker",age:"52 yrs",cat:"Adult",sys:90,dia:58,hr:52,spo2:93,ctx:"Environmental exposure"},
+        {name:"Marco Torres",age:"45 yrs",cat:"Session 1",sys:158,dia:94,hr:92,spo2:96,ctx:"Your patient from Mini Med School",perrla:true,rL:"normal",rR:"normal"},
+        {name:"Healthy Teen",age:"15 yrs",cat:"Pediatric",sys:110,dia:68,hr:72,spo2:99,ctx:"Routine checkup",perrla:true,rL:"normal",rR:"normal"},
+        {name:"Emma (Asthma)",age:"12 yrs",cat:"Pediatric",sys:104,dia:62,hr:98,spo2:92,ctx:"Respiratory distress",perrla:true,rL:"normal",rR:"normal"},
+        {name:"Sepsis Patient",age:"45 yrs",cat:"Adult",sys:88,dia:60,hr:130,spo2:94,ctx:"Shock presentation",perrla:true,rL:"normal",rR:"normal"},
+        {name:"Stroke Alert",age:"62 yrs",cat:"Adult",sys:198,dia:110,hr:88,spo2:96,ctx:"Neurological emergency",perrla:false,pupilIssue:"unequal",rL:"exaggerated",rR:"normal"},
+        {name:"Hypothermic Hiker",age:"52 yrs",cat:"Adult",sys:90,dia:58,hr:52,spo2:93,ctx:"Environmental exposure",perrla:true,rL:"diminished",rR:"diminished"},
       ];
-      const load=(c)=>{setSys(c.sys);setDia(c.dia);setHr(c.hr);setSpo2(c.spo2);setShow(false);};
+      const load=(c)=>{
+        setSys(c.sys);setDia(c.dia);setHr(c.hr);setSpo2(c.spo2);
+        setPupilEqual(c.perrla!==false||c.pupilIssue!=="unequal");
+        setPupilRound(true);setPupilLeftReact(c.perrla!==false);setPupilRightReact(c.perrla!==false);setPupilAccom(true);
+        setReflexLeft(c.rL||"normal");setReflexRight(c.rR||"normal");
+        setShow(false);
+      };
       const interpret=()=>{setShow(true);setPearl(randomPearl());};
       const bp=classifyBP(sys,dia),hrC=classifyHR(hr),sp=classifySpo2(spo2);
+      const perrla=pupilEqual&&pupilRound&&pupilLeftReact&&pupilRightReact&&pupilAccom;
+      const reflexSym=reflexLeft===reflexRight;
 
       return(<div className="fade-in">
         <Card>
           <div style={{fontSize:15,fontWeight:800,color:NAVY,marginBottom:4}}>Explore Vital Signs</div>
-          <p style={{fontSize:13,color:MED,lineHeight:1.6,marginBottom:14}}>Adjust the sliders to see how different values are classified. Load a preset patient case to practice interpreting real scenarios.</p>
+          <p style={{fontSize:13,color:MED,lineHeight:1.6,marginBottom:14}}>Adjust values and toggle findings to see how they're classified. Load a preset patient case to practice interpreting real scenarios.</p>
 
           <SectionLabel>Patient Cases</SectionLabel>
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(140px,1fr))",gap:8,marginBottom:16}}>
@@ -350,13 +363,41 @@
             <VitalInput label="Heart Rate" value={hr} onChange={setHr} min={30} max={200} unit="BPM"/>
             <VitalInput label="SpO2" value={spo2} onChange={setSpo2} min={70} max={100} unit="%"/>
           </div>
-          <div style={{textAlign:"center",marginTop:8}}><Btn primary onClick={interpret}>{"\u{1FA7A}"} Interpret Vitals</Btn></div>
+
+          <div style={{background:"#F8F9FA",borderRadius:R,padding:16,marginBottom:12}}>
+            <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10}}>
+              <span style={{fontSize:16}}>{"\u{1F441}\uFE0F"}</span>
+              <div style={{fontSize:13,fontWeight:800,color:NAVY}}>PERRLA</div>
+              <span style={{fontSize:11,fontWeight:700,color:perrla?GREEN:RED,background:perrla?"#E8F8F1":"#FADBD8",padding:"2px 10px",borderRadius:10,marginLeft:"auto"}}>{perrla?"Normal":"Abnormal"}</span>
+            </div>
+            <Toggle label="Pupils Equal" value={pupilEqual} onChange={setPupilEqual}/>
+            <Toggle label="Pupils Round" value={pupilRound} onChange={setPupilRound}/>
+            <Toggle label="Left reacts to light" value={pupilLeftReact} onChange={setPupilLeftReact}/>
+            <Toggle label="Right reacts to light" value={pupilRightReact} onChange={setPupilRightReact}/>
+            <Toggle label="Accommodation" value={pupilAccom} onChange={setPupilAccom}/>
+          </div>
+
+          <div style={{background:"#F8F9FA",borderRadius:R,padding:16,marginBottom:12}}>
+            <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10}}>
+              <span style={{fontSize:16}}>{"\u{1F9B5}"}</span>
+              <div style={{fontSize:13,fontWeight:800,color:NAVY}}>Reflexes</div>
+              <span style={{fontSize:11,fontWeight:700,color:reflexSym&&reflexLeft==="normal"?GREEN:!reflexSym?RED:YELLOW,background:reflexSym&&reflexLeft==="normal"?"#E8F8F1":!reflexSym?"#FADBD8":"#FFF9E6",padding:"2px 10px",borderRadius:10,marginLeft:"auto"}}>{reflexSym&&reflexLeft==="normal"?"Normal":!reflexSym?"Asymmetric":"Abnormal"}</span>
+            </div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+              <div><SectionLabel>Left Knee</SectionLabel><div style={{display:"flex",flexDirection:"column",gap:6}}><RefOption label="Normal" selected={reflexLeft==="normal"} onClick={()=>setReflexLeft("normal")} color={GREEN}/><RefOption label="Diminished" selected={reflexLeft==="diminished"} onClick={()=>setReflexLeft("diminished")} color={YELLOW}/><RefOption label="Exaggerated" selected={reflexLeft==="exaggerated"} onClick={()=>setReflexLeft("exaggerated")} color={RED}/></div></div>
+              <div><SectionLabel>Right Knee</SectionLabel><div style={{display:"flex",flexDirection:"column",gap:6}}><RefOption label="Normal" selected={reflexRight==="normal"} onClick={()=>setReflexRight("normal")} color={GREEN}/><RefOption label="Diminished" selected={reflexRight==="diminished"} onClick={()=>setReflexRight("diminished")} color={YELLOW}/><RefOption label="Exaggerated" selected={reflexRight==="exaggerated"} onClick={()=>setReflexRight("exaggerated")} color={RED}/></div></div>
+            </div>
+          </div>
+
+          <div style={{textAlign:"center",marginTop:8}}><Btn primary onClick={interpret}>{"\u{1FA7A}"} Interpret All Vitals</Btn></div>
         </Card>
 
         {show&&(<div className="slide-up">
           <ResultBar title="Blood Pressure" value={`${sys}/${dia} mmHg`} classification={bp}/>
           <ResultBar title="Heart Rate" value={`${hr} BPM`} classification={hrC}/>
           <ResultBar title="Oxygen Saturation" value={`${spo2}%`} classification={sp}/>
+          <ResultBar title="Pupil Response (PERRLA)" value={perrla?"All findings normal":"Abnormal finding detected"} classification={{name:perrla?"Normal":"Abnormal",color:perrla?GREEN:RED,note:perrla?"Pupils equal, round, reactive to light, accommodation intact.":(!pupilEqual?"Unequal pupils (anisocoria) - possible brain injury. ":"")+((!pupilLeftReact||!pupilRightReact)?"Non-reactive pupil - neurological red flag. ":"")+(!pupilAccom?"Accommodation failure - cranial nerve issue.":"")}}/>
+          <ResultBar title="Reflexes" value={`Left: ${reflexLeft}, Right: ${reflexRight}`} classification={{name:reflexSym&&reflexLeft==="normal"?"Normal":!reflexSym?"Asymmetric":"Bilateral "+reflexLeft,color:reflexSym&&reflexLeft==="normal"?GREEN:!reflexSym?RED:YELLOW,note:reflexSym&&reflexLeft==="normal"?"Symmetric normal reflexes.":!reflexSym?"Asymmetric reflexes suggest nerve damage on one side.":"Both sides "+reflexLeft+" - may need further evaluation."}}/>
           <div style={{background:"#FFF9E6",borderRadius:R,padding:14,borderLeft:`4px solid ${GOLD}`,marginTop:8}}>
             <div style={{fontSize:10,fontWeight:700,color:"#8B6914",textTransform:"uppercase",letterSpacing:1.5,marginBottom:4}}>{"\u{1F48E}"} Clinical Pearl</div>
             <p style={{fontSize:13,color:DARK,margin:0,lineHeight:1.6,fontStyle:"italic"}}>{pearl}</p>
@@ -424,8 +465,8 @@
             </div>
             <div style={{display:"grid",gap:12,marginBottom:20}}>
               {[
-                {key:"assess",icon:"\u{1F4CB}",title:"My Patient Assessment",desc:"Enter all your collected vital signs - BP (resting, stress, recovery), SpO2, pulse, pupils, and reflexes. Get a full clinical interpretation.",color:TEAL},
-                {key:"explore",icon:"\u{1F50D}",title:"Explore Mode",desc:"Adjust vital signs with sliders and load preset patient cases including Marco Torres. See real-time clinical interpretations.",color:GOLD},
+                {key:"explore",icon:"\u{1F50D}",title:"Explore Mode",desc:"Adjust vital signs, toggle neuro findings, and load preset patient cases. Learn what normal looks like and where danger begins.",color:TEAL},
+                {key:"assess",icon:"\u{1F4CB}",title:"My Patient Findings",desc:"Enter the actual readings you collected at each station - BP (resting, stress, recovery), SpO2, pulse, pupils, and reflexes. Compare your patient to what you explored.",color:GOLD},
                 {key:"quiz",icon:"\u{1F3AF}",title:"Quiz Mode",desc:"8 clinical scenarios testing your ability to interpret vital signs and spot patterns. Can you think like a doctor?",color:"#C0392B"},
               ].map(m=>(<div key={m.key} onClick={()=>setScreen(m.key)} style={{background:WHITE,borderRadius:R,padding:"18px 20px",boxShadow:SHADOW,border:"2px solid #E0E8EE",cursor:"pointer",transition:"all .25s",display:"flex",alignItems:"center",gap:16}} onMouseOver={e=>{e.currentTarget.style.borderColor=m.color;e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow=`0 6px 20px ${m.color}20`}} onMouseOut={e=>{e.currentTarget.style.borderColor="#E0E8EE";e.currentTarget.style.transform="none";e.currentTarget.style.boxShadow=SHADOW}}>
                 <div style={{width:52,height:52,borderRadius:14,background:`${m.color}12`,border:`2px solid ${m.color}25`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:26,flexShrink:0}}>{m.icon}</div>
@@ -433,8 +474,8 @@
               </div>))}
             </div>
             <div style={{background:"#FFF9E6",border:`2px solid ${GOLD}`,borderRadius:R,padding:14,textAlign:"center"}}>
-              <div style={{fontSize:13,fontWeight:700,color:NAVY,marginBottom:4}}>{"\u{1F4A1}"} Start with My Patient Assessment</div>
-              <p style={{fontSize:12,color:MED,margin:0,lineHeight:1.5}}>Enter the readings you collected at each station, then use the Summary tab to see your complete clinical picture.</p>
+              <div style={{fontSize:13,fontWeight:700,color:NAVY,marginBottom:4}}>{"\u{1F4A1}"} Start with Explore Mode</div>
+              <p style={{fontSize:12,color:MED,margin:0,lineHeight:1.5}}>Learn the ranges first by exploring different vital sign values. Then switch to My Patient Findings to enter your own readings and compare.</p>
             </div>
           </div>
           <AppFooter/>
@@ -442,7 +483,7 @@
       );
       return(
         <div style={{fontFamily:"'Segoe UI',Tahoma,Geneva,Verdana,sans-serif",minHeight:"100vh",display:"flex",flexDirection:"column"}}>
-          <AppHeader subtitle={screen==="assess"?"My Patient Assessment":screen==="explore"?"Explore Mode":"Quiz Mode"}/>
+          <AppHeader subtitle={screen==="assess"?"My Patient Findings":screen==="explore"?"Explore Mode":"Quiz Mode"}/>
           <div style={{maxWidth:700,margin:"0 auto",padding:"16px 16px 24px",flex:1}}>
             <div style={{marginBottom:14}}><button onClick={()=>setScreen("welcome")} style={{background:"none",border:`2px solid ${TEAL}`,color:TEAL,borderRadius:10,padding:"8px 16px",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"inherit"}}>{"\u2190"} Menu</button></div>
             {screen==="assess"&&<MyAssessment onBack={()=>setScreen("welcome")}/>}
