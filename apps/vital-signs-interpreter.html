@@ -3,1763 +3,457 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vital Signs Interpreter  -  Woven Learning Mini Med School</title>
+  <title>Vital Signs Interpreter - Woven Learning Mini Med School</title>
   <script crossorigin src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone@7.23.9/babel.min.js"></script>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #F0F4F8;
-      min-height: 100vh;
-      padding: 0;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(8px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes slideIn {
-      from { opacity: 0; transform: translateX(-8px); }
-      to { opacity: 1; transform: translateX(0); }
-    }
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.05); }
-    }
-    @keyframes slideInUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes heartbeat {
-      0%, 100% { transform: scale(1); }
-      14% { transform: scale(1.12); }
-      28% { transform: scale(1); }
-      42% { transform: scale(1.08); }
-      56% { transform: scale(1); }
-    }
-    @keyframes modeSwitch {
-      from { opacity: 0; transform: translateY(12px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes streakGlow {
-      0%, 100% { text-shadow: 0 0 8px rgba(212, 168, 67, 0.4); }
-      50% { text-shadow: 0 0 20px rgba(212, 168, 67, 0.8), 0 0 40px rgba(212, 168, 67, 0.3); }
-    }
-    @keyframes confettiBurst {
-      0% { transform: translateY(0) rotate(0deg) scale(1); opacity: 1; }
-      100% { transform: translateY(-120px) rotate(720deg) scale(0); opacity: 0; }
-    }
-    @keyframes confettiFloat {
-      0% { transform: translateY(0) translateX(0) rotate(0deg); opacity: 1; }
-      100% { transform: translateY(200px) translateX(var(--drift)) rotate(var(--spin)); opacity: 0; }
-    }
-    @keyframes buttonPress {
-      0% { transform: scale(1); }
-      50% { transform: scale(0.96); }
-      100% { transform: scale(1); }
-    }
-    .fade-in { animation: fadeIn 0.3s ease-out; }
-    .slide-in { animation: slideIn 0.3s ease-out; }
-    .pulse { animation: pulse 0.6s ease-in-out; }
-    .slide-in-up { animation: slideInUp 0.4s ease-out; }
-    .mode-switch { animation: modeSwitch 0.35s ease-out; }
-    .heartbeat-icon { animation: heartbeat 1.5s ease-in-out infinite; display: inline-block; }
-    .streak-glow { animation: streakGlow 1.5s ease-in-out infinite; }
-    .btn-press:active { animation: buttonPress 0.15s ease-out; }
-
-    .confetti-container {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: 9999;
-      overflow: hidden;
-    }
-    .confetti-piece {
-      position: absolute;
-      width: 10px;
-      height: 10px;
-      border-radius: 2px;
-      animation: confettiFloat 2.5s ease-out forwards;
-    }
-
-    /* Range input styling */
-    input[type="range"] {
-      -webkit-appearance: none;
-      appearance: none;
-      height: 6px;
-      border-radius: 3px;
-      background: #E0E8EE;
-      outline: none;
-      cursor: pointer;
-    }
-    input[type="range"]::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      appearance: none;
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #2A9D8F, #1A6B6B);
-      cursor: pointer;
-      box-shadow: 0 2px 6px rgba(42, 157, 143, 0.3);
-      transition: transform 0.15s, box-shadow 0.15s;
-    }
-    input[type="range"]::-webkit-slider-thumb:hover {
-      transform: scale(1.15);
-      box-shadow: 0 3px 10px rgba(42, 157, 143, 0.45);
-    }
-    input[type="range"]::-moz-range-thumb {
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #2A9D8F, #1A6B6B);
-      cursor: pointer;
-      border: none;
-      box-shadow: 0 2px 6px rgba(42, 157, 143, 0.3);
-    }
-    input[type="number"] {
-      outline: none;
-      transition: border-color 0.2s, box-shadow 0.2s;
-    }
-    input[type="number"]:focus {
-      border-color: #2A9D8F !important;
-      box-shadow: 0 0 0 3px rgba(42, 157, 143, 0.12);
-    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:#F0F4F8;min-height:100vh}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes slideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+    @keyframes pupilShrink{0%{r:18}100%{r:8}}
+    .fade-in{animation:fadeIn .3s ease-out}
+    .slide-up{animation:slideUp .4s ease-out}
+    input[type=range]{-webkit-appearance:none;appearance:none;height:6px;border-radius:3px;background:#E0E8EE;outline:none;cursor:pointer;width:100%}
+    input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:linear-gradient(135deg,#2A9D8F,#1A6B6B);cursor:pointer;box-shadow:0 2px 6px rgba(42,157,143,.3)}
+    input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:linear-gradient(135deg,#2A9D8F,#1A6B6B);cursor:pointer;border:none}
+    input[type=number]{outline:none;transition:border-color .2s,box-shadow .2s}
+    input[type=number]:focus{border-color:#2A9D8F !important;box-shadow:0 0 0 3px rgba(42,157,143,.12)}
   </style>
 </head>
 <body>
   <div id="root"></div>
   <script type="text/babel">
-    const { useState, useEffect, useRef, useCallback } = React;
+    const{useState,useEffect,useMemo}=React;
+    const NAVY="#1B3A5C",TEAL="#2A9D8F",TEAL_DARK="#1A6B6B",GOLD="#D4A843",WHITE="#FFFFFF",RED="#C0392B",GREEN="#27AE60",YELLOW="#F39C12",DARK="#333",MED="#666",R=14,SHADOW="0 2px 10px rgba(0,0,0,.08)";
 
-    // Color scheme
-    const NAVY = "#1B3A5C";
-    const TEAL = "#2A9D8F";
-    const TEAL_DARK = "#1A6B6B";
-    const GOLD = "#D4A843";
-    const LIGHT_BG = "#F0F4F8";
-    const RED = "#C0392B";
-    const GREEN = "#27AE60";
-    const YELLOW = "#F39C12";
-    const DARK = "#333333";
-    const MED = "#666666";
-    const WHITE = "#FFFFFF";
-    const CARD_RADIUS = 14;
-    const CARD_SHADOW = "0 1px 6px rgba(0,0,0,0.06)";
-    const BTN_GRADIENT = "linear-gradient(135deg, #2A9D8F, #1A6B6B)";
+    // ===== Classification Logic =====
+    function classifyBP(sys,dia){
+      if(sys>=180||dia>=120)return{name:"Hypertensive Crisis",color:"#8B0000",bg:"#F5C6C6",note:"EMERGENCY. Call 911 if symptoms present."};
+      if(sys>=140||dia>=90)return{name:"Stage 2 Hypertension",color:RED,bg:"#FADBD8",note:"May need medication. See a doctor."};
+      if(sys>=130||dia>=80)return{name:"Stage 1 Hypertension",color:"#E67E22",bg:"#FFF0E0",note:"Lifestyle changes recommended."};
+      if(sys>=120)return{name:"Elevated",color:GOLD,bg:"#FFF9E6",note:"Monitor regularly. Reduce sodium."};
+      return{name:"Normal",color:GREEN,bg:"#E8F8F1",note:"Healthy blood pressure."};
+    }
+    function classifyHR(v){
+      if(v>120)return{label:"Tachycardia",color:RED,bg:"#FADBD8",note:"High at rest. Needs medical evaluation."};
+      if(v>100)return{label:"Elevated",color:YELLOW,bg:"#FFF9E6",note:"Could be from activity or stress."};
+      if(v>=60)return{label:"Normal",color:GREEN,bg:"#E8F8F1",note:"Healthy resting heart rate."};
+      return{label:"Bradycardia",color:"#2980B9",bg:"#EBF5FB",note:"Low rate. Normal in athletes."};
+    }
+    function classifySpo2(v){
+      if(v>=96)return{label:"Normal",color:GREEN,bg:"#E8F8F1",note:"Healthy oxygen saturation."};
+      if(v>=93)return{label:"Borderline",color:YELLOW,bg:"#FFF9E6",note:"Sit up and breathe deeply. Recheck."};
+      return{label:"Low",color:RED,bg:"#FADBD8",note:"Urgent. Seek medical attention."};
+    }
+    const clinicalPearls=[
+      "Always look for patterns. Low BP + high HR might indicate shock.",
+      "Trending vitals over time is more valuable than a single snapshot.",
+      "White coat hypertension can raise BP 20-30 mmHg. Context matters.",
+      "Athletes often have resting heart rates in the 40-60 range.",
+      "SpO2 is a lagging indicator - by the time it drops, the patient may have been hypoxic for minutes.",
+      "Nail polish and cold fingers can cause falsely low SpO2 readings.",
+      "A single elevated BP reading does not mean hypertension - it requires multiple readings to diagnose.",
+      "PERRLA is one of the fastest neurological checks and gives critical information about brain function.",
+      "Asymmetric reflexes can indicate nerve damage on one side of the body.",
+      "The story the vitals tell together matters more than any single number."
+    ];
+    function randomPearl(){return clinicalPearls[Math.floor(Math.random()*clinicalPearls.length)];}
 
-    // Clinical pearls database
-    const clinicalPearls = {
-      bp: [
-        "White coat hypertension can raise BP by 20-30 mmHg. Always consider context when interpreting readings.",
-        "A single elevated BP reading doesn't mean hypertension - it requires multiple readings over time to diagnose.",
-        "Pulse pressure (systolic minus diastolic) normally ranges 30-50 mmHg. A wide pulse pressure may indicate aortic valve issues.",
-        "Orthostatic hypotension (BP drop when standing) is common in elderly patients and those on certain medications."
-      ],
-      hr: [
-        "Athletes often have resting heart rates in the 40-60 range due to increased cardiac efficiency.",
-        "Irregular heart rhythms can't be detected by rate alone - always check for regularity when taking a pulse.",
-        "Heart rate variability (HRV) is actually a sign of good health - a perfectly regular heart rate can be concerning.",
-        "Beta-blocker medications can mask tachycardia, making heart rate less reliable as a vital sign."
-      ],
-      spo2: [
-        "Nail polish and cold fingers can cause falsely low SpO2 readings. Always check the waveform quality.",
-        "Carbon monoxide poisoning can show normal SpO2 on a standard pulse oximeter - it can't distinguish CO from O2.",
-        "SpO2 is a lagging indicator - by the time it drops, the patient may have been hypoxic for minutes.",
-        "At high altitudes, normal SpO2 ranges are lower. At 8,000 feet, 92-94% may be perfectly acceptable."
-      ],
-      temp: [
-        "Fever is actually a defense mechanism - moderate fevers help the immune system fight infection more effectively.",
-        "Elderly patients may not mount a fever even with serious infections, making other vital signs more important.",
-        "The 98.6°F 'normal' was established in 1868. Modern studies suggest the average is closer to 97.9°F.",
-        "Hypothermia below 86°F can cause the heart to become irritable, risking dangerous arrhythmias."
-      ],
-      general: [
-        "Always look for patterns. Low BP + high HR might indicate shock. High BP + normal everything else might be chronic hypertension.",
-        "The story the vitals tell together matters more than any single number. Think of them as a clinical narrative.",
-        "Trending vitals over time is often more valuable than a single snapshot - is the patient getting better or worse?",
-        "In the 'sepsis triad,' look for: fever + tachycardia + hypotension. Early recognition saves lives."
-      ]
+    // ===== Shared Components =====
+    const WovenLogo=({size=20})=>(<svg viewBox="0 0 40 40" width={size} height={size} style={{flexShrink:0}}><polygon points="13,2 24,13 13,24 2,13" fill="#0ABAB5" opacity=".85"/><polygon points="27,2 38,13 27,24 16,13" fill="#F5B731" opacity=".85"/><polygon points="13,16 24,27 13,38 2,27" fill="#E65C3C" opacity=".85"/><polygon points="27,16 38,27 27,38 16,27" fill="#7A2D4E" opacity=".85"/></svg>);
+    const AppHeader=({subtitle})=>(<div style={{background:"linear-gradient(135deg,#1B3A5C 0%,#2A9D8F 100%)",padding:"12px 20px",display:"flex",alignItems:"center",gap:10,borderBottom:`3px solid ${GOLD}`}}><WovenLogo size={24}/><div style={{flex:1}}><div style={{fontSize:15,fontWeight:800,color:WHITE,letterSpacing:.3}}>Mini Med School</div><div style={{fontSize:11,color:"rgba(255,255,255,.75)",fontWeight:500}}>{subtitle||"Vital Signs Interpreter"}</div></div><span style={{fontSize:20}}>{"\u2764\uFE0F"}</span></div>);
+    const AppFooter=()=>(<div style={{textAlign:"center",padding:"14px 20px",borderTop:`3px solid ${GOLD}`,background:WHITE,fontSize:11,color:"#999",display:"flex",alignItems:"center",justifyContent:"center",gap:6,marginTop:24}}><WovenLogo size={14}/><span>Built by <strong style={{color:TEAL_DARK}}>Woven Learning & Technology</strong></span></div>);
+    const Btn=({children,onClick,primary,style={}})=>(<button onClick={onClick} style={{background:primary?`linear-gradient(135deg,${TEAL},${TEAL_DARK})`:WHITE,color:primary?WHITE:NAVY,border:primary?"none":`2px solid ${TEAL}`,borderRadius:10,padding:"11px 24px",fontSize:14,fontWeight:700,cursor:"pointer",transition:"all .2s",boxShadow:primary?`0 2px 8px rgba(42,157,143,.25)`:SHADOW,fontFamily:"inherit",...style}}>{children}</button>);
+    const Card=({children,style={}})=>(<div style={{background:WHITE,borderRadius:R,padding:20,boxShadow:"0 4px 20px rgba(0,0,0,.08)",marginBottom:16,...style}}>{children}</div>);
+    const SectionLabel=({children})=>(<div style={{fontSize:10,fontWeight:700,color:MED,textTransform:"uppercase",letterSpacing:1.5,marginBottom:6}}>{children}</div>);
+    const StatusBadge=({label,color,bg})=>(<span style={{fontSize:12,fontWeight:700,color:WHITE,background:color,borderRadius:10,padding:"3px 12px"}}>{label}</span>);
+
+    const VitalInput=({label,value,onChange,min,max,unit,step=1})=>(<div style={{marginBottom:14}}><div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}><label style={{fontSize:13,fontWeight:700,color:NAVY}}>{label}</label><span style={{fontSize:12,color:MED,fontWeight:500}}>{unit}</span></div><div style={{display:"flex",alignItems:"center",gap:12}}><input type="range" min={min} max={max} step={step} value={value} onChange={e=>onChange(Number(e.target.value))} style={{flex:1}}/><input type="number" min={min} max={max} step={step} value={value} onChange={e=>onChange(Number(e.target.value))} style={{width:70,padding:"8px 10px",border:"2px solid #D0D8E0",borderRadius:8,fontSize:15,fontWeight:700,color:NAVY,textAlign:"center",fontFamily:"inherit"}}/></div></div>);
+
+    const ResultBar=({title,value,classification})=>{
+      const c=classification;
+      return(<div className="fade-in" style={{background:WHITE,borderRadius:R,padding:"12px 16px",marginBottom:8,borderLeft:`5px solid ${c.color||c.color}`,boxShadow:SHADOW}}><div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:4}}><div style={{fontWeight:700,color:DARK,fontSize:13}}>{title}</div><StatusBadge label={c.name||c.label} color={c.color} bg={c.bg}/></div><div style={{fontSize:18,fontWeight:800,color:c.color,marginBottom:2}}>{value}</div><p style={{fontSize:12,color:MED,margin:0,lineHeight:1.5}}>{c.note}</p></div>);
     };
 
-    function getRandomPearl(category) {
-      const pearls = clinicalPearls[category] || clinicalPearls.general;
-      return pearls[Math.floor(Math.random() * pearls.length)];
-    }
+    // ===== MY ASSESSMENT MODE =====
+    function MyAssessment({onBack}){
+      const[section,setSection]=useState("bp");
+      const[restSys,setRestSys]=useState(118);const[restDia,setRestDia]=useState(76);
+      const[stressSys,setStressSys]=useState(140);const[stressDia,setStressDia]=useState(85);
+      const[recSys,setRecSys]=useState(122);const[recDia,setRecDia]=useState(78);
+      const[spo2,setSpo2]=useState(98);const[pulse,setPulse]=useState(75);
+      const[pupilEqual,setPupilEqual]=useState(true);const[pupilRound,setPupilRound]=useState(true);
+      const[pupilLeftReact,setPupilLeftReact]=useState(true);const[pupilRightReact,setPupilRightReact]=useState(true);
+      const[pupilAccom,setPupilAccom]=useState(true);
+      const[reflexLeft,setReflexLeft]=useState("normal");const[reflexRight,setReflexRight]=useState("normal");
+      const[showSummary,setShowSummary]=useState(false);
 
-    function getMostRelevantPearlCategory(bpResult, hrResult, spo2Result, tempResult) {
-      // Pick the most abnormal vital sign for the pearl
-      const bpIdx = bpCategories.indexOf(bpResult);
-      if (bpIdx >= 3) return "bp";
-      if (hrResult.color === RED) return "hr";
-      if (spo2Result.color === RED) return "spo2";
-      if (tempResult.color === RED || tempResult.color === "#8B0000") return "temp";
-      if (bpIdx >= 2) return "bp";
-      if (hrResult.color === YELLOW) return "hr";
-      if (spo2Result.color === YELLOW) return "spo2";
-      if (tempResult.color === YELLOW) return "temp";
-      return "general";
-    }
+      const restBP=classifyBP(restSys,restDia);
+      const stressBP=classifyBP(stressSys,stressDia);
+      const recBP=classifyBP(recSys,recDia);
+      const hrC=classifyHR(pulse);
+      const spo2C=classifySpo2(spo2);
+      const perrla=pupilEqual&&pupilRound&&pupilLeftReact&&pupilRightReact&&pupilAccom;
+      const reflexSym=reflexLeft===reflexRight;
 
-    const bpCategories = [
-      {
-        name: "Normal",
-        systolicRange: [0, 119],
-        diastolicRange: [0, 79],
-        color: GREEN,
-        bgColor: "#E8F8F1",
-        feedback: "Excellent! Keep healthy habits.",
-        icon: ""
-      },
-      {
-        name: "Elevated",
-        systolicRange: [120, 129],
-        diastolicRange: [0, 79],
-        color: GOLD,
-        bgColor: "#FFF9E6",
-        feedback: "Monitor regularly. Reduce sodium.",
-        icon: ""
-      },
-      {
-        name: "Stage 1 Hypertension",
-        systolicRange: [130, 139],
-        diastolicRange: [80, 89],
-        color: "#E67E22",
-        bgColor: "#FFF0E0",
-        feedback: "Lifestyle changes recommended.",
-        icon: ""
-      },
-      {
-        name: "Stage 2 Hypertension",
-        systolicRange: [140, 179],
-        diastolicRange: [90, 119],
-        color: RED,
-        bgColor: "#FADBD8",
-        feedback: "May need medication. Doctor visit.",
-        icon: ""
-      },
-      {
-        name: "Hypertensive Crisis",
-        systolicRange: [180, 300],
-        diastolicRange: [120, 200],
-        color: "#8B0000",
-        bgColor: "#F5C6C6",
-        feedback: "EMERGENCY. CALL 911 if symptoms.",
-        icon: ""
-      },
-    ];
+      const tabs=[
+        {key:"bp",label:"Blood Pressure",icon:"\u{1FA7A}"},
+        {key:"ox",label:"SpO2 & Pulse",icon:"\u{1F4A8}"},
+        {key:"neuro",label:"Neuro Check",icon:"\u{1F9E0}"},
+        {key:"summary",label:"Summary",icon:"\u{1F4CB}"}
+      ];
 
-    const spo2Levels = [
-      { range: [96, 100], label: "Normal", color: GREEN, bgColor: "#E8F8F1", note: "Healthy oxygen saturation." },
-      { range: [93, 95], label: "Borderline", color: YELLOW, bgColor: "#FFF9E6", note: "Sit up and breathe deeply. Recheck." },
-      { range: [0, 92], label: "Low", color: RED, bgColor: "#FADBD8", note: "Urgent. Seek medical attention." },
-    ];
+      const Toggle=({label,value,onChange})=>(<div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"12px 0",borderBottom:"1px solid #F0F2F4"}} onClick={()=>onChange(!value)}>
+        <span style={{fontSize:14,fontWeight:600,color:DARK}}>{label}</span>
+        <div style={{width:48,height:26,borderRadius:13,background:value?GREEN:"#CCC",cursor:"pointer",position:"relative",transition:"background .2s"}}><div style={{width:22,height:22,borderRadius:11,background:WHITE,position:"absolute",top:2,left:value?24:2,transition:"left .2s",boxShadow:"0 1px 4px rgba(0,0,0,.2)"}}/></div>
+      </div>);
 
-    const hrLevels = [
-      { range: [0, 59], label: "Bradycardia", color: "#2980B9", bgColor: "#EBF5FB", note: "Low heart rate. Normal in athletes." },
-      { range: [60, 100], label: "Normal", color: GREEN, bgColor: "#E8F8F1", note: "Healthy resting rate." },
-      { range: [101, 120], label: "Elevated", color: YELLOW, bgColor: "#FFF9E6", note: "Could be from activity or stress." },
-      { range: [121, 300], label: "Tachycardia", color: RED, bgColor: "#FADBD8", note: "High at rest. Medical evaluation." },
-    ];
+      const RefOption=({label,selected,onClick,color})=>(<button onClick={onClick} style={{padding:"10px 16px",borderRadius:10,border:`2px solid ${selected?color:"#E0E0E0"}`,background:selected?`${color}12`:WHITE,color:selected?color:MED,fontWeight:700,fontSize:13,cursor:"pointer",fontFamily:"inherit",transition:"all .2s",flex:1}}>{label}</button>);
 
-    const tempLevels = [
-      { range: [0, 95.9], label: "Hypothermia", color: "#2980B9", bgColor: "#EBF5FB", note: "Dangerously low. Needs warming." },
-      { range: [96, 99.5], label: "Normal", color: GREEN, bgColor: "#E8F8F1", note: "Normal temperature." },
-      { range: [99.6, 100.3], label: "Low-Grade Fever", color: YELLOW, bgColor: "#FFF9E6", note: "Monitor and hydrate." },
-      { range: [100.4, 103.9], label: "Fever", color: RED, bgColor: "#FADBD8", note: "Active fever. Medical eval." },
-      { range: [104, 115], label: "High Fever", color: "#8B0000", bgColor: "#F5C6C6", note: "Critical. Seek immediate care." },
-    ];
-
-    const presetCases = [
-      {
-        name: "Healthy Teen",
-        age: "15 yrs",
-        category: "Pediatric",
-        systolic: 110, diastolic: 68, hr: 72, spo2: 99, temp: 98.6,
-        context: "Routine checkup"
-      },
-      {
-        name: "Marco Torres",
-        age: "45 yrs",
-        category: "Adult",
-        systolic: 158, diastolic: 96, hr: 108, spo2: 97, temp: 99.1,
-        context: "Session 1: Your patient from Mini Med School"
-      },
-      {
-        name: "Grandmother Chen",
-        age: "76 yrs",
-        category: "Elderly",
-        systolic: 148, diastolic: 85, hr: 92, spo2: 94, temp: 97.8,
-        context: "Post-fall evaluation"
-      },
-      {
-        name: "Emma (Asthma)",
-        age: "12 yrs",
-        category: "Pediatric",
-        systolic: 104, diastolic: 62, hr: 98, spo2: 92, temp: 98.2,
-        context: "Respiratory distress"
-      },
-      {
-        name: "Stroke Alert",
-        age: "62 yrs",
-        category: "Adult",
-        systolic: 198, diastolic: 110, hr: 88, spo2: 96, temp: 98.4,
-        context: "Neurological emergency"
-      },
-      {
-        name: "Sepsis Patient",
-        age: "45 yrs",
-        category: "Adult",
-        systolic: 88, diastolic: 60, hr: 130, spo2: 94, temp: 102.8,
-        context: "Shock presentation"
-      },
-      {
-        name: "Hypothermic Hiker",
-        age: "52 yrs",
-        category: "Adult",
-        systolic: 90, diastolic: 58, hr: 52, spo2: 93, temp: 94.1,
-        context: "Environmental exposure"
-      },
-      {
-        name: "Mr. Johnson",
-        age: "71 yrs",
-        category: "Elderly",
-        systolic: 142, diastolic: 88, hr: 76, spo2: 95, temp: 99.0,
-        context: "Chronic hypertension"
-      },
-    ];
-
-    function classify(value, categories) {
-      for (const cat of categories) {
-        if (value >= cat.range[0] && value <= cat.range[1]) return cat;
-      }
-      return categories[categories.length - 1];
-    }
-
-    function classifyBP(sys, dia) {
-      for (let i = bpCategories.length - 1; i >= 0; i--) {
-        const c = bpCategories[i];
-        if (sys >= c.systolicRange[0] && (i === 0 ? sys <= c.systolicRange[1] : true)) {
-          if (dia >= c.diastolicRange[0] && (i === 0 ? dia <= c.diastolicRange[1] : true)) {
-            return c;
-          }
-        }
-        if (sys >= c.systolicRange[0]) return c;
-        if (dia >= c.diastolicRange[0]) return c;
-      }
-      return bpCategories[0];
-    }
-
-    // Severity border color mapping
-    function getSeverityColor(category) {
-      const c = category.color;
-      if (c === GREEN || c === "#27AE60") return GREEN;
-      if (c === YELLOW || c === "#F39C12" || c === GOLD || c === "#D4A843") return GOLD;
-      if (c === "#E67E22") return "#E67E22";
-      if (c === RED || c === "#C0392B") return RED;
-      if (c === "#8B0000") return "#8B0000";
-      if (c === "#2980B9") return "#2980B9";
-      return TEAL;
-    }
-
-    // Woven 4-diamond logo SVG component
-    const WovenLogo = ({ size = 20 }) => (
-      <svg viewBox="0 0 40 40" width={size} height={size} style={{ flexShrink: 0 }}>
-        <polygon points="13,2 24,13 13,24 2,13" fill="#0ABAB5" opacity="0.85"/>
-        <polygon points="27,2 38,13 27,24 16,13" fill="#F5B731" opacity="0.85"/>
-        <polygon points="13,16 24,27 13,38 2,27" fill="#E65C3C" opacity="0.85"/>
-        <polygon points="27,16 38,27 27,38 16,27" fill="#7A2D4E" opacity="0.85"/>
-      </svg>
-    );
-
-    // Confetti component
-    const Confetti = ({ active }) => {
-      const [pieces, setPieces] = useState([]);
-
-      useEffect(() => {
-        if (!active) { setPieces([]); return; }
-        const colors = [TEAL, GOLD, GREEN, "#E65C3C", "#0ABAB5", "#F5B731", "#7A2D4E"];
-        const newPieces = [];
-        for (let i = 0; i < 60; i++) {
-          newPieces.push({
-            id: i,
-            left: Math.random() * 100,
-            color: colors[Math.floor(Math.random() * colors.length)],
-            delay: Math.random() * 0.8,
-            drift: (Math.random() - 0.5) * 120,
-            spin: (Math.random() - 0.5) * 1080,
-            duration: 1.8 + Math.random() * 1.5,
-            size: 6 + Math.random() * 8,
-            shape: Math.random() > 0.5 ? '50%' : '2px'
-          });
-        }
-        setPieces(newPieces);
-        const timer = setTimeout(() => setPieces([]), 3000);
-        return () => clearTimeout(timer);
-      }, [active]);
-
-      if (pieces.length === 0) return null;
-      return (
-        <div className="confetti-container">
-          {pieces.map(p => (
-            <div
-              key={p.id}
-              className="confetti-piece"
-              style={{
-                left: `${p.left}%`,
-                top: '-10px',
-                width: p.size,
-                height: p.size,
-                borderRadius: p.shape,
-                backgroundColor: p.color,
-                animationDelay: `${p.delay}s`,
-                animationDuration: `${p.duration}s`,
-                '--drift': `${p.drift}px`,
-                '--spin': `${p.spin}deg`
-              }}
-            />
-          ))}
+      return(<div>
+        <div style={{display:"flex",gap:4,marginBottom:16,background:WHITE,borderRadius:R,padding:4,boxShadow:SHADOW}}>
+          {tabs.map(t=>(<button key={t.key} onClick={()=>setSection(t.key)} style={{flex:1,padding:"10px 6px",borderRadius:10,border:"none",background:section===t.key?`linear-gradient(135deg,${TEAL},${TEAL_DARK})`:WHITE,color:section===t.key?WHITE:MED,fontWeight:700,fontSize:11,cursor:"pointer",fontFamily:"inherit",transition:"all .2s"}}><div style={{fontSize:16}}>{t.icon}</div>{t.label}</button>))}
         </div>
-      );
-    };
 
-    // Header component
-    const AppHeader = ({ subtitle }) => (
-      <div style={{
-        background: "linear-gradient(135deg, #1B3A5C 0%, #2A9D8F 100%)",
-        padding: "10px 16px",
-        display: "flex",
-        alignItems: "center",
-        gap: 10,
-        marginBottom: 16,
-        borderBottom: `3px solid ${GOLD}`
-      }}>
-        <WovenLogo size={24} />
-        <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 15, fontWeight: 800, color: WHITE, letterSpacing: 0.3 }}>
-            Mini Med School
-          </div>
-          <div style={{ fontSize: 11, color: "rgba(255,255,255,0.75)", fontWeight: 500 }}>
-            {subtitle || "Vital Signs Interpreter"}
-          </div>
-        </div>
-        <span className="heartbeat-icon" style={{ fontSize: 20 }}>
-          &#x2764;&#xFE0F;
-        </span>
-      </div>
-    );
+        {section==="bp"&&(<div className="slide-up">
+          <Card>
+            <div style={{fontSize:15,fontWeight:800,color:NAVY,marginBottom:4}}>Blood Pressure Investigation</div>
+            <p style={{fontSize:13,color:MED,lineHeight:1.6,marginBottom:16}}>Enter your three BP readings below. Watch how exercise changes your blood pressure and how your body recovers.</p>
 
-    // Footer component
-    const AppFooter = () => (
-      <div style={{
-        textAlign: "center",
-        padding: "12px 16px",
-        borderTop: `3px solid ${GOLD}`,
-        background: WHITE,
-        fontSize: 11,
-        color: "#999",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: 6,
-        fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-        marginTop: 24
-      }}>
-        <WovenLogo size={14} />
-        <span>Built by <strong style={{ color: TEAL_DARK }}>Woven Learning & Technology</strong></span>
-      </div>
-    );
+            <div style={{background:"#F8F9FA",borderRadius:R,padding:16,marginBottom:12}}>
+              <SectionLabel>Resting BP</SectionLabel>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+                <VitalInput label="Systolic" value={restSys} onChange={setRestSys} min={60} max={250} unit="mmHg"/>
+                <VitalInput label="Diastolic" value={restDia} onChange={setRestDia} min={30} max={150} unit="mmHg"/>
+              </div>
+              <ResultBar title="Resting Classification" value={`${restSys}/${restDia} mmHg`} classification={restBP}/>
+            </div>
 
-    const VitalInput = ({ label, value, onChange, min, max, unit, step = 1 }) => (
-      <div style={{ marginBottom: 16 }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
-          <label style={{ fontSize: 13, fontWeight: 700, color: NAVY }}>{label}</label>
-          <span style={{ fontSize: 12, color: MED, fontWeight: 500 }}>{unit}</span>
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <input
-            type="range"
-            min={min}
-            max={max}
-            step={step}
-            value={value}
-            onChange={(e) => onChange(Number(e.target.value))}
-            style={{ flex: 1 }}
-          />
-          <input
-            type="number"
-            min={min}
-            max={max}
-            step={step}
-            value={value}
-            onChange={(e) => onChange(Number(e.target.value))}
-            style={{
-              width: 70,
-              padding: "8px 10px",
-              border: "2px solid #D0D8E0",
-              borderRadius: 8,
-              fontSize: 15,
-              fontWeight: 700,
-              color: NAVY,
-              textAlign: "center",
-              fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
-            }}
-          />
-        </div>
-      </div>
-    );
+            <div style={{background:"#FFF8F0",borderRadius:R,padding:16,marginBottom:12}}>
+              <SectionLabel>After Exercise (Stress BP)</SectionLabel>
+              <p style={{fontSize:12,color:MED,marginBottom:10}}>Measured immediately after 2 minutes of jumping jacks.</p>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+                <VitalInput label="Systolic" value={stressSys} onChange={setStressSys} min={60} max={250} unit="mmHg"/>
+                <VitalInput label="Diastolic" value={stressDia} onChange={setStressDia} min={30} max={150} unit="mmHg"/>
+              </div>
+              <ResultBar title="Stress Classification" value={`${stressSys}/${stressDia} mmHg`} classification={stressBP}/>
+            </div>
 
-    function ResultCard({ title, value, category }) {
-      const borderColor = getSeverityColor(category);
-      return (
-        <div
-          className="fade-in"
-          style={{
-            background: WHITE,
-            borderRadius: CARD_RADIUS,
-            padding: "14px 16px",
-            marginBottom: 10,
-            boxShadow: CARD_SHADOW,
-            borderLeft: `5px solid ${borderColor}`,
-            display: "flex",
-            alignItems: "flex-start",
-            gap: 14,
-            transition: "transform 0.2s, box-shadow 0.2s"
-          }}
-          onMouseOver={(e) => {
-            e.currentTarget.style.transform = "translateY(-1px)";
-            e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.1)";
-          }}
-          onMouseOut={(e) => {
-            e.currentTarget.style.transform = "translateY(0)";
-            e.currentTarget.style.boxShadow = CARD_SHADOW;
-          }}
-        >
-          <div style={{
-            fontSize: 28,
-            lineHeight: 1,
-            marginTop: 2,
-            filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.1))"
-          }}>
-            {category.icon || "\u2022"}
-          </div>
-          <div style={{ flex: 1 }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 4 }}>
-              <div style={{ fontWeight: 700, color: DARK, fontSize: 13 }}>{title}</div>
-              <div style={{
-                fontSize: 11,
-                fontWeight: 700,
-                color: WHITE,
-                background: borderColor,
-                borderRadius: 10,
-                padding: "2px 10px",
-                letterSpacing: 0.3
-              }}>
-                {category.label || category.name}
+            <div style={{background:"#F0F8F5",borderRadius:R,padding:16,marginBottom:12}}>
+              <SectionLabel>Recovery BP (3 Minutes After)</SectionLabel>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+                <VitalInput label="Systolic" value={recSys} onChange={setRecSys} min={60} max={250} unit="mmHg"/>
+                <VitalInput label="Diastolic" value={recDia} onChange={setRecDia} min={30} max={150} unit="mmHg"/>
+              </div>
+              <ResultBar title="Recovery Classification" value={`${recSys}/${recDia} mmHg`} classification={recBP}/>
+            </div>
+
+            <div style={{background:"#FFF9E6",borderRadius:R,padding:14,borderLeft:`4px solid ${GOLD}`}}>
+              <div style={{fontSize:10,fontWeight:700,color:"#8B6914",textTransform:"uppercase",letterSpacing:1.5,marginBottom:4}}>{"\u{1F4A1}"} What to Look For</div>
+              <p style={{fontSize:13,color:DARK,margin:0,lineHeight:1.6}}>
+                {stressSys>restSys?"Your BP went up with exercise - that's normal. Your heart pumps harder to get oxygen to working muscles. ":"Your stress BP didn't rise much - you may have measured too late after exercising. "}
+                {Math.abs(recSys-restSys)<=10?"Your recovery BP is close to resting - good cardiovascular recovery.":"Your recovery BP is still elevated - your body is still working to return to baseline."}
+              </p>
+            </div>
+          </Card>
+        </div>)}
+
+        {section==="ox"&&(<div className="slide-up">
+          <Card>
+            <div style={{fontSize:15,fontWeight:800,color:NAVY,marginBottom:4}}>Pulse Oximetry</div>
+            <p style={{fontSize:13,color:MED,lineHeight:1.6,marginBottom:16}}>Enter the SpO2 and pulse rate from your fingertip sensor. These two numbers tell you if the blood is carrying enough oxygen and how hard the heart is working.</p>
+
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,marginBottom:16}}>
+              <div>
+                <VitalInput label="SpO2 (Oxygen)" value={spo2} onChange={setSpo2} min={70} max={100} unit="%"/>
+                <ResultBar title="Oxygen Saturation" value={`${spo2}%`} classification={spo2C}/>
+              </div>
+              <div>
+                <VitalInput label="Pulse Rate" value={pulse} onChange={setPulse} min={30} max={200} unit="BPM"/>
+                <ResultBar title="Heart Rate" value={`${pulse} BPM`} classification={hrC}/>
               </div>
             </div>
-            <div style={{ fontSize: 20, fontWeight: 800, color: borderColor, marginBottom: 4 }}>{value}</div>
-            <p style={{ fontSize: 12, color: MED, margin: 0, lineHeight: 1.5 }}>
-              {category.note || category.feedback}
-            </p>
-          </div>
-        </div>
-      );
-    }
 
-    // Primary button
-    const PrimaryButton = ({ children, onClick, style = {}, fullWidth = false }) => (
-      <button
-        className="btn-press"
-        onClick={onClick}
-        style={{
-          background: BTN_GRADIENT,
-          color: WHITE,
-          border: "none",
-          borderRadius: 10,
-          padding: "12px 32px",
-          fontSize: 15,
-          fontWeight: 700,
-          cursor: "pointer",
-          transition: "all 0.2s",
-          boxShadow: "0 2px 8px rgba(42, 157, 143, 0.25)",
-          width: fullWidth ? "100%" : "auto",
-          fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-          ...style
-        }}
-        onMouseOver={(e) => {
-          e.target.style.boxShadow = "0 4px 16px rgba(42, 157, 143, 0.35)";
-          e.target.style.transform = "translateY(-1px)";
-        }}
-        onMouseOut={(e) => {
-          e.target.style.boxShadow = "0 2px 8px rgba(42, 157, 143, 0.25)";
-          e.target.style.transform = "translateY(0)";
-        }}
-      >
-        {children}
-      </button>
-    );
+            <div style={{background:"#FFF9E6",borderRadius:R,padding:14,borderLeft:`4px solid ${GOLD}`}}>
+              <div style={{fontSize:10,fontWeight:700,color:"#8B6914",textTransform:"uppercase",letterSpacing:1.5,marginBottom:4}}>{"\u{1F48E}"} Clinical Pearl</div>
+              <p style={{fontSize:13,color:DARK,margin:0,lineHeight:1.6,fontStyle:"italic"}}>The pulse oximeter works by shining red and infrared light through your finger. Oxygenated blood absorbs different wavelengths than deoxygenated blood. That's why nail polish and cold fingers can cause falsely low readings.</p>
+            </div>
+          </Card>
+        </div>)}
 
-    // Secondary / outline button
-    const OutlineButton = ({ children, onClick, style = {} }) => (
-      <button
-        className="btn-press"
-        onClick={onClick}
-        style={{
-          background: "none",
-          border: `2px solid ${TEAL}`,
-          color: TEAL,
-          borderRadius: 10,
-          padding: "8px 16px",
-          fontSize: 13,
-          fontWeight: 700,
-          cursor: "pointer",
-          transition: "all 0.2s",
-          fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-          ...style
-        }}
-        onMouseOver={(e) => {
-          e.target.style.background = TEAL;
-          e.target.style.color = WHITE;
-        }}
-        onMouseOut={(e) => {
-          e.target.style.background = "none";
-          e.target.style.color = TEAL;
-        }}
-      >
-        {children}
-      </button>
-    );
+        {section==="neuro"&&(<div className="slide-up">
+          <Card>
+            <div style={{fontSize:15,fontWeight:800,color:NAVY,marginBottom:4}}>Neurological Assessment</div>
+            <p style={{fontSize:13,color:MED,lineHeight:1.6,marginBottom:16}}>Record your pupil and reflex findings. These quick checks tell you whether the brain and spinal cord are communicating properly with the rest of the body.</p>
 
-    // Quiz answer button
-    const QuizOptionButton = ({ label, selected, onClick }) => (
-      <button
-        className="btn-press"
-        onClick={onClick}
-        style={{
-          background: selected ? BTN_GRADIENT : WHITE,
-          color: selected ? WHITE : NAVY,
-          border: `2px solid ${selected ? TEAL : "#E0E0E0"}`,
-          borderRadius: 10,
-          padding: "10px",
-          fontSize: 13,
-          fontWeight: 700,
-          cursor: "pointer",
-          transition: "all 0.2s",
-          boxShadow: selected ? "0 2px 8px rgba(42, 157, 143, 0.2)" : CARD_SHADOW,
-          fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
-        }}
-        onMouseOver={(e) => {
-          if (!selected) {
-            e.currentTarget.style.borderColor = TEAL;
-            e.currentTarget.style.background = "#F0FAF8";
-          }
-        }}
-        onMouseOut={(e) => {
-          if (!selected) {
-            e.currentTarget.style.borderColor = "#E0E0E0";
-            e.currentTarget.style.background = WHITE;
-          }
-        }}
-      >
-        {label}
-      </button>
-    );
-
-    function VitalSignsInterpreter() {
-      const [screen, setScreen] = useState("welcome"); // welcome, explore, quiz
-      const [systolic, setSystolic] = useState(120);
-      const [diastolic, setDiastolic] = useState(80);
-      const [hr, setHr] = useState(75);
-      const [spo2, setSpo2] = useState(98);
-      const [temp, setTemp] = useState(98.6);
-      const [showResults, setShowResults] = useState(false);
-      const [completedCases, setCompletedCases] = useState([]);
-      const [feedback, setFeedback] = useState("");
-      const [feedbackType, setFeedbackType] = useState("");
-      const [currentPearl, setCurrentPearl] = useState("");
-      const feedbackTimeout = useRef(null);
-
-      // Quiz mode state
-      const [quizMode, setQuizMode] = useState("start");
-      const [quizCaseIdx, setQuizCaseIdx] = useState(0);
-      const [quizAnswers, setQuizAnswers] = useState({});
-      const [quizScore, setQuizScore] = useState(0);
-      const [quizStreak, setQuizStreak] = useState(0);
-      const [quizBestStreak, setQuizBestStreak] = useState(0);
-      const [quizTotalAttempts, setQuizTotalAttempts] = useState(0);
-      const [showConfetti, setShowConfetti] = useState(false);
-      const [quizPearl, setQuizPearl] = useState("");
-
-      const handleLoadCase = (caseData) => {
-        setSystolic(caseData.systolic);
-        setDiastolic(caseData.diastolic);
-        setHr(caseData.hr);
-        setSpo2(caseData.spo2);
-        setTemp(caseData.temp);
-        setShowResults(false);
-        setFeedback("");
-
-        setTimeout(() => {
-          const resultsArea = document.querySelector('[data-results-area]');
-          if (resultsArea) {
-            resultsArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }
-        }, 100);
-      };
-
-      const handleInterpret = () => {
-        setShowResults(true);
-        // Pick a relevant clinical pearl
-        const bp = classifyBP(systolic, diastolic);
-        const hrR = classify(hr, hrLevels);
-        const sp = classify(spo2, spo2Levels);
-        const tm = classify(temp, tempLevels);
-        const cat = getMostRelevantPearlCategory(bp, hrR, sp, tm);
-        setCurrentPearl(getRandomPearl(cat));
-        setFeedback("Vitals interpreted!");
-        setFeedbackType("success");
-        if (feedbackTimeout.current) clearTimeout(feedbackTimeout.current);
-        feedbackTimeout.current = setTimeout(() => setFeedback(""), 2000);
-      };
-
-      const handleStartOver = () => {
-        setSystolic(120);
-        setDiastolic(80);
-        setHr(75);
-        setSpo2(98);
-        setTemp(98.6);
-        setShowResults(false);
-        setFeedback("");
-        setCompletedCases([]);
-        setScreen("welcome");
-        setQuizMode("start");
-        setQuizCaseIdx(0);
-        setQuizAnswers({});
-        setQuizScore(0);
-        setQuizStreak(0);
-        setQuizBestStreak(0);
-        setQuizTotalAttempts(0);
-      };
-
-      const handleCompleteCase = () => {
-        const caseRecord = {
-          systolic, diastolic, hr, spo2, temp,
-          timestamp: new Date().toLocaleTimeString()
-        };
-        setCompletedCases([...completedCases, caseRecord]);
-        setFeedback("Case saved to your tracker!");
-        setFeedbackType("info");
-        if (feedbackTimeout.current) clearTimeout(feedbackTimeout.current);
-        feedbackTimeout.current = setTimeout(() => setFeedback(""), 2000);
-      };
-
-      // Quiz mode handlers
-      const handleQuizStart = () => {
-        setQuizMode("question");
-        setQuizCaseIdx(0);
-        setQuizAnswers({});
-        setQuizScore(0);
-        setQuizStreak(0);
-        setQuizBestStreak(0);
-        setQuizTotalAttempts(0);
-        const firstCase = presetCases[0];
-        setSystolic(firstCase.systolic);
-        setDiastolic(firstCase.diastolic);
-        setHr(firstCase.hr);
-        setSpo2(firstCase.spo2);
-        setTemp(firstCase.temp);
-      };
-
-      const getVitalClassification = (vital, value) => {
-        if (vital === "bp") {
-          const cat = classifyBP(value.sys, value.dia);
-          const idx = bpCategories.indexOf(cat);
-          if (idx <= 1) return "Normal";
-          if (idx === 2) return "Elevated";
-          return "Critical";
-        }
-        if (vital === "hr") {
-          const cat = classify(value, hrLevels);
-          if (cat.label === "Normal") return "Normal";
-          if (cat.label === "Bradycardia") return "Normal";
-          if (cat.label === "Elevated") return "Elevated";
-          return "Critical";
-        }
-        if (vital === "spo2") {
-          const cat = classify(value, spo2Levels);
-          if (cat.label === "Normal") return "Normal";
-          if (cat.label === "Borderline") return "Elevated";
-          return "Critical";
-        }
-        if (vital === "temp") {
-          const cat = classify(value, tempLevels);
-          if (cat.label === "Normal") return "Normal";
-          if (cat.label === "Low-Grade Fever" || cat.label === "Hypothermia") return "Elevated";
-          return "Critical";
-        }
-      };
-
-      const getCorrectAnswer = (caseData) => {
-        return {
-          bp: getVitalClassification("bp", { sys: caseData.systolic, dia: caseData.diastolic }),
-          hr: getVitalClassification("hr", caseData.hr),
-          spo2: getVitalClassification("spo2", caseData.spo2),
-          temp: getVitalClassification("temp", caseData.temp)
-        };
-      };
-
-      const handleQuizAnswer = (vital, answer) => {
-        const newAnswers = { ...quizAnswers, [vital]: answer };
-        setQuizAnswers(newAnswers);
-
-        if (Object.keys(newAnswers).length === 4) {
-          const caseData = presetCases[quizCaseIdx];
-          const correct = getCorrectAnswer(caseData);
-
-          let casePoints = 0;
-          let allCorrect = true;
-          Object.keys(correct).forEach((v) => {
-            if (newAnswers[v] === correct[v]) {
-              casePoints += 10;
-            } else {
-              allCorrect = false;
-              casePoints += 5;
-            }
-          });
-
-          const newScore = quizScore + casePoints;
-          const newStreak = allCorrect ? quizStreak + 1 : 0;
-          const newBest = Math.max(quizBestStreak, newStreak);
-          setQuizScore(newScore);
-          setQuizStreak(newStreak);
-          setQuizBestStreak(newBest);
-          setQuizTotalAttempts(quizTotalAttempts + 1);
-
-          // Pick a pearl relevant to the most interesting vital in this case
-          const bp = classifyBP(caseData.systolic, caseData.diastolic);
-          const hrR = classify(caseData.hr, hrLevels);
-          const sp = classify(caseData.spo2, spo2Levels);
-          const tm = classify(caseData.temp, tempLevels);
-          const pearlCat = getMostRelevantPearlCategory(bp, hrR, sp, tm);
-          setQuizPearl(getRandomPearl(pearlCat));
-
-          setQuizMode("feedback");
-        }
-      };
-
-      const handleQuizNext = () => {
-        if (quizCaseIdx < presetCases.length - 1) {
-          const nextIdx = quizCaseIdx + 1;
-          setQuizCaseIdx(nextIdx);
-          setQuizAnswers({});
-          const caseData = presetCases[nextIdx];
-          setSystolic(caseData.systolic);
-          setDiastolic(caseData.diastolic);
-          setHr(caseData.hr);
-          setSpo2(caseData.spo2);
-          setTemp(caseData.temp);
-          setQuizMode("question");
-        } else {
-          setQuizMode("final");
-          // Check for perfect score confetti
-          const finalAccuracy = quizScore / ((quizTotalAttempts) * 40) * 100;
-          if (finalAccuracy >= 95) {
-            setShowConfetti(true);
-            setTimeout(() => setShowConfetti(false), 3500);
-          }
-        }
-      };
-
-      const bpResult = classifyBP(systolic, diastolic);
-      const hrResult = classify(hr, hrLevels);
-      const spo2Result = classify(spo2, spo2Levels);
-      const tempResult = classify(temp, tempLevels);
-
-      const concerns = [];
-      if (bpCategories.indexOf(bpResult) >= 3) concerns.push("Blood pressure in dangerous range");
-      if (hrResult.color === RED) concerns.push("Heart rate significantly elevated");
-      if (spo2Result.color === RED) concerns.push("Oxygen levels critically low");
-      if (tempResult.color === RED || tempResult.color === "#8B0000") concerns.push("Critical temperature");
-
-      const successRate = completedCases.length > 0
-        ? Math.round((completedCases.length / presetCases.length) * 100)
-        : 0;
-
-      const quizAccuracy = quizTotalAttempts > 0
-        ? Math.round((quizScore / (quizTotalAttempts * 40)) * 100)
-        : 0;
-
-      // Welcome screen
-      if (screen === "welcome") {
-        return (
-          <div style={{ fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif" }}>
-            <AppHeader subtitle="Vital Signs Interpreter" />
-            <Confetti active={false} />
-            <div className="mode-switch" style={{ maxWidth: 700, margin: "0 auto", padding: "0 16px 16px" }}>
-              <div style={{
-                textAlign: "center",
-                marginBottom: 24,
-                padding: "20px 16px"
-              }}>
-                <div style={{ fontSize: 48, marginBottom: 8 }}>&#x1FA7A;</div>
-                <h1 style={{ fontSize: 26, fontWeight: 800, color: NAVY, margin: "0 0 8px" }}>
-                  Vital Signs Interpreter
-                </h1>
-                <p style={{ fontSize: 14, color: MED, lineHeight: 1.6, maxWidth: 480, margin: "0 auto" }}>
-                  Learn to read and interpret the vital signs that doctors and nurses check on every patient. Practice interpreting the vital signs you'll measure on real patients in Session 1. Choose your mode below to get started!
-                </p>
+            <div style={{background:"#F8F9FA",borderRadius:R,padding:16,marginBottom:16}}>
+              <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:12}}>
+                <span style={{fontSize:20}}>{"\u{1F441}\uFE0F"}</span>
+                <div style={{fontSize:14,fontWeight:800,color:NAVY}}>PERRLA Eye Exam</div>
               </div>
+              <p style={{fontSize:12,color:MED,marginBottom:12,lineHeight:1.5}}>PERRLA: Pupils Equal, Round, Reactive to Light, Accommodation. Toggle each finding based on your observation.</p>
 
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginBottom: 20 }}>
-                <div
-                  style={{
-                    background: WHITE,
-                    borderRadius: CARD_RADIUS,
-                    padding: "20px 16px",
-                    boxShadow: CARD_SHADOW,
-                    border: `2px solid #E0E8EE`,
-                    cursor: "pointer",
-                    transition: "all 0.25s",
-                    textAlign: "center"
-                  }}
-                  onClick={() => setScreen("explore")}
-                  onMouseOver={(e) => {
-                    e.currentTarget.style.borderColor = TEAL;
-                    e.currentTarget.style.transform = "translateY(-3px)";
-                    e.currentTarget.style.boxShadow = "0 6px 20px rgba(42,157,143,0.15)";
-                  }}
-                  onMouseOut={(e) => {
-                    e.currentTarget.style.borderColor = "#E0E8EE";
-                    e.currentTarget.style.transform = "translateY(0)";
-                    e.currentTarget.style.boxShadow = CARD_SHADOW;
-                  }}
-                >
-                  <div style={{ fontSize: 32, marginBottom: 8 }}>&#x1F50D;</div>
-                  <div style={{ fontSize: 16, fontWeight: 800, color: NAVY, marginBottom: 6 }}>Explore Mode</div>
-                  <p style={{ fontSize: 12, color: MED, lineHeight: 1.5, margin: 0 }}>
-                    Adjust vital signs with sliders and see real-time clinical interpretations. Load preset patient cases to practice.
-                  </p>
-                </div>
+              <Toggle label="Pupils Equal in size" value={pupilEqual} onChange={setPupilEqual}/>
+              <Toggle label="Pupils Round" value={pupilRound} onChange={setPupilRound}/>
+              <Toggle label="Left pupil reacts to light" value={pupilLeftReact} onChange={setPupilLeftReact}/>
+              <Toggle label="Right pupil reacts to light" value={pupilRightReact} onChange={setPupilRightReact}/>
+              <Toggle label="Accommodation (focus near/far)" value={pupilAccom} onChange={setPupilAccom}/>
 
-                <div
-                  style={{
-                    background: WHITE,
-                    borderRadius: CARD_RADIUS,
-                    padding: "20px 16px",
-                    boxShadow: CARD_SHADOW,
-                    border: `2px solid #E0E8EE`,
-                    cursor: "pointer",
-                    transition: "all 0.25s",
-                    textAlign: "center"
-                  }}
-                  onClick={() => setScreen("quiz")}
-                  onMouseOver={(e) => {
-                    e.currentTarget.style.borderColor = GOLD;
-                    e.currentTarget.style.transform = "translateY(-3px)";
-                    e.currentTarget.style.boxShadow = "0 6px 20px rgba(212,168,67,0.15)";
-                  }}
-                  onMouseOut={(e) => {
-                    e.currentTarget.style.borderColor = "#E0E8EE";
-                    e.currentTarget.style.transform = "translateY(0)";
-                    e.currentTarget.style.boxShadow = CARD_SHADOW;
-                  }}
-                >
-                  <div style={{ fontSize: 32, marginBottom: 8 }}>&#x1F3AF;</div>
-                  <div style={{ fontSize: 16, fontWeight: 800, color: NAVY, marginBottom: 6 }}>Quiz Mode</div>
-                  <p style={{ fontSize: 12, color: MED, lineHeight: 1.5, margin: 0 }}>
-                    Test your skills! Classify vital signs for 8 patient cases. Earn points, build streaks, and learn clinical pearls.
-                  </p>
+              <div style={{marginTop:12,padding:"10px 14px",borderRadius:10,background:perrla?"#E8F8F1":"#FADBD8",borderLeft:`4px solid ${perrla?GREEN:RED}`}}>
+                <div style={{fontSize:13,fontWeight:700,color:perrla?GREEN:RED}}>
+                  {perrla?"\u2705 PERRLA Normal - All pupil responses intact":"\u26A0\uFE0F Abnormal Finding Detected"}
                 </div>
-              </div>
-
-              <div style={{
-                background: "#FFF9E6",
-                border: `2px solid ${GOLD}`,
-                borderRadius: CARD_RADIUS,
-                padding: 14,
-                textAlign: "center"
-              }}>
-                <div style={{ fontSize: 13, fontWeight: 700, color: NAVY, marginBottom: 4 }}>
-                  &#x1F4A1; Quick Tip
-                </div>
-                <p style={{ fontSize: 12, color: MED, margin: 0, lineHeight: 1.5 }}>
-                  Start with <strong>Explore Mode</strong> to learn the ranges, then challenge yourself in <strong>Quiz Mode</strong> to test what you know!
-                </p>
+                {!perrla&&<p style={{fontSize:12,color:DARK,margin:"4px 0 0",lineHeight:1.5}}>
+                  {!pupilEqual&&"Unequal pupils (anisocoria) can indicate brain injury or nerve damage. "}
+                  {!pupilRound&&"Irregular pupil shape may indicate trauma or eye surgery. "}
+                  {(!pupilLeftReact||!pupilRightReact)&&"A pupil that doesn't react to light is a red flag for neurological emergency. "}
+                  {!pupilAccom&&"Accommodation failure may indicate a cranial nerve issue."}
+                </p>}
               </div>
             </div>
-            <AppFooter />
-          </div>
-        );
-      }
 
-      // Quiz mode screens
-      if (screen === "quiz") {
-        if (quizMode === "start") {
-          return (
-            <div style={{ fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif" }}>
-              <AppHeader subtitle="Quiz Mode" />
-              <div className="mode-switch" style={{ maxWidth: 700, margin: "0 auto", padding: "0 16px 16px" }}>
+            <div style={{background:"#F8F9FA",borderRadius:R,padding:16}}>
+              <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:12}}>
+                <span style={{fontSize:20}}>{"\u{1F9B5}"}</span>
+                <div style={{fontSize:14,fontWeight:800,color:NAVY}}>Patellar Reflex (Knee Jerk)</div>
+              </div>
+              <p style={{fontSize:12,color:MED,marginBottom:12,lineHeight:1.5}}>Rate each knee's response when tapped with the reflex hammer just below the kneecap.</p>
 
-                <div style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  gap: 10,
-                  marginBottom: 16,
-                  padding: 12,
-                  background: WHITE,
-                  borderRadius: CARD_RADIUS,
-                  boxShadow: CARD_SHADOW,
-                  flexWrap: "wrap"
-                }}>
-                  <OutlineButton onClick={handleStartOver}>
-                    &#x2190; Home
-                  </OutlineButton>
-                </div>
-
-                <div style={{
-                  background: WHITE,
-                  border: `2px solid ${GOLD}`,
-                  borderRadius: CARD_RADIUS,
-                  padding: 24,
-                  marginBottom: 16,
-                  textAlign: "center",
-                  boxShadow: CARD_SHADOW
-                }}>
-                  <div style={{ fontSize: 40, marginBottom: 8 }}>&#x1F3AF;</div>
-                  <h2 style={{ fontSize: 22, fontWeight: 800, color: NAVY, marginBottom: 12 }}>
-                    Ready to Test Your Skills?
-                  </h2>
-                  <p style={{ fontSize: 14, color: MED, lineHeight: 1.6, marginBottom: 16 }}>
-                    You'll see 8 patient cases. For each case, classify the vital signs as <strong>Normal</strong>, <strong>Elevated</strong>, or <strong>Critical</strong>.
-                  </p>
-                  <div style={{
-                    display: "grid",
-                    gridTemplateColumns: "1fr 1fr",
-                    gap: 10,
-                    maxWidth: 360,
-                    margin: "0 auto 20px",
-                    textAlign: "left"
-                  }}>
-                    <div style={{
-                      background: "#E8F8F1",
-                      borderRadius: 10,
-                      padding: "10px 12px",
-                      fontSize: 12,
-                      color: DARK,
-                      fontWeight: 600
-                    }}>
-                      &#x2705; +10 pts for correct
-                    </div>
-                    <div style={{
-                      background: "#FFF9E6",
-                      borderRadius: 10,
-                      padding: "10px 12px",
-                      fontSize: 12,
-                      color: DARK,
-                      fontWeight: 600
-                    }}>
-                      &#x1F7E1; +5 pts for close
-                    </div>
-                    <div style={{
-                      background: "#EBF5FB",
-                      borderRadius: 10,
-                      padding: "10px 12px",
-                      fontSize: 12,
-                      color: DARK,
-                      fontWeight: 600
-                    }}>
-                      &#x1F525; Streak bonuses
-                    </div>
-                    <div style={{
-                      background: "#FFF0F0",
-                      borderRadius: 10,
-                      padding: "10px 12px",
-                      fontSize: 12,
-                      color: DARK,
-                      fontWeight: 600
-                    }}>
-                      &#x1F48E; Clinical pearls
-                    </div>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,marginBottom:12}}>
+                <div>
+                  <SectionLabel>Left Knee</SectionLabel>
+                  <div style={{display:"flex",flexDirection:"column",gap:6}}>
+                    <RefOption label="Normal" selected={reflexLeft==="normal"} onClick={()=>setReflexLeft("normal")} color={GREEN}/>
+                    <RefOption label="Diminished" selected={reflexLeft==="diminished"} onClick={()=>setReflexLeft("diminished")} color={YELLOW}/>
+                    <RefOption label="Exaggerated" selected={reflexLeft==="exaggerated"} onClick={()=>setReflexLeft("exaggerated")} color={RED}/>
                   </div>
-                  <PrimaryButton onClick={handleQuizStart} style={{ padding: "14px 40px", fontSize: 16 }}>
-                    Begin Quiz &#x2192;
-                  </PrimaryButton>
+                </div>
+                <div>
+                  <SectionLabel>Right Knee</SectionLabel>
+                  <div style={{display:"flex",flexDirection:"column",gap:6}}>
+                    <RefOption label="Normal" selected={reflexRight==="normal"} onClick={()=>setReflexRight("normal")} color={GREEN}/>
+                    <RefOption label="Diminished" selected={reflexRight==="diminished"} onClick={()=>setReflexRight("diminished")} color={YELLOW}/>
+                    <RefOption label="Exaggerated" selected={reflexRight==="exaggerated"} onClick={()=>setReflexRight("exaggerated")} color={RED}/>
+                  </div>
                 </div>
               </div>
-              <AppFooter />
+
+              <div style={{padding:"10px 14px",borderRadius:10,background:reflexSym&&reflexLeft==="normal"?"#E8F8F1":!reflexSym?"#FADBD8":"#FFF9E6",borderLeft:`4px solid ${reflexSym&&reflexLeft==="normal"?GREEN:!reflexSym?RED:YELLOW}`}}>
+                <div style={{fontSize:13,fontWeight:700,color:reflexSym&&reflexLeft==="normal"?GREEN:!reflexSym?RED:YELLOW}}>
+                  {reflexSym&&reflexLeft==="normal"&&"\u2705 Normal symmetric reflexes"}
+                  {reflexSym&&reflexLeft==="diminished"&&"\u26A0\uFE0F Both sides diminished - may indicate peripheral neuropathy"}
+                  {reflexSym&&reflexLeft==="exaggerated"&&"\u26A0\uFE0F Both sides exaggerated - may indicate upper motor neuron issue"}
+                  {!reflexSym&&"\u274C Asymmetric reflexes - possible nerve damage on one side"}
+                </div>
+              </div>
             </div>
-          );
-        }
+          </Card>
+        </div>)}
 
-        if (quizMode === "question") {
-          const caseData = presetCases[quizCaseIdx];
-          return (
-            <div style={{ fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif" }}>
-              <AppHeader subtitle={`Quiz - Case ${quizCaseIdx + 1} of ${presetCases.length}`} />
-              <div className="mode-switch" style={{ maxWidth: 700, margin: "0 auto", padding: "0 16px 16px" }}>
+        {section==="summary"&&(<div className="slide-up">
+          <Card>
+            <div style={{fontSize:15,fontWeight:800,color:NAVY,marginBottom:4}}>Your Complete Findings</div>
+            <p style={{fontSize:13,color:MED,lineHeight:1.6,marginBottom:16}}>Here is your full patient assessment - every vital sign you collected today, classified and interpreted.</p>
 
-                {/* Score bar */}
-                <div style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  gap: 10,
-                  marginBottom: 16,
-                  padding: "10px 14px",
-                  background: WHITE,
-                  borderRadius: CARD_RADIUS,
-                  boxShadow: CARD_SHADOW,
-                  flexWrap: "wrap"
-                }}>
-                  <div style={{ display: "flex", gap: 16, alignItems: "center", flexWrap: "wrap" }}>
-                    <div>
-                      <div style={{ fontSize: 10, color: MED, fontWeight: 600, textTransform: "uppercase", letterSpacing: 1 }}>Score</div>
-                      <div style={{ fontSize: 18, fontWeight: 800, color: TEAL }}>{quizScore}</div>
-                    </div>
-                    <div style={{ width: 1, height: 28, background: "#E0E0E0" }}></div>
-                    <div>
-                      <div style={{ fontSize: 10, color: MED, fontWeight: 600, textTransform: "uppercase", letterSpacing: 1 }}>Streak</div>
-                      <div
-                        className={quizStreak >= 3 ? "streak-glow" : ""}
-                        style={{
-                          fontSize: 18,
-                          fontWeight: 800,
-                          color: quizStreak >= 3 ? GOLD : quizStreak > 0 ? GREEN : MED
-                        }}
-                      >
-                        {quizStreak > 0 ? `${quizStreak} &#x1F525;` : "0"}
-                      </div>
-                    </div>
-                    {quizStreak >= 3 && (
-                      <div className="fade-in" style={{
-                        background: "linear-gradient(135deg, #FFF9E6, #FFF0D0)",
-                        border: `1px solid ${GOLD}`,
-                        borderRadius: 8,
-                        padding: "4px 10px",
-                        fontSize: 11,
-                        fontWeight: 700,
-                        color: "#8B6914"
-                      }}>
-                        {quizStreak} in a row!
-                      </div>
-                    )}
-                  </div>
-                  <div style={{ width: "100%", maxWidth: 240, background: "#E8EDF2", borderRadius: 6, height: 6, overflow: "hidden" }}>
-                    <div style={{
-                      background: BTN_GRADIENT,
-                      height: "100%",
-                      width: `${((quizCaseIdx + 1) / presetCases.length) * 100}%`,
-                      transition: "width 0.4s ease",
-                      borderRadius: 6
-                    }} />
-                  </div>
-                </div>
-
-                {/* Patient card */}
-                <div style={{
-                  background: WHITE,
-                  border: "2px solid #E0E8EE",
-                  borderRadius: CARD_RADIUS,
-                  padding: 18,
-                  marginBottom: 16,
-                  boxShadow: CARD_SHADOW
-                }}>
-                  <div style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    marginBottom: 14
-                  }}>
-                    <div style={{ fontSize: 15, fontWeight: 800, color: NAVY }}>
-                      &#x1F9D1;&#x200D;&#x2695;&#xFE0F; {caseData.name}
-                    </div>
-                    <div style={{
-                      fontSize: 11,
-                      fontWeight: 600,
-                      color: TEAL,
-                      background: "#E8F5F2",
-                      borderRadius: 8,
-                      padding: "3px 10px"
-                    }}>
-                      {caseData.category}
-                    </div>
-                  </div>
-                  <div style={{ fontSize: 13, color: DARK, lineHeight: 1.6, marginBottom: 14 }}>
-                    <strong>Age:</strong> {caseData.age} &nbsp;|&nbsp; <strong>Context:</strong> {caseData.context}
-                  </div>
-
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0 16px", marginBottom: 12 }}>
-                    <VitalInput label="Systolic BP (Top)" value={systolic} onChange={setSystolic} min={60} max={250} unit="mmHg" />
-                    <VitalInput label="Diastolic BP (Bottom)" value={diastolic} onChange={setDiastolic} min={30} max={150} unit="mmHg" />
-                  </div>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0 16px", marginBottom: 12 }}>
-                    <VitalInput label="Heart Rate" value={hr} onChange={setHr} min={30} max={200} unit="BPM" />
-                    <VitalInput label="SpO&#x2082; (Oxygen)" value={spo2} onChange={setSpo2} min={70} max={100} unit="%" />
-                  </div>
-                  <VitalInput label="Temperature" value={temp} onChange={setTemp} min={90} max={110} unit="&#x00B0;F" step={0.1} />
-                </div>
-
-                {/* Classification area */}
-                <div style={{
-                  background: WHITE,
-                  border: `2px solid ${GOLD}`,
-                  borderRadius: CARD_RADIUS,
-                  padding: 16,
-                  marginBottom: 16,
-                  boxShadow: CARD_SHADOW
-                }}>
-                  <div style={{ fontWeight: 700, color: NAVY, fontSize: 14, marginBottom: 14 }}>
-                    &#x1F3AF; Classify Each Vital
-                  </div>
-
+            <div style={{overflowX:"auto"}}>
+              <table style={{width:"100%",borderCollapse:"collapse",fontSize:13}}>
+                <thead>
+                  <tr style={{background:NAVY,color:WHITE}}>
+                    <th style={{padding:"10px 12px",textAlign:"left",borderRadius:"8px 0 0 0"}}>Vital Sign</th>
+                    <th style={{padding:"10px 12px",textAlign:"center"}}>Your Reading</th>
+                    <th style={{padding:"10px 12px",textAlign:"center"}}>Normal Range</th>
+                    <th style={{padding:"10px 12px",textAlign:"center",borderRadius:"0 8px 0 0"}}>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
                   {[
-                    { key: "bp", label: `Blood Pressure: ${systolic}/${diastolic} mmHg` },
-                    { key: "hr", label: `Heart Rate: ${hr} BPM` },
-                    { key: "spo2", label: `SpO\u2082: ${spo2}%` },
-                    { key: "temp", label: `Temperature: ${temp}\u00B0F` }
-                  ].map(({ key, label }) => (
-                    <div key={key} style={{ marginBottom: 12 }}>
-                      <div style={{ fontSize: 13, fontWeight: 700, color: NAVY, marginBottom: 8 }}>
-                        {label}
-                      </div>
-                      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8 }}>
-                        {["Normal", "Elevated", "Critical"].map((opt) => (
-                          <QuizOptionButton
-                            key={opt}
-                            label={opt}
-                            selected={quizAnswers[key] === opt}
-                            onClick={() => handleQuizAnswer(key, opt)}
-                          />
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <AppFooter />
-            </div>
-          );
-        }
-
-        if (quizMode === "feedback") {
-          const caseData = presetCases[quizCaseIdx];
-          const correct = getCorrectAnswer(caseData);
-          const allCorrect = Object.keys(correct).every(v => quizAnswers[v] === correct[v]);
-
-          return (
-            <div style={{ fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif" }}>
-              <AppHeader subtitle={`Quiz - Case ${quizCaseIdx + 1} Results`} />
-              <div className="mode-switch" style={{ maxWidth: 700, margin: "0 auto", padding: "0 16px 16px" }}>
-
-                {/* Streak callout */}
-                {quizStreak >= 2 && (
-                  <div className="fade-in" style={{
-                    textAlign: "center",
-                    marginBottom: 14,
-                    padding: "10px",
-                    background: "linear-gradient(135deg, #FFF9E6, #FFF0D0)",
-                    border: `2px solid ${GOLD}`,
-                    borderRadius: CARD_RADIUS,
-                    boxShadow: "0 2px 12px rgba(212, 168, 67, 0.15)"
-                  }}>
-                    <span className="streak-glow" style={{
-                      fontSize: 16,
-                      fontWeight: 800,
-                      color: "#8B6914"
-                    }}>
-                      &#x1F525; {quizStreak} in a row! Keep it up!
-                    </span>
-                  </div>
-                )}
-
-                {allCorrect && (
-                  <div className="fade-in" style={{
-                    textAlign: "center",
-                    marginBottom: 14,
-                    padding: "10px",
-                    background: "#E8F8F1",
-                    border: `2px solid ${GREEN}`,
-                    borderRadius: CARD_RADIUS
-                  }}>
-                    <span style={{ fontSize: 15, fontWeight: 800, color: GREEN }}>
-                      &#x2705; Perfect! All 4 vitals correct!
-                    </span>
-                  </div>
-                )}
-
-                <div style={{
-                  background: WHITE,
-                  border: "2px solid #E0E8EE",
-                  borderRadius: CARD_RADIUS,
-                  padding: 18,
-                  marginBottom: 16,
-                  boxShadow: CARD_SHADOW
-                }}>
-                  <div style={{ fontSize: 14, fontWeight: 700, color: NAVY, marginBottom: 14 }}>
-                    Your Answers - {caseData.name}
-                  </div>
-
-                  {Object.keys(correct).map((vital) => {
-                    const userAns = quizAnswers[vital];
-                    const correctAns = correct[vital];
-                    const isCorrect = userAns === correctAns;
-                    const labels = { bp: "Blood Pressure", hr: "Heart Rate", spo2: "SpO\u2082", temp: "Temperature" };
-
-                    return (
-                      <div
-                        key={vital}
-                        className="fade-in"
-                        style={{
-                          background: isCorrect ? "#F0FBF5" : "#FFF5F5",
-                          borderLeft: `4px solid ${isCorrect ? GREEN : RED}`,
-                          borderRadius: 10,
-                          padding: 12,
-                          marginBottom: 8,
-                          transition: "all 0.2s"
-                        }}
-                      >
-                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                          <div>
-                            <div style={{ fontSize: 13, fontWeight: 700, color: DARK }}>{labels[vital]}</div>
-                            <div style={{ fontSize: 12, color: MED }}>
-                              Your answer: <strong style={{ color: isCorrect ? GREEN : RED }}>{userAns}</strong>
-                            </div>
-                          </div>
-                          <span style={{ fontSize: 20 }}>
-                            {isCorrect ? "\u2705" : "\u274C"}
-                          </span>
-                        </div>
-                        {!isCorrect && (
-                          <div style={{ fontSize: 12, color: DARK, marginTop: 6, paddingTop: 6, borderTop: "1px solid rgba(192,57,43,0.15)" }}>
-                            Correct: <strong style={{ color: GREEN }}>{correctAns}</strong>
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-
-                {/* Clinical Pearl */}
-                <div style={{
-                  background: "#FFF9E6",
-                  border: `2px solid ${GOLD}`,
-                  borderRadius: CARD_RADIUS,
-                  padding: 14,
-                  marginBottom: 16,
-                  boxShadow: CARD_SHADOW
-                }}>
-                  <div style={{ fontWeight: 700, color: NAVY, fontSize: 13, marginBottom: 6, display: "flex", alignItems: "center", gap: 6 }}>
-                    <span style={{ fontSize: 16 }}>&#x1F48E;</span> Clinical Pearl
-                  </div>
-                  <p style={{ fontSize: 12, color: MED, margin: 0, lineHeight: 1.6, fontStyle: "italic" }}>
-                    {quizPearl}
-                  </p>
-                </div>
-
-                <div style={{ textAlign: "center" }}>
-                  <PrimaryButton onClick={handleQuizNext} style={{ padding: "12px 36px" }}>
-                    {quizCaseIdx < presetCases.length - 1 ? "Next Case \u2192" : "View Final Results"}
-                  </PrimaryButton>
-                </div>
-              </div>
-              <AppFooter />
-            </div>
-          );
-        }
-
-        if (quizMode === "final") {
-          const finalAccuracy = (quizTotalAttempts > 0) ? quizScore / (quizTotalAttempts * 40) * 100 : 0;
-          const isPerfect = finalAccuracy >= 95;
-          return (
-            <div style={{ fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif" }}>
-              <AppHeader subtitle="Quiz Complete!" />
-              <Confetti active={showConfetti} />
-              <div className="mode-switch" style={{ maxWidth: 700, margin: "0 auto", padding: "0 16px 16px" }}>
-
-                <div style={{
-                  textAlign: "center",
-                  padding: 28,
-                  borderRadius: CARD_RADIUS,
-                  background: isPerfect
-                    ? "linear-gradient(135deg, #E8F8F1, #D5F5E3)"
-                    : finalAccuracy >= 80 ? "#E8F8F1"
-                    : finalAccuracy >= 60 ? "#FFF9E6"
-                    : "#FADBD8",
-                  marginBottom: 16,
-                  border: `2px solid ${finalAccuracy >= 80 ? GREEN : finalAccuracy >= 60 ? GOLD : RED}`,
-                  boxShadow: isPerfect ? "0 4px 20px rgba(39,174,96,0.2)" : CARD_SHADOW
-                }}>
-                  <div style={{ fontSize: 48, marginBottom: 4 }}>
-                    {isPerfect ? "\u{1F3C6}" : finalAccuracy >= 80 ? "\u{1F31F}" : finalAccuracy >= 60 ? "\u{1F44D}" : "\u{1F4AA}"}
-                  </div>
-                  <div style={{
-                    fontSize: 52,
-                    fontWeight: 800,
-                    color: finalAccuracy >= 80 ? GREEN : finalAccuracy >= 60 ? GOLD : RED,
-                    marginBottom: 4,
-                    lineHeight: 1
-                  }}>
-                    {Math.round(finalAccuracy)}%
-                  </div>
-                  <div style={{ fontSize: 15, fontWeight: 700, color: NAVY, marginBottom: 4 }}>
-                    Overall Accuracy
-                  </div>
-                  <div style={{ fontSize: 13, color: MED }}>
-                    Total Score: <strong>{quizScore}</strong> points
-                  </div>
-                </div>
-
-                <div style={{
-                  background: WHITE,
-                  border: "2px solid #E0E8EE",
-                  borderRadius: CARD_RADIUS,
-                  padding: 16,
-                  marginBottom: 16,
-                  boxShadow: CARD_SHADOW
-                }}>
-                  <div style={{ fontSize: 14, fontWeight: 700, color: NAVY, marginBottom: 12 }}>
-                    Performance Summary
-                  </div>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginBottom: 14 }}>
-                    <div style={{ background: "#F0F4F8", borderRadius: 10, padding: "10px", textAlign: "center" }}>
-                      <div style={{ fontSize: 11, color: MED, fontWeight: 600 }}>Cases</div>
-                      <div style={{ fontSize: 18, fontWeight: 800, color: NAVY }}>{quizTotalAttempts}/{presetCases.length}</div>
-                    </div>
-                    <div style={{ background: "#F0F4F8", borderRadius: 10, padding: "10px", textAlign: "center" }}>
-                      <div style={{ fontSize: 11, color: MED, fontWeight: 600 }}>Best Streak</div>
-                      <div style={{ fontSize: 18, fontWeight: 800, color: quizBestStreak >= 3 ? GOLD : NAVY }}>
-                        {quizBestStreak} {quizBestStreak >= 3 ? "\u{1F525}" : ""}
-                      </div>
-                    </div>
-                    <div style={{ background: "#F0F4F8", borderRadius: 10, padding: "10px", textAlign: "center" }}>
-                      <div style={{ fontSize: 11, color: MED, fontWeight: 600 }}>Points</div>
-                      <div style={{ fontSize: 18, fontWeight: 800, color: TEAL }}>{quizScore}</div>
-                    </div>
-                  </div>
-                  <div style={{
-                    fontSize: 13,
-                    color: DARK,
-                    lineHeight: 1.6,
-                    padding: "12px",
-                    background: "#F8F9FA",
-                    borderRadius: 10
-                  }}>
-                    {finalAccuracy >= 90 && "\u{1F31F} Excellent! You've mastered vital sign classification. You'd make a great clinician!"}
-                    {finalAccuracy >= 75 && finalAccuracy < 90 && "\u{1F44F} Very good! With more practice, you'll reach mastery."}
-                    {finalAccuracy >= 60 && finalAccuracy < 75 && "\u{1F4AA} Good effort! Review the cases you got wrong and try again."}
-                    {finalAccuracy < 60 && "\u{1F4DA} Keep learning! Try Explore Mode first to study the ranges, then come back to the quiz."}
-                  </div>
-                </div>
-
-                <div style={{ display: "flex", gap: 10 }}>
-                  <PrimaryButton onClick={() => { setQuizMode("start"); }} style={{ flex: 1, textAlign: "center" }}>
-                    Try Again
-                  </PrimaryButton>
-                  <OutlineButton onClick={() => { setScreen("explore"); }} style={{ flex: 1, textAlign: "center", padding: "12px" }}>
-                    Explore Mode
-                  </OutlineButton>
-                </div>
-              </div>
-              <AppFooter />
-            </div>
-          );
-        }
-      }
-
-      // Explore mode
-      return (
-        <div style={{ fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif" }}>
-          <AppHeader subtitle="Explore Mode" />
-          <div className="mode-switch" style={{ maxWidth: 700, margin: "0 auto", padding: "0 16px 16px" }}>
-
-            {/* Stats + controls bar */}
-            <div style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              gap: 10,
-              marginBottom: 16,
-              padding: "10px 14px",
-              background: WHITE,
-              borderRadius: CARD_RADIUS,
-              boxShadow: CARD_SHADOW,
-              flexWrap: "wrap"
-            }}>
-              <div style={{ display: "flex", gap: 16, alignItems: "center", flexWrap: "wrap" }}>
-                <div>
-                  <div style={{ fontSize: 10, color: MED, fontWeight: 600, textTransform: "uppercase", letterSpacing: 1 }}>Cases Done</div>
-                  <div style={{ fontSize: 18, fontWeight: 800, color: TEAL }}>
-                    {completedCases.length}/{presetCases.length}
-                  </div>
-                </div>
-                <div style={{ width: 1, height: 28, background: "#E0E0E0" }}></div>
-                <div>
-                  <div style={{ fontSize: 10, color: MED, fontWeight: 600, textTransform: "uppercase", letterSpacing: 1 }}>Progress</div>
-                  <div style={{ fontSize: 18, fontWeight: 800, color: successRate > 50 ? GREEN : MED }}>
-                    {successRate}%
-                  </div>
-                </div>
-              </div>
-              <OutlineButton onClick={handleStartOver}>
-                &#x2190; Home
-              </OutlineButton>
+                    {name:"Resting BP",val:`${restSys}/${restDia}`,norm:"< 120/80 mmHg",status:restBP},
+                    {name:"Stress BP",val:`${stressSys}/${stressDia}`,norm:"Rises with exercise",status:stressBP},
+                    {name:"Recovery BP",val:`${recSys}/${recDia}`,norm:"Near resting within 3 min",status:recBP},
+                    {name:"SpO2",val:`${spo2}%`,norm:"95 - 100%",status:spo2C},
+                    {name:"Pulse Rate",val:`${pulse} BPM`,norm:"60 - 100 BPM",status:hrC},
+                    {name:"Pupil Response",val:perrla?"PERRLA Normal":"Abnormal",norm:"PERRLA",status:{name:perrla?"Normal":"Abnormal",label:perrla?"Normal":"Abnormal",color:perrla?GREEN:RED,note:perrla?"All pupil responses intact.":"One or more findings abnormal."}},
+                    {name:"Reflexes",val:`L: ${reflexLeft}, R: ${reflexRight}`,norm:"Normal, symmetric",status:{name:reflexSym&&reflexLeft==="normal"?"Normal":!reflexSym?"Asymmetric":"Abnormal",label:reflexSym&&reflexLeft==="normal"?"Normal":!reflexSym?"Asymmetric":"Abnormal",color:reflexSym&&reflexLeft==="normal"?GREEN:!reflexSym?RED:YELLOW,note:reflexSym&&reflexLeft==="normal"?"Symmetric normal reflexes.":"Reflex findings need further evaluation."}}
+                  ].map((r,i)=>(<tr key={i} style={{background:i%2===0?"#F8F9FA":WHITE}}>
+                    <td style={{padding:"10px 12px",fontWeight:700,color:NAVY}}>{r.name}</td>
+                    <td style={{padding:"10px 12px",textAlign:"center",fontWeight:700,color:DARK}}>{r.val}</td>
+                    <td style={{padding:"10px 12px",textAlign:"center",color:MED}}>{r.norm}</td>
+                    <td style={{padding:"10px 12px",textAlign:"center"}}><span style={{fontSize:11,fontWeight:700,color:WHITE,background:r.status.color,borderRadius:10,padding:"3px 10px"}}>{r.status.name||r.status.label}</span></td>
+                  </tr>))}
+                </tbody>
+              </table>
             </div>
 
-            {/* Mode toggle */}
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 16 }}>
-              <button
-                style={{
-                  background: BTN_GRADIENT,
-                  color: WHITE,
-                  border: "none",
-                  borderRadius: 10,
-                  padding: "11px",
-                  fontSize: 14,
-                  fontWeight: 700,
-                  cursor: "default",
-                  boxShadow: "0 2px 8px rgba(42, 157, 143, 0.2)",
-                  fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
-                }}
-              >
-                &#x1F50D; Explore Mode
-              </button>
-              <button
-                onClick={() => setScreen("quiz")}
-                style={{
-                  background: WHITE,
-                  color: NAVY,
-                  border: "2px solid #E0E8EE",
-                  borderRadius: 10,
-                  padding: "11px",
-                  fontSize: 14,
-                  fontWeight: 700,
-                  cursor: "pointer",
-                  transition: "all 0.2s",
-                  fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
-                }}
-                onMouseOver={(e) => {
-                  e.currentTarget.style.borderColor = GOLD;
-                  e.currentTarget.style.background = "#FFFDF5";
-                }}
-                onMouseOut={(e) => {
-                  e.currentTarget.style.borderColor = "#E0E8EE";
-                  e.currentTarget.style.background = WHITE;
-                }}
-              >
-                &#x1F3AF; Quiz Mode
-              </button>
-            </div>
-
-            {/* Case selection */}
-            <div style={{ fontSize: 11, fontWeight: 700, color: NAVY, marginBottom: 8, textTransform: "uppercase", letterSpacing: 1.5 }}>
-              Select a Patient Case
-            </div>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(145px, 1fr))", gap: 8, marginBottom: 16 }}>
-              {presetCases.map((caseData, idx) => (
-                <button
-                  key={idx}
-                  className="btn-press"
-                  onClick={() => handleLoadCase(caseData)}
-                  style={{
-                    background: WHITE,
-                    border: "2px solid #E0E8EE",
-                    borderRadius: 10,
-                    padding: "10px 12px",
-                    fontSize: 12,
-                    fontWeight: 600,
-                    color: DARK,
-                    cursor: "pointer",
-                    transition: "all 0.2s",
-                    textAlign: "left",
-                    boxShadow: CARD_SHADOW,
-                    fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
-                  }}
-                  onMouseOver={(e) => {
-                    e.currentTarget.style.borderColor = TEAL;
-                    e.currentTarget.style.boxShadow = "0 4px 12px rgba(42, 157, 143, 0.15)";
-                    e.currentTarget.style.transform = "translateY(-1px)";
-                  }}
-                  onMouseOut={(e) => {
-                    e.currentTarget.style.borderColor = "#E0E8EE";
-                    e.currentTarget.style.boxShadow = CARD_SHADOW;
-                    e.currentTarget.style.transform = "translateY(0)";
-                  }}
-                >
-                  <div style={{ fontWeight: 700 }}>{caseData.name}</div>
-                  <div style={{ fontSize: 11, color: MED, marginTop: 3 }}>
-                    {caseData.age} &bull; {caseData.category}
-                  </div>
-                </button>
-              ))}
-            </div>
-
-            {/* Vital signs input */}
-            <div style={{
-              background: WHITE,
-              border: "2px solid #E0E8EE",
-              borderRadius: CARD_RADIUS,
-              padding: 18,
-              marginBottom: 16,
-              boxShadow: CARD_SHADOW
-            }}>
-              <div style={{ fontWeight: 700, color: NAVY, fontSize: 15, marginBottom: 14 }}>
-                &#x1FA7A; Patient Vitals
-              </div>
-
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0 16px", marginBottom: 12 }}>
-                <VitalInput label="Systolic BP (Top)" value={systolic} onChange={setSystolic} min={60} max={250} unit="mmHg" />
-                <VitalInput label="Diastolic BP (Bottom)" value={diastolic} onChange={setDiastolic} min={30} max={150} unit="mmHg" />
-              </div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0 16px", marginBottom: 12 }}>
-                <VitalInput label="Heart Rate" value={hr} onChange={setHr} min={30} max={200} unit="BPM" />
-                <VitalInput label="SpO&#x2082; (Oxygen)" value={spo2} onChange={setSpo2} min={70} max={100} unit="%" />
-              </div>
-              <VitalInput label="Temperature" value={temp} onChange={setTemp} min={90} max={110} unit="&#x00B0;F" step={0.1} />
-
-              <div style={{ textAlign: "center", marginTop: 16 }}>
-                <PrimaryButton onClick={handleInterpret}>
-                  &#x1FA7A; Interpret Vitals
-                </PrimaryButton>
-              </div>
-            </div>
-
-            {feedback && (
-              <div
-                className="fade-in"
-                style={{
-                  padding: 12,
-                  borderRadius: 10,
-                  marginBottom: 12,
-                  textAlign: "center",
-                  background: feedbackType === "success" ? "#E8F8F1" : "#EBF5FB",
-                  color: feedbackType === "success" ? GREEN : "#2980B9",
-                  fontWeight: 600,
-                  fontSize: 13,
-                  border: `1px solid ${feedbackType === "success" ? GREEN : "#2980B9"}22`
-                }}
-              >
-                {feedback}
-              </div>
-            )}
-
-            {showResults && (
-              <div data-results-area className="mode-switch">
-                <div style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 8,
-                  marginBottom: 14,
-                  paddingBottom: 12,
-                  borderBottom: "2px solid #E0E8EE"
-                }}>
-                  <h2 style={{ fontSize: 16, fontWeight: 700, color: NAVY, margin: 0 }}>
-                    Clinical Interpretation
-                  </h2>
+            {(()=>{
+              const concerns=[];
+              if(restBP.color===RED||restBP.color==="#8B0000")concerns.push("Resting blood pressure is in a dangerous range");
+              if(hrC.color===RED)concerns.push("Heart rate is significantly elevated at rest");
+              if(spo2C.color===RED)concerns.push("Oxygen levels are critically low");
+              if(!perrla)concerns.push("Abnormal pupil response detected");
+              if(!reflexSym)concerns.push("Asymmetric reflexes need evaluation");
+              return concerns.length>0?(
+                <div className="fade-in" style={{background:"#FFF5F5",borderLeft:`5px solid ${RED}`,borderRadius:R,padding:14,marginTop:16}}>
+                  <div style={{fontWeight:700,color:RED,fontSize:14,marginBottom:8}}>{"\u26A0\uFE0F"} Clinical Concerns</div>
+                  {concerns.map((c,i)=>(<p key={i} style={{fontSize:13,color:DARK,margin:"4px 0",lineHeight:1.4}}>{"\u2022"} {c}</p>))}
                 </div>
-
-                <ResultCard title="Blood Pressure" value={`${systolic}/${diastolic} mmHg`} category={bpResult} />
-                <ResultCard title="Heart Rate" value={`${hr} BPM`} category={hrResult} />
-                <ResultCard title="Oxygen Saturation" value={`${spo2}%`} category={spo2Result} />
-                <ResultCard title="Temperature" value={`${temp}\u00B0F`} category={tempResult} />
-
-                {concerns.length > 0 && (
-                  <div
-                    className="fade-in"
-                    style={{
-                      background: "#FFF5F5",
-                      borderLeft: `5px solid ${RED}`,
-                      borderRadius: CARD_RADIUS,
-                      padding: 14,
-                      marginBottom: 12,
-                      boxShadow: CARD_SHADOW
-                    }}
-                  >
-                    <div style={{ fontWeight: 700, color: RED, fontSize: 14, marginBottom: 8 }}>
-                      &#x26A0;&#xFE0F; Clinical Concerns
-                    </div>
-                    {concerns.map((c, i) => (
-                      <p key={i} style={{ fontSize: 13, color: DARK, margin: "4px 0", lineHeight: 1.4 }}>
-                        &bull; {c}
-                      </p>
-                    ))}
-                  </div>
-                )}
-
-                {concerns.length === 0 && (
-                  <div
-                    className="fade-in"
-                    style={{
-                      background: "#F0FBF5",
-                      borderLeft: `5px solid ${GREEN}`,
-                      borderRadius: CARD_RADIUS,
-                      padding: 14,
-                      marginBottom: 12,
-                      textAlign: "center",
-                      boxShadow: CARD_SHADOW
-                    }}
-                  >
-                    <div style={{ fontWeight: 700, color: GREEN, fontSize: 14 }}>
-                      &#x2705; All Vitals Within Normal Range
-                    </div>
-                  </div>
-                )}
-
-                <div
-                  className="fade-in"
-                  style={{
-                    background: "#FFF9E6",
-                    border: `2px solid ${GOLD}`,
-                    borderRadius: CARD_RADIUS,
-                    padding: 14,
-                    marginBottom: 14,
-                    boxShadow: CARD_SHADOW
-                  }}
-                >
-                  <div style={{ fontWeight: 700, color: NAVY, fontSize: 13, marginBottom: 6, display: "flex", alignItems: "center", gap: 6 }}>
-                    <span style={{ fontSize: 16 }}>&#x1F48E;</span> Clinical Pearl
-                  </div>
-                  <p style={{ fontSize: 12, color: MED, margin: 0, lineHeight: 1.6, fontStyle: "italic" }}>
-                    {currentPearl}
-                  </p>
+              ):(
+                <div className="fade-in" style={{background:"#F0FBF5",borderLeft:`5px solid ${GREEN}`,borderRadius:R,padding:14,marginTop:16,textAlign:"center"}}>
+                  <div style={{fontWeight:700,color:GREEN,fontSize:14}}>{"\u2705"} All Vitals Within Normal Range</div>
                 </div>
+              );
+            })()}
 
-                <PrimaryButton onClick={handleCompleteCase} fullWidth style={{ background: GREEN, boxShadow: "0 2px 8px rgba(39,174,96,0.25)" }}>
-                  &#x2705; Save This Case to Tracker
-                </PrimaryButton>
-              </div>
-            )}
+            <div style={{background:"#FFF9E6",borderRadius:R,padding:14,borderLeft:`4px solid ${GOLD}`,marginTop:16}}>
+              <div style={{fontSize:10,fontWeight:700,color:"#8B6914",textTransform:"uppercase",letterSpacing:1.5,marginBottom:4}}>{"\u{1F48E}"} Clinical Pearl</div>
+              <p style={{fontSize:13,color:DARK,margin:0,lineHeight:1.6,fontStyle:"italic"}}>{randomPearl()}</p>
+            </div>
+          </Card>
+        </div>)}
+      </div>);
+    }
 
-            {completedCases.length > 0 && (
-              <div style={{ marginTop: 20, paddingTop: 16, borderTop: "2px solid #E0E8EE" }}>
-                <h3 style={{ fontSize: 14, fontWeight: 700, color: NAVY, marginBottom: 10 }}>
-                  Your Session Summary ({completedCases.length} case{completedCases.length !== 1 ? "s" : ""})
-                </h3>
-                <div style={{
-                  background: WHITE,
-                  border: `2px solid ${TEAL}`,
-                  borderRadius: CARD_RADIUS,
-                  padding: 14,
-                  fontSize: 13,
-                  color: DARK,
-                  boxShadow: CARD_SHADOW,
-                  lineHeight: 1.6
-                }}>
-                  <strong>Great progress!</strong> You've completed {completedCases.length} case{completedCases.length !== 1 ? "s" : ""}. Keep practicing to master vital sign interpretation. Consider reviewing the cases where you identified concerns.
-                </div>
-              </div>
-            )}
+    // ===== EXPLORE MODE =====
+    function ExploreMode({onBack}){
+      const[sys,setSys]=useState(120);const[dia,setDia]=useState(80);
+      const[hr,setHr]=useState(75);const[spo2,setSpo2]=useState(98);
+      const[show,setShow]=useState(false);const[pearl,setPearl]=useState("");
+      const presets=[
+        {name:"Marco Torres",age:"45 yrs",cat:"Session 1",sys:158,dia:94,hr:92,spo2:96,ctx:"Your patient from Mini Med School"},
+        {name:"Healthy Teen",age:"15 yrs",cat:"Pediatric",sys:110,dia:68,hr:72,spo2:99,ctx:"Routine checkup"},
+        {name:"Emma (Asthma)",age:"12 yrs",cat:"Pediatric",sys:104,dia:62,hr:98,spo2:92,ctx:"Respiratory distress"},
+        {name:"Sepsis Patient",age:"45 yrs",cat:"Adult",sys:88,dia:60,hr:130,spo2:94,ctx:"Shock presentation"},
+        {name:"Stroke Alert",age:"62 yrs",cat:"Adult",sys:198,dia:110,hr:88,spo2:96,ctx:"Neurological emergency"},
+        {name:"Hypothermic Hiker",age:"52 yrs",cat:"Adult",sys:90,dia:58,hr:52,spo2:93,ctx:"Environmental exposure"},
+      ];
+      const load=(c)=>{setSys(c.sys);setDia(c.dia);setHr(c.hr);setSpo2(c.spo2);setShow(false);};
+      const interpret=()=>{setShow(true);setPearl(randomPearl());};
+      const bp=classifyBP(sys,dia),hrC=classifyHR(hr),sp=classifySpo2(spo2);
+
+      return(<div className="fade-in">
+        <Card>
+          <div style={{fontSize:15,fontWeight:800,color:NAVY,marginBottom:4}}>Explore Vital Signs</div>
+          <p style={{fontSize:13,color:MED,lineHeight:1.6,marginBottom:14}}>Adjust the sliders to see how different values are classified. Load a preset patient case to practice interpreting real scenarios.</p>
+
+          <SectionLabel>Patient Cases</SectionLabel>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(140px,1fr))",gap:8,marginBottom:16}}>
+            {presets.map(c=>(<button key={c.name} onClick={()=>load(c)} style={{background:WHITE,border:"2px solid #E0E8EE",borderRadius:10,padding:"10px 12px",fontSize:12,fontWeight:600,color:DARK,cursor:"pointer",transition:"all .2s",textAlign:"left",fontFamily:"inherit"}} onMouseOver={e=>{e.currentTarget.style.borderColor=TEAL;e.currentTarget.style.transform="translateY(-1px)"}} onMouseOut={e=>{e.currentTarget.style.borderColor="#E0E8EE";e.currentTarget.style.transform="none"}}><div style={{fontWeight:700}}>{c.name}</div><div style={{fontSize:11,color:MED,marginTop:2}}>{c.age} - {c.ctx}</div></button>))}
           </div>
-          <AppFooter />
+
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,marginBottom:12}}>
+            <VitalInput label="Systolic BP" value={sys} onChange={setSys} min={60} max={250} unit="mmHg"/>
+            <VitalInput label="Diastolic BP" value={dia} onChange={setDia} min={30} max={150} unit="mmHg"/>
+          </div>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,marginBottom:12}}>
+            <VitalInput label="Heart Rate" value={hr} onChange={setHr} min={30} max={200} unit="BPM"/>
+            <VitalInput label="SpO2" value={spo2} onChange={setSpo2} min={70} max={100} unit="%"/>
+          </div>
+          <div style={{textAlign:"center",marginTop:8}}><Btn primary onClick={interpret}>{"\u{1FA7A}"} Interpret Vitals</Btn></div>
+        </Card>
+
+        {show&&(<div className="slide-up">
+          <ResultBar title="Blood Pressure" value={`${sys}/${dia} mmHg`} classification={bp}/>
+          <ResultBar title="Heart Rate" value={`${hr} BPM`} classification={hrC}/>
+          <ResultBar title="Oxygen Saturation" value={`${spo2}%`} classification={sp}/>
+          <div style={{background:"#FFF9E6",borderRadius:R,padding:14,borderLeft:`4px solid ${GOLD}`,marginTop:8}}>
+            <div style={{fontSize:10,fontWeight:700,color:"#8B6914",textTransform:"uppercase",letterSpacing:1.5,marginBottom:4}}>{"\u{1F48E}"} Clinical Pearl</div>
+            <p style={{fontSize:13,color:DARK,margin:0,lineHeight:1.6,fontStyle:"italic"}}>{pearl}</p>
+          </div>
+        </div>)}
+      </div>);
+    }
+
+    // ===== QUIZ MODE =====
+    function QuizMode({onBack}){
+      const questions=useMemo(()=>[
+        {q:"A patient's BP is 158/94 with HR 92 and SpO2 96%. Which vital is most concerning?",opts:["Heart rate","Blood pressure","Oxygen saturation","All are normal"],ans:1,exp:"158/94 is Stage 2 Hypertension. HR 92 is normal. SpO2 96% is normal. BP is the concern."},
+        {q:"SpO2 reads 91%. What should you do?",opts:["Nothing, it's normal","Recheck in an hour","Seek immediate medical attention","Remove nail polish and recheck"],ans:2,exp:"Below 92% is critically low oxygen. This needs urgent attention."},
+        {q:"After 2 minutes of jumping jacks, BP goes from 118/76 to 145/88. Is this normal?",opts:["No, this is dangerous","Yes, BP rises with exercise","Only if you're young","The cuff must be broken"],ans:1,exp:"BP naturally rises during exercise as the heart pumps harder to deliver oxygen to muscles."},
+        {q:"Both pupils react to light but are different sizes. What is this called?",opts:["PERRLA","Accommodation","Anisocoria","Normal variant"],ans:2,exp:"Anisocoria (unequal pupils) can indicate brain injury, nerve damage, or certain medications."},
+        {q:"Left knee reflex is normal, right knee reflex is absent. What does this suggest?",opts:["Normal variation","Nerve damage on the right side","The hammer was too soft","Dehydration"],ans:1,exp:"Asymmetric reflexes suggest a nerve pathway problem on the affected side."},
+        {q:"HR is 52 BPM at rest. Is this dangerous?",opts:["Yes, always","No, it could indicate excellent fitness","Only in elderly patients","It means the sensor is wrong"],ans:1,exp:"Bradycardia (low HR) is common in athletes due to increased cardiac efficiency."},
+        {q:"BP 88/54, HR 130, SpO2 94%. What pattern do these vitals suggest?",opts:["Normal stress response","Hypertensive crisis","Possible shock","Dehydration only"],ans:2,exp:"Low BP + high HR is a classic shock pattern. The heart races to compensate for low blood pressure."},
+        {q:"Recovery BP is still 20 points above resting after 3 minutes. What does this suggest?",opts:["Normal recovery","Poor cardiovascular fitness","The cuff is too tight","Time to exercise more"],ans:1,exp:"BP should return close to resting within a few minutes. Slow recovery may indicate poor cardiovascular conditioning."},
+      ],[]);
+      const[idx,setIdx]=useState(0);const[sel,setSel]=useState(null);const[answered,setAnswered]=useState(false);
+      const[score,setScore]=useState(0);const[done,setDone]=useState(false);
+      const q=questions[idx];
+
+      const pick=(i)=>{if(answered)return;setSel(i);setAnswered(true);if(i===q.ans)setScore(s=>s+1);};
+      const next=()=>{if(idx>=questions.length-1){setDone(true);}else{setIdx(idx+1);setSel(null);setAnswered(false);}};
+
+      if(done){const pct=Math.round(score/questions.length*100);return(<div className="fade-in"><Card style={{textAlign:"center"}}>
+        <div style={{fontSize:48,marginBottom:8}}>{pct>=80?"\u{1F3C6}":pct>=60?"\u{1F31F}":"\u{1F4AA}"}</div>
+        <div style={{fontSize:44,fontWeight:800,color:pct>=80?GREEN:pct>=60?GOLD:RED,lineHeight:1}}>{pct}%</div>
+        <div style={{fontSize:15,fontWeight:700,color:NAVY,margin:"8px 0"}}>{score}/{questions.length} correct</div>
+        <div style={{display:"flex",gap:10,justifyContent:"center",marginTop:16}}><Btn primary onClick={()=>{setIdx(0);setSel(null);setAnswered(false);setScore(0);setDone(false);}}>Try Again</Btn><Btn onClick={onBack}>Menu</Btn></div>
+      </Card></div>);}
+
+      return(<div>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}><span style={{fontSize:13,fontWeight:700,color:MED}}>{idx+1}/{questions.length}</span><span style={{fontSize:13,fontWeight:700,color:TEAL}}>Score: {score}</span></div>
+        <div style={{height:6,background:"#E8EDF2",borderRadius:3,marginBottom:16,overflow:"hidden"}}><div style={{height:"100%",background:`linear-gradient(90deg,${TEAL},${TEAL_DARK})`,width:`${((idx+1)/questions.length)*100}%`,transition:"width .4s",borderRadius:3}}/></div>
+        <Card>
+          <p style={{fontSize:15,fontWeight:700,color:NAVY,marginBottom:16,lineHeight:1.5}}>{q.q}</p>
+          <div style={{display:"grid",gap:8}}>
+            {q.opts.map((o,i)=>{
+              let bg=WHITE,border="#E0E8EE";
+              if(answered&&i===q.ans){bg="#E8F8F1";border=GREEN;}
+              else if(answered&&i===sel){bg="#FFF5F5";border=RED;}
+              return(<button key={i} onClick={()=>pick(i)} style={{padding:"12px 16px",background:bg,border:`2px solid ${border}`,borderRadius:10,fontSize:14,fontWeight:600,color:DARK,cursor:answered?"default":"pointer",textAlign:"left",fontFamily:"inherit",transition:"all .2s"}}>{o}</button>);
+            })}
+          </div>
+          {answered&&<div className="fade-in" style={{marginTop:14,padding:"12px 16px",borderRadius:10,background:sel===q.ans?"#E8F8F1":"#FFF5F5",borderLeft:`4px solid ${sel===q.ans?GREEN:RED}`,fontSize:13,color:DARK,lineHeight:1.6}}>{q.exp}</div>}
+          {answered&&<div style={{textAlign:"right",marginTop:12}}><Btn primary onClick={next}>{idx<questions.length-1?"Next \u2192":"View Results"}</Btn></div>}
+        </Card>
+      </div>);
+    }
+
+    // ===== MAIN =====
+    function App(){
+      const[screen,setScreen]=useState("welcome");
+      if(screen==="welcome")return(
+        <div style={{fontFamily:"'Segoe UI',Tahoma,Geneva,Verdana,sans-serif",minHeight:"100vh",display:"flex",flexDirection:"column"}}>
+          <AppHeader/>
+          <div className="fade-in" style={{maxWidth:700,margin:"0 auto",padding:"0 16px 24px",flex:1}}>
+            <div style={{textAlign:"center",padding:"28px 16px 20px"}}>
+              <div style={{fontSize:48,marginBottom:8}}>{"\u{1FA7A}"}</div>
+              <h1 style={{fontSize:26,fontWeight:800,color:NAVY,margin:"0 0 8px"}}>Vital Signs Interpreter</h1>
+              <p style={{fontSize:14,color:MED,lineHeight:1.6,maxWidth:440,margin:"0 auto"}}>Interpret the vital signs you measure on real patients in Session 1. Record your findings, explore clinical scenarios, and test your knowledge.</p>
+            </div>
+            <div style={{display:"grid",gap:12,marginBottom:20}}>
+              {[
+                {key:"assess",icon:"\u{1F4CB}",title:"My Patient Assessment",desc:"Enter all your collected vital signs - BP (resting, stress, recovery), SpO2, pulse, pupils, and reflexes. Get a full clinical interpretation.",color:TEAL},
+                {key:"explore",icon:"\u{1F50D}",title:"Explore Mode",desc:"Adjust vital signs with sliders and load preset patient cases including Marco Torres. See real-time clinical interpretations.",color:GOLD},
+                {key:"quiz",icon:"\u{1F3AF}",title:"Quiz Mode",desc:"8 clinical scenarios testing your ability to interpret vital signs and spot patterns. Can you think like a doctor?",color:"#C0392B"},
+              ].map(m=>(<div key={m.key} onClick={()=>setScreen(m.key)} style={{background:WHITE,borderRadius:R,padding:"18px 20px",boxShadow:SHADOW,border:"2px solid #E0E8EE",cursor:"pointer",transition:"all .25s",display:"flex",alignItems:"center",gap:16}} onMouseOver={e=>{e.currentTarget.style.borderColor=m.color;e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow=`0 6px 20px ${m.color}20`}} onMouseOut={e=>{e.currentTarget.style.borderColor="#E0E8EE";e.currentTarget.style.transform="none";e.currentTarget.style.boxShadow=SHADOW}}>
+                <div style={{width:52,height:52,borderRadius:14,background:`${m.color}12`,border:`2px solid ${m.color}25`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:26,flexShrink:0}}>{m.icon}</div>
+                <div><div style={{fontSize:16,fontWeight:800,color:NAVY,marginBottom:4}}>{m.title}</div><p style={{fontSize:12,color:MED,margin:0,lineHeight:1.5}}>{m.desc}</p></div>
+              </div>))}
+            </div>
+            <div style={{background:"#FFF9E6",border:`2px solid ${GOLD}`,borderRadius:R,padding:14,textAlign:"center"}}>
+              <div style={{fontSize:13,fontWeight:700,color:NAVY,marginBottom:4}}>{"\u{1F4A1}"} Start with My Patient Assessment</div>
+              <p style={{fontSize:12,color:MED,margin:0,lineHeight:1.5}}>Enter the readings you collected at each station, then use the Summary tab to see your complete clinical picture.</p>
+            </div>
+          </div>
+          <AppFooter/>
+        </div>
+      );
+      return(
+        <div style={{fontFamily:"'Segoe UI',Tahoma,Geneva,Verdana,sans-serif",minHeight:"100vh",display:"flex",flexDirection:"column"}}>
+          <AppHeader subtitle={screen==="assess"?"My Patient Assessment":screen==="explore"?"Explore Mode":"Quiz Mode"}/>
+          <div style={{maxWidth:700,margin:"0 auto",padding:"16px 16px 24px",flex:1}}>
+            <div style={{marginBottom:14}}><button onClick={()=>setScreen("welcome")} style={{background:"none",border:`2px solid ${TEAL}`,color:TEAL,borderRadius:10,padding:"8px 16px",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"inherit"}}>{"\u2190"} Menu</button></div>
+            {screen==="assess"&&<MyAssessment onBack={()=>setScreen("welcome")}/>}
+            {screen==="explore"&&<ExploreMode onBack={()=>setScreen("welcome")}/>}
+            {screen==="quiz"&&<QuizMode onBack={()=>setScreen("welcome")}/>}
+          </div>
+          <AppFooter/>
         </div>
       );
     }
-
-    ReactDOM.createRoot(document.getElementById('root')).render(<VitalSignsInterpreter />);
+    ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
   </script>
 </body>
 </html>
