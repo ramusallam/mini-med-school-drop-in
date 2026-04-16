@@ -48,6 +48,12 @@
       if(v>=93)return{label:"Borderline",color:YELLOW,bg:"#FFF9E6",note:"Sit up and breathe deeply. Recheck."};
       return{label:"Low",color:RED,bg:"#FADBD8",note:"Urgent. Seek medical attention."};
     }
+    function classifyGlucose(v){
+      if(v>=126)return{label:"Diabetic Range",color:RED,bg:"#FADBD8",note:"Fasting glucose 126+ suggests diabetes. Needs follow-up testing."};
+      if(v>=100)return{label:"Prediabetic",color:YELLOW,bg:"#FFF9E6",note:"Fasting glucose 100-125 is prediabetic. Lifestyle changes can prevent progression."};
+      if(v>=70)return{label:"Normal",color:GREEN,bg:"#E8F8F1",note:"Healthy fasting glucose level."};
+      return{label:"Low (Hypoglycemia)",color:"#2980B9",bg:"#EBF5FB",note:"Below 70 is low blood sugar. Patient may feel shaky, dizzy, or confused."};
+    }
     const clinicalPearls=[
       "Always look for patterns. Low BP + high HR might indicate shock.",
       "Trending vitals over time is more valuable than a single snapshot.",
@@ -58,7 +64,9 @@
       "A single elevated BP reading does not mean hypertension - it requires multiple readings to diagnose.",
       "PERRLA is one of the fastest neurological checks and gives critical information about brain function.",
       "Asymmetric reflexes can indicate nerve damage on one side of the body.",
-      "The story the vitals tell together matters more than any single number."
+      "The story the vitals tell together matters more than any single number.",
+      "Fasting glucose is tested after 8+ hours without eating. A random glucose test can be higher and still be normal.",
+      "Prediabetes affects 1 in 3 adults but most don't know they have it. A simple finger-prick test can catch it early."
     ];
     function randomPearl(){return clinicalPearls[Math.floor(Math.random()*clinicalPearls.length)];}
 
@@ -95,6 +103,7 @@
       const[pupilLeftReact,setPupilLeftReact]=useState(true);const[pupilRightReact,setPupilRightReact]=useState(true);
       const[pupilAccom,setPupilAccom]=useState(true);
       const[reflexLeft,setReflexLeft]=useState("normal");const[reflexRight,setReflexRight]=useState("normal");
+      const[glucose,setGlucose]=useState(95);
       const[showSummary,setShowSummary]=useState(false);
 
       const restBP=classifyBP(restSys,restDia);
@@ -102,12 +111,14 @@
       const recBP=classifyBP(recSys,recDia);
       const hrC=classifyHR(pulse);
       const spo2C=classifySpo2(spo2);
+      const glucC=classifyGlucose(glucose);
       const perrla=pupilEqual&&pupilRound&&pupilLeftReact&&pupilRightReact&&pupilAccom;
       const reflexSym=reflexLeft===reflexRight;
 
       const tabs=[
         {key:"bp",label:"Blood Pressure",icon:"\u{1FA7A}"},
         {key:"ox",label:"SpO2 & Pulse",icon:"\u{1F4A8}"},
+        {key:"gluc",label:"Glucose",icon:"\u{1FA78}"},
         {key:"neuro",label:"Neuro Check",icon:"\u{1F9E0}"},
         {key:"summary",label:"Summary",icon:"\u{1F4CB}"}
       ];
@@ -181,6 +192,22 @@
             <div style={{background:"#FFF9E6",borderRadius:R,padding:14,borderLeft:`4px solid ${GOLD}`}}>
               <div style={{fontSize:10,fontWeight:700,color:"#8B6914",textTransform:"uppercase",letterSpacing:1.5,marginBottom:4}}>{"\u{1F48E}"} Clinical Pearl</div>
               <p style={{fontSize:13,color:DARK,margin:0,lineHeight:1.6,fontStyle:"italic"}}>The pulse oximeter works by shining red and infrared light through your finger. Oxygenated blood absorbs different wavelengths than deoxygenated blood. That's why nail polish and cold fingers can cause falsely low readings.</p>
+            </div>
+          </Card>
+        </div>)}
+
+        {section==="gluc"&&(<div className="slide-up">
+          <Card>
+            <div style={{fontSize:15,fontWeight:800,color:NAVY,marginBottom:4}}>Glucose Testing</div>
+            <div style={{background:"#FFF0E0",borderRadius:R,padding:"10px 14px",marginBottom:14,borderLeft:"4px solid #E67E22",fontSize:12,color:DARK}}>
+              <strong>Optional Station:</strong> Some programs include finger-prick glucose testing. If your program did not include this station, you can still enter a value here to see how glucose levels are classified.
+            </div>
+            <p style={{fontSize:13,color:MED,lineHeight:1.6,marginBottom:16}}>A glucose meter measures the amount of sugar in the blood. Fasting glucose (after 8+ hours without eating) is the standard test. High glucose over time can lead to diabetes.</p>
+            <VitalInput label="Fasting Glucose" value={glucose} onChange={setGlucose} min={40} max={300} unit="mg/dL"/>
+            <ResultBar title="Blood Glucose" value={`${glucose} mg/dL`} classification={glucC}/>
+            <div style={{background:"#FFF9E6",borderRadius:R,padding:14,borderLeft:`4px solid ${GOLD}`,marginTop:8}}>
+              <div style={{fontSize:10,fontWeight:700,color:"#8B6914",textTransform:"uppercase",letterSpacing:1.5,marginBottom:4}}>{"\u{1F48E}"} Clinical Pearl</div>
+              <p style={{fontSize:13,color:DARK,margin:0,lineHeight:1.6,fontStyle:"italic"}}>Prediabetes affects 1 in 3 adults but most don't know they have it. A simple finger-prick test can catch it early. Lifestyle changes at the prediabetic stage can prevent progression to diabetes in most cases.</p>
             </div>
           </Card>
         </div>)}
@@ -276,6 +303,7 @@
                     {name:"Recovery BP",val:`${recSys}/${recDia}`,norm:"Near resting within 3 min",status:recBP},
                     {name:"SpO2",val:`${spo2}%`,norm:"95 - 100%",status:spo2C},
                     {name:"Pulse Rate",val:`${pulse} BPM`,norm:"60 - 100 BPM",status:hrC},
+                    {name:"Glucose (Fasting)",val:`${glucose} mg/dL`,norm:"70 - 99 mg/dL",status:glucC},
                     {name:"Pupil Response",val:perrla?"PERRLA Normal":"Abnormal",norm:"PERRLA",status:{name:perrla?"Normal":"Abnormal",label:perrla?"Normal":"Abnormal",color:perrla?GREEN:RED,note:perrla?"All pupil responses intact.":"One or more findings abnormal."}},
                     {name:"Reflexes",val:`L: ${reflexLeft}, R: ${reflexRight}`,norm:"Normal, symmetric",status:{name:reflexSym&&reflexLeft==="normal"?"Normal":!reflexSym?"Asymmetric":"Abnormal",label:reflexSym&&reflexLeft==="normal"?"Normal":!reflexSym?"Asymmetric":"Abnormal",color:reflexSym&&reflexLeft==="normal"?GREEN:!reflexSym?RED:YELLOW,note:reflexSym&&reflexLeft==="normal"?"Symmetric normal reflexes.":"Reflex findings need further evaluation."}}
                   ].map((r,i)=>(<tr key={i} style={{background:i%2===0?"#F8F9FA":WHITE}}>
@@ -320,28 +348,29 @@
     function ExploreMode({onBack}){
       const[sys,setSys]=useState(120);const[dia,setDia]=useState(80);
       const[hr,setHr]=useState(75);const[spo2,setSpo2]=useState(98);
+      const[glucose,setGlucose]=useState(95);
       const[pupilEqual,setPupilEqual]=useState(true);const[pupilRound,setPupilRound]=useState(true);
       const[pupilLeftReact,setPupilLeftReact]=useState(true);const[pupilRightReact,setPupilRightReact]=useState(true);
       const[pupilAccom,setPupilAccom]=useState(true);
       const[reflexLeft,setReflexLeft]=useState("normal");const[reflexRight,setReflexRight]=useState("normal");
       const[show,setShow]=useState(false);const[pearl,setPearl]=useState("");
       const presets=[
-        {name:"Marco Torres",age:"45 yrs",cat:"Session 1",sys:158,dia:94,hr:92,spo2:96,ctx:"Your patient from Mini Med School",perrla:true,rL:"normal",rR:"normal"},
-        {name:"Healthy Teen",age:"15 yrs",cat:"Pediatric",sys:110,dia:68,hr:72,spo2:99,ctx:"Routine checkup",perrla:true,rL:"normal",rR:"normal"},
-        {name:"Emma (Asthma)",age:"12 yrs",cat:"Pediatric",sys:104,dia:62,hr:98,spo2:92,ctx:"Respiratory distress",perrla:true,rL:"normal",rR:"normal"},
-        {name:"Sepsis Patient",age:"45 yrs",cat:"Adult",sys:88,dia:60,hr:130,spo2:94,ctx:"Shock presentation",perrla:true,rL:"normal",rR:"normal"},
-        {name:"Stroke Alert",age:"62 yrs",cat:"Adult",sys:198,dia:110,hr:88,spo2:96,ctx:"Neurological emergency",perrla:false,pupilIssue:"unequal",rL:"exaggerated",rR:"normal"},
-        {name:"Hypothermic Hiker",age:"52 yrs",cat:"Adult",sys:90,dia:58,hr:52,spo2:93,ctx:"Environmental exposure",perrla:true,rL:"diminished",rR:"diminished"},
+        {name:"Marco Torres",age:"45 yrs",cat:"Session 1",sys:158,dia:94,hr:92,spo2:96,gluc:118,ctx:"Your patient from Mini Med School",perrla:true,rL:"normal",rR:"normal"},
+        {name:"Healthy Teen",age:"15 yrs",cat:"Pediatric",sys:110,dia:68,hr:72,spo2:99,gluc:88,ctx:"Routine checkup",perrla:true,rL:"normal",rR:"normal"},
+        {name:"Emma (Asthma)",age:"12 yrs",cat:"Pediatric",sys:104,dia:62,hr:98,spo2:92,gluc:92,ctx:"Respiratory distress",perrla:true,rL:"normal",rR:"normal"},
+        {name:"Sepsis Patient",age:"45 yrs",cat:"Adult",sys:88,dia:60,hr:130,spo2:94,gluc:156,ctx:"Shock presentation",perrla:true,rL:"normal",rR:"normal"},
+        {name:"Stroke Alert",age:"62 yrs",cat:"Adult",sys:198,dia:110,hr:88,spo2:96,gluc:142,ctx:"Neurological emergency",perrla:false,pupilIssue:"unequal",rL:"exaggerated",rR:"normal"},
+        {name:"Hypothermic Hiker",age:"52 yrs",cat:"Adult",sys:90,dia:58,hr:52,spo2:93,gluc:64,ctx:"Environmental exposure",perrla:true,rL:"diminished",rR:"diminished"},
       ];
       const load=(c)=>{
-        setSys(c.sys);setDia(c.dia);setHr(c.hr);setSpo2(c.spo2);
+        setSys(c.sys);setDia(c.dia);setHr(c.hr);setSpo2(c.spo2);setGlucose(c.gluc||95);
         setPupilEqual(c.perrla!==false||c.pupilIssue!=="unequal");
         setPupilRound(true);setPupilLeftReact(c.perrla!==false);setPupilRightReact(c.perrla!==false);setPupilAccom(true);
         setReflexLeft(c.rL||"normal");setReflexRight(c.rR||"normal");
         setShow(false);
       };
       const interpret=()=>{setShow(true);setPearl(randomPearl());};
-      const bp=classifyBP(sys,dia),hrC=classifyHR(hr),sp=classifySpo2(spo2);
+      const bp=classifyBP(sys,dia),hrC=classifyHR(hr),sp=classifySpo2(spo2),glucC=classifyGlucose(glucose);
       const perrla=pupilEqual&&pupilRound&&pupilLeftReact&&pupilRightReact&&pupilAccom;
       const reflexSym=reflexLeft===reflexRight;
 
@@ -363,6 +392,7 @@
             <VitalInput label="Heart Rate" value={hr} onChange={setHr} min={30} max={200} unit="BPM"/>
             <VitalInput label="SpO2" value={spo2} onChange={setSpo2} min={70} max={100} unit="%"/>
           </div>
+          <VitalInput label="Fasting Glucose" value={glucose} onChange={setGlucose} min={40} max={300} unit="mg/dL"/>
 
           <div style={{background:"#F8F9FA",borderRadius:R,padding:16,marginBottom:12}}>
             <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10}}>
@@ -396,6 +426,7 @@
           <ResultBar title="Blood Pressure" value={`${sys}/${dia} mmHg`} classification={bp}/>
           <ResultBar title="Heart Rate" value={`${hr} BPM`} classification={hrC}/>
           <ResultBar title="Oxygen Saturation" value={`${spo2}%`} classification={sp}/>
+          <ResultBar title="Blood Glucose" value={`${glucose} mg/dL`} classification={glucC}/>
           <ResultBar title="Pupil Response (PERRLA)" value={perrla?"All findings normal":"Abnormal finding detected"} classification={{name:perrla?"Normal":"Abnormal",color:perrla?GREEN:RED,note:perrla?"Pupils equal, round, reactive to light, accommodation intact.":(!pupilEqual?"Unequal pupils (anisocoria) - possible brain injury. ":"")+((!pupilLeftReact||!pupilRightReact)?"Non-reactive pupil - neurological red flag. ":"")+(!pupilAccom?"Accommodation failure - cranial nerve issue.":"")}}/>
           <ResultBar title="Reflexes" value={`Left: ${reflexLeft}, Right: ${reflexRight}`} classification={{name:reflexSym&&reflexLeft==="normal"?"Normal":!reflexSym?"Asymmetric":"Bilateral "+reflexLeft,color:reflexSym&&reflexLeft==="normal"?GREEN:!reflexSym?RED:YELLOW,note:reflexSym&&reflexLeft==="normal"?"Symmetric normal reflexes.":!reflexSym?"Asymmetric reflexes suggest nerve damage on one side.":"Both sides "+reflexLeft+" - may need further evaluation."}}/>
           <div style={{background:"#FFF9E6",borderRadius:R,padding:14,borderLeft:`4px solid ${GOLD}`,marginTop:8}}>
