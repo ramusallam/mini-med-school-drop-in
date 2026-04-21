@@ -158,7 +158,7 @@
             {
               "type": "callout",
               "content": "Your vital signs data is the foundation of clinical assessment. These same three measurements are the first thing checked on every patient in every hospital.",
-              "style": "info"
+              "style": "case"
             },
             {
               "type": "checklist",
@@ -204,6 +204,11 @@
           "type": "lab",
           "title": "The Physical Lab",
           "blocks": [
+            {
+              "type": "callout",
+              "style": "warning",
+              "content": "Safety: curved suture needles are sharp. Always point the needle away from your body and your partner. When not suturing, park the needle in the foam pad. Pass instruments tip-down, never hand to hand."
+            },
             {
               "type": "materials",
               "title": "Materials Needed",
@@ -315,7 +320,7 @@
             {
               "type": "callout",
               "content": "Suturing is a skill that improves with repetition. The difference between your first stitch and your hundredth will be dramatic.",
-              "style": "info"
+              "style": "case"
             },
             {
               "type": "checklist",
@@ -472,7 +477,7 @@
             {
               "type": "callout",
               "content": "The frustration you felt is real - and it is exactly what every surgeon experiences during training. The difference is practice. Thousands of hours of it.",
-              "style": "info"
+              "style": "case"
             },
             {
               "type": "checklist",
@@ -518,6 +523,11 @@
           "type": "lab",
           "title": "The Physical Lab",
           "blocks": [
+            {
+              "type": "callout",
+              "style": "warning",
+              "content": "Safety: the reflex hammer is a tool, not a toy. Tap the patellar tendon gently, never the kneecap itself. For the PERRLA penlight check, don't shine the light directly into a partner's eye for more than 1-2 seconds."
+            },
             {
               "type": "materials",
               "title": "Materials Needed",
@@ -620,7 +630,7 @@
             {
               "type": "callout",
               "content": "You just performed the same neurological assessments used in every emergency room in the world. A 30-second test that can save a life.",
-              "style": "info"
+              "style": "case"
             },
             {
               "type": "checklist",
@@ -767,7 +777,7 @@
             {
               "type": "callout",
               "content": "The skills you practiced today - vital signs, suturing, laparoscopy, neurological assessment - are real entry points into real careers. The path starts with one step.",
-              "style": "info"
+              "style": "case"
             },
             {
               "type": "checklist",
@@ -915,7 +925,7 @@
             {
               "type": "callout",
               "content": "Triage combines everything: vital signs knowledge, clinical reasoning, calm under pressure, and the ability to make decisions with incomplete information. It is the ultimate test of a healthcare professional.",
-              "style": "info"
+              "style": "case"
             },
             {
               "type": "checklist",
