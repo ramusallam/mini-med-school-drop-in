@@ -166,7 +166,7 @@
             {
               "type": "app",
               "url": "apps/vital-signs-interpreter.html",
-              "title": "Vital Signs Interpreter - Clinical Application",
+              "title": "Vital Signs Interpreter",
               "embed": true
             },
             {
@@ -251,7 +251,7 @@
             {
               "type": "step",
               "content": "Surgical Dexterity Trainer App",
-              "description": "Warm up your fine motor skills with the digital trainer. Two rounds of the steady-hand trace, one round of precision targeting. This is harder than it looks."
+              "description": "Warm up your fine motor skills with the digital trainer. Two rounds of **Precision Path Tracing**, one round of **Precision Targeting**. This is harder than it looks."
             },
             {
               "type": "app",
@@ -322,7 +322,7 @@
             {
               "type": "app",
               "url": "apps/surgical-dexterity-trainer.html",
-              "title": "Surgical Dexterity Trainer - Self-Assessment",
+              "title": "Surgical Dexterity Trainer",
               "embed": true
             },
             {
@@ -437,7 +437,7 @@
             {
               "type": "step",
               "content": "Surgical Dexterity Trainer App",
-              "description": "Before touching the training box, warm up with the digital trainer. Complete 2 rounds of precision targeting. Even on a flat screen, the coordination demands are real. This prepares your brain for the reversed movements ahead."
+              "description": "Before touching the training box, warm up with the digital trainer. Complete 2 rounds of **Precision Targeting**. Even on a flat screen, the coordination demands are real. This prepares your brain for the reversed movements ahead."
             },
             {
               "type": "app",
@@ -497,13 +497,13 @@
             },
             {
               "type": "step",
-              "content": "Digital Trainer - Laparoscopy Mode",
-              "description": "Return to the precision trainer. Now that you've actually felt the fulcrum effect in the box, does the 2D screen-only challenge feel different? Run it one more time and compare your score to your warm-up round."
+              "content": "Digital Trainer Re-Run",
+              "description": "Return to the digital trainer and replay **Precision Targeting**. Now that you've actually felt the fulcrum effect in the box, does the 2D screen-only challenge feel different? Run it one more time and compare your score to your warm-up round."
             },
             {
               "type": "app",
               "url": "apps/surgical-dexterity-trainer.html",
-              "title": "Surgical Dexterity Trainer - Laparoscopy Self-Assessment",
+              "title": "Surgical Dexterity Trainer",
               "embed": true
             },
             {
@@ -896,7 +896,7 @@
             {
               "type": "case",
               "label": "Mass Casualty Briefing",
-              "content": "<p>A charter bus has rolled on the highway. Multiple victims are arriving at your ER simultaneously: a driver with chest pain and shortness of breath, a teenager with an obviously broken arm screaming in pain, a quiet elderly passenger who is pale and sweaty but not complaining, and a young adult with a bleeding scalp laceration. You have one doctor, one nurse, one trauma bay available right now. Who gets seen first? Who can wait? In the next few minutes, you will use the 5-level triage system to rank each patient and test your reasoning against the simulator.</p>"
+              "content": "<p>A charter bus has rolled on the highway. Multiple victims are arriving at your ER simultaneously: a driver with chest pain and shortness of breath, a teenager with an obviously broken arm screaming in pain, a quiet elderly passenger who is pale and sweaty but not complaining, and a young adult with a bleeding scalp laceration. You have one doctor, one nurse, one trauma bay available right now. Who gets seen first? Who can wait? In the next few minutes, you will use the RED/YELLOW/GREEN/BLACK triage system to tag each patient and test your reasoning against the simulator.</p>"
             },
             {
               "type": "video",
@@ -931,7 +931,7 @@
             {
               "type": "step",
               "content": "Triage Simulator App",
-              "description": "Launch the Triage Simulator and select your first scenario (Day Shift). Four patients arrive with names, ages, symptoms, and vital signs. Rank them from most urgent (1) to least urgent (4). Submit your answer and read the clinical reasoning feedback carefully. Complete all four scenarios: Day Shift, Night Shift, The Big Game, and Winter Ski Trip."
+              "description": "Launch the Triage Simulator and select your first scenario. Patients arrive with names, ages, symptoms, and vital signs. Tag each one **RED - Immediate**, **YELLOW - Delayed**, **GREEN - Minor**, or **BLACK - Expectant**, then read the feedback. Work through all three scenarios: **Building Collapse**, **Highway Pileup**, and **School Shooting**."
             },
             {
               "type": "app",
@@ -941,8 +941,8 @@
             },
             {
               "type": "step",
-              "content": "Learn the 5-Level System",
-              "description": "Review the triage levels: Level 1 (Resuscitation - no pulse, not breathing), Level 2 (Emergent - chest pain, severe bleeding, difficulty breathing), Level 3 (Urgent - moderate pain, possible fractures), Level 4 (Minor - scrapes, mild headaches), Level 5 (Non-Urgent - follow-up care, routine visits). The key principle: severity combined with time sensitivity equals priority."
+              "content": "Learn the START System",
+              "description": "The simulator uses the mass-casualty START system with four tags: **RED - Immediate** (life-threatening, treat first), **YELLOW - Delayed** (serious but stable, treat second), **GREEN - Minor** (walking wounded, treat last), **BLACK - Expectant** (comfort care only, beyond saving). The key principle: severity combined with time sensitivity equals priority."
             },
             {
               "type": "step",
@@ -952,7 +952,7 @@
             {
               "type": "step",
               "content": "Record Your Simulator Results",
-              "description": "Write down your ranking for each of the four scenarios. Note which patients were hardest to rank and why. Compare your accuracy across scenarios - did you improve from Day Shift to Winter Ski Trip?"
+              "description": "Write down your tags for each patient across all three scenarios. Note which patients were hardest to tag and why. Compare your accuracy across scenarios - did you improve from **Building Collapse** to **School Shooting**?"
             },
             {
               "type": "callout",
@@ -963,7 +963,7 @@
               "type": "checklist",
               "items": [
                 {
-                  "text": "I completed all four triage scenarios in the simulator"
+                  "text": "I completed all three triage scenarios in the simulator"
                 }
               ]
             }
@@ -982,7 +982,7 @@
             {
               "type": "step",
               "content": "Hardest Decision",
-              "description": "Which patient across all four scenarios was the most difficult to rank? What made that decision hard? Was it because the symptoms were ambiguous, or because two patients seemed equally urgent?"
+              "description": "Which patient across the three scenarios was the most difficult to tag? What made that decision hard? Was it because the symptoms were ambiguous, or because two patients seemed equally urgent?"
             },
             {
               "type": "step",
@@ -992,7 +992,7 @@
             {
               "type": "step",
               "content": "Career Connection",
-              "description": "ER triage nurses are the first healthcare providers patients see. They assess vital signs, determine urgency, and manage patient flow. Salary range: $65K-95K with 4 years of nursing education plus 6-12 months of ER experience. Paramedics perform field triage at accident scenes using color-coded tags: Red (urgent), Yellow (moderate), Green (minor), Black (deceased). Salary range: $35K-60K."
+              "description": "ER triage nurses are the first healthcare providers patients see. They assess vital signs, determine urgency, and manage patient flow. Salary range: $65K-95K with 4 years of nursing education plus 6-12 months of ER experience. Paramedics perform field triage at accident scenes using color-coded tags: **RED - Immediate**, **YELLOW - Delayed**, **GREEN - Minor**, **BLACK - Expectant**. Salary range: $35K-60K."
             },
             {
               "type": "video",
@@ -1021,7 +1021,7 @@
             {
               "type": "app",
               "url": "apps/triage-simulator.html",
-              "title": "Triage Simulator - Clinical Decision Mode",
+              "title": "Triage Simulator",
               "embed": true
             },
             {
