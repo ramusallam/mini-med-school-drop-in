@@ -18,6 +18,11 @@
           "title": "The Hook",
           "blocks": [
             {
+              "type": "callout",
+              "style": "info",
+              "content": "Woven notebook: open your notebook now. As you move through this phase, write your answers to every reflection, discussion, and clinical scenario question before moving on. Your notebook is the record of your thinking."
+            },
+            {
               "type": "text",
               "content": "Vital signs are the first language of a clinician. Three numbers - blood pressure, heart rate, oxygen - tell you in 60 seconds whether a patient is stable or crashing. You're the clinician now."
             },
@@ -41,6 +46,11 @@
           "style": "coral",
           "title": "The Physical Lab",
           "blocks": [
+            {
+              "type": "callout",
+              "style": "info",
+              "content": "Woven notebook: open your notebook now. As you move through this phase, write your answers to every reflection, discussion, and clinical scenario question before moving on. Your notebook is the record of your thinking."
+            },
             {
               "type": "materials",
               "title": "Materials Needed",
@@ -120,6 +130,11 @@
           "title": "AI & Digital Literacy",
           "blocks": [
             {
+              "type": "callout",
+              "style": "info",
+              "content": "Woven notebook: open your notebook now. As you move through this phase, write your answers to every reflection, discussion, and clinical scenario question before moving on. Your notebook is the record of your thinking."
+            },
+            {
               "type": "case",
               "label": "Case Study",
               "content": "<p>Blood pressure is not just a number - it is a window into cardiovascular health. A reading of 155/95 puts a patient in Stage 2 Hypertension territory. At that level, the heart is working harder than it should with every single beat, and the walls of the arteries are under constant excess pressure. Over time, this damages blood vessels throughout the body - in the kidneys, the eyes, and the brain. The silent nature of hypertension is what makes it dangerous: most people feel completely fine until something catastrophic happens. One in three American adults has high blood pressure, and nearly half of them do not know it.</p>"
@@ -159,6 +174,11 @@
           "style": "maroon",
           "title": "End of Station",
           "blocks": [
+            {
+              "type": "callout",
+              "style": "info",
+              "content": "Woven notebook: open your notebook now. As you move through this phase, write your answers to every reflection, discussion, and clinical scenario question before moving on. Your notebook is the record of your thinking."
+            },
             {
               "type": "text",
               "content": "One last read. A community member at the screening table reports their vitals: BP 168/102, SpO2 97%, HR 88. Drop these into the interpreter - what would you flag, and how would you explain it to them without scaring them?"
@@ -206,6 +226,11 @@
           "title": "The Hook",
           "blocks": [
             {
+              "type": "callout",
+              "style": "info",
+              "content": "Woven notebook: open your notebook now. As you move through this phase, write your answers to every reflection, discussion, and clinical scenario question before moving on. Your notebook is the record of your thinking."
+            },
+            {
               "type": "text",
               "content": "Suturing hasn't changed in 5,000 years because it works. The simple interrupted suture - individual stitches that stand alone - is the standard closure worldwide. Today you learn to close a wound."
             },
@@ -229,6 +254,11 @@
           "style": "coral",
           "title": "The Physical Lab",
           "blocks": [
+            {
+              "type": "callout",
+              "style": "info",
+              "content": "Woven notebook: open your notebook now. As you move through this phase, write your answers to every reflection, discussion, and clinical scenario question before moving on. Your notebook is the record of your thinking."
+            },
             {
               "type": "callout",
               "style": "warning",
@@ -305,6 +335,11 @@
           "title": "AI & Digital Literacy",
           "blocks": [
             {
+              "type": "callout",
+              "style": "info",
+              "content": "Woven notebook: open your notebook now. As you move through this phase, write your answers to every reflection, discussion, and clinical scenario question before moving on. Your notebook is the record of your thinking."
+            },
+            {
               "type": "case",
               "label": "Case Study",
               "content": "<p>The laceration you are treating - 4cm on the forearm - is a bread-and-butter ER case. The attending physician chooses 3-0 non-absorbable nylon because the forearm is not a high-tension area and the sutures will be removed in 5-7 days. But suture selection is not always this simple. A facial laceration might use 5-0 or 6-0 suture (thinner thread, closer spacing) because cosmetic outcome matters more on the face. An abdominal wound after surgery uses absorbable suture internally because the body breaks it down naturally - no one wants to reopen a surgical site just to remove stitches. The size number system runs backwards: 6-0 is the thinnest, 0 is thicker, and 2-0 is thicker still.</p>"
@@ -356,6 +391,11 @@
           "title": "End of Station",
           "blocks": [
             {
+              "type": "callout",
+              "style": "info",
+              "content": "Woven notebook: open your notebook now. As you move through this phase, write your answers to every reflection, discussion, and clinical scenario question before moving on. Your notebook is the record of your thinking."
+            },
+            {
               "type": "step",
               "content": "What was the hardest part of the technique - the needle angle, the knot, or the tension? What would you work on next time?"
             },
@@ -392,6 +432,11 @@
           "title": "The Hook",
           "blocks": [
             {
+              "type": "callout",
+              "style": "info",
+              "content": "Woven notebook: open your notebook now. As you move through this phase, write your answers to every reflection, discussion, and clinical scenario question before moving on. Your notebook is the record of your thinking."
+            },
+            {
               "type": "text",
               "content": "Laparoscopic surgery changed everything - tiny cuts, faster recovery. But it breaks your brain. You lose depth perception. You lose direct touch. Every movement is reversed. And your hands have to relearn how to move. Prepare for your brain to get confused."
             },
@@ -420,6 +465,11 @@
           "style": "coral",
           "title": "The Physical Lab",
           "blocks": [
+            {
+              "type": "callout",
+              "style": "info",
+              "content": "Woven notebook: open your notebook now. As you move through this phase, write your answers to every reflection, discussion, and clinical scenario question before moving on. Your notebook is the record of your thinking."
+            },
             {
               "type": "materials",
               "title": "Materials Needed",
@@ -486,6 +536,11 @@
           "title": "AI & Digital Literacy",
           "blocks": [
             {
+              "type": "callout",
+              "style": "info",
+              "content": "Woven notebook: open your notebook now. As you move through this phase, write your answers to every reflection, discussion, and clinical scenario question before moving on. Your notebook is the record of your thinking."
+            },
+            {
               "type": "case",
               "label": "Case Study",
               "content": "<p>When laparoscopic surgery was introduced in the 1980s, it was revolutionary for patients but brutally difficult for surgeons. Early studies showed that surgeons made significantly more errors during their first 50 laparoscopic cases compared to open surgery. The fulcrum effect, combined with 2D visualization and reduced tactile feedback, created a steep learning curve. Today, simulation training like what you just experienced is mandatory before surgical residents operate on real patients. The da Vinci surgical robot was developed partly to solve the fulcrum problem: it translates 1:1 hand movements (no reversal), provides 3D stereoscopic vision, and filters out hand tremor. The trade-off? Each system costs about $2 million.</p>"
@@ -537,6 +592,11 @@
           "title": "End of Station",
           "blocks": [
             {
+              "type": "callout",
+              "style": "info",
+              "content": "Woven notebook: open your notebook now. As you move through this phase, write your answers to every reflection, discussion, and clinical scenario question before moving on. Your notebook is the record of your thinking."
+            },
+            {
               "type": "step",
               "content": "If you had to convince a hospital to invest $2M in a da Vinci robot versus 20 more training hours for each resident, which would you choose and why?"
             },
@@ -573,6 +633,11 @@
           "title": "The Hook",
           "blocks": [
             {
+              "type": "callout",
+              "style": "info",
+              "content": "Woven notebook: open your notebook now. As you move through this phase, write your answers to every reflection, discussion, and clinical scenario question before moving on. Your notebook is the record of your thinking."
+            },
+            {
               "type": "text",
               "content": "The nervous system is your body's electrical network - billions of neurons carrying signals between your brain, spinal cord, and every organ and muscle. When something goes wrong (stroke, head injury, spinal cord damage), doctors find clues by testing how the nervous system responds to simple stimuli. Today you test the nervous system."
             },
@@ -596,6 +661,11 @@
           "style": "coral",
           "title": "The Physical Lab",
           "blocks": [
+            {
+              "type": "callout",
+              "style": "info",
+              "content": "Woven notebook: open your notebook now. As you move through this phase, write your answers to every reflection, discussion, and clinical scenario question before moving on. Your notebook is the record of your thinking."
+            },
             {
               "type": "callout",
               "style": "warning",
@@ -668,6 +738,11 @@
           "title": "AI & Digital Literacy",
           "blocks": [
             {
+              "type": "callout",
+              "style": "info",
+              "content": "Woven notebook: open your notebook now. As you move through this phase, write your answers to every reflection, discussion, and clinical scenario question before moving on. Your notebook is the record of your thinking."
+            },
+            {
               "type": "case",
               "label": "Case Study",
               "content": "<p>The pupil check takes 30 seconds. The reflex test takes 15 seconds per knee. These are among the simplest tests in medicine, yet they can reveal conditions that kill within hours if missed. Unequal pupils after trauma (one dilated, one normal) suggest the brain is swelling on one side - herniation that compresses the third cranial nerve. Absent reflexes can indicate spinal cord injury or peripheral nerve damage. Hyperactive reflexes suggest a problem with the brain's descending control pathways. Emergency medicine physicians and neurologists rely on these basic assessments every single day, even with access to MRI, CT, and advanced imaging. The bedside exam is always first.</p>"
@@ -702,6 +777,11 @@
           "style": "maroon",
           "title": "End of Station",
           "blocks": [
+            {
+              "type": "callout",
+              "style": "info",
+              "content": "Woven notebook: open your notebook now. As you move through this phase, write your answers to every reflection, discussion, and clinical scenario question before moving on. Your notebook is the record of your thinking."
+            },
             {
               "type": "step",
               "content": "If a quick bedside neuro check takes 60 seconds and a CT scan takes 30 minutes, why would the exam still come first? What does that tell you about clinical judgment?"
@@ -739,6 +819,11 @@
           "title": "The Hook",
           "blocks": [
             {
+              "type": "callout",
+              "style": "info",
+              "content": "Woven notebook: open your notebook now. As you move through this phase, write your answers to every reflection, discussion, and clinical scenario question before moving on. Your notebook is the record of your thinking."
+            },
+            {
               "type": "text",
               "content": "Healthcare is not just doctors and nurses. It is a vast ecosystem of over 350 different career paths - from biomedical engineers designing surgical robots to genetic counselors helping families understand inherited conditions. The question is not whether there is a career for you in healthcare. The question is which one fits your personality. Today you discover where you fit."
             },
@@ -767,6 +852,11 @@
           "style": "coral",
           "title": "The Physical Lab",
           "blocks": [
+            {
+              "type": "callout",
+              "style": "info",
+              "content": "Woven notebook: open your notebook now. As you move through this phase, write your answers to every reflection, discussion, and clinical scenario question before moving on. Your notebook is the record of your thinking."
+            },
             {
               "type": "materials",
               "title": "Materials Needed",
@@ -818,6 +908,11 @@
           "title": "AI & Digital Literacy",
           "blocks": [
             {
+              "type": "callout",
+              "style": "info",
+              "content": "Woven notebook: open your notebook now. As you move through this phase, write your answers to every reflection, discussion, and clinical scenario question before moving on. Your notebook is the record of your thinking."
+            },
+            {
               "type": "case",
               "label": "Case Study",
               "content": "<p>Healthcare workforce shortages are real and growing. The Association of American Medical Colleges projects a shortage of up to 86,000 physicians by 2036. Nursing shortages are even more severe in rural areas. But the demand is not limited to traditional roles. Biomedical engineering is one of the fastest-growing fields in the country. Health informatics specialists are in demand as every hospital system digitizes patient records. Surgical robotics technicians maintain the $2 million da Vinci systems that are now in over 6,000 hospitals worldwide. The career landscape in healthcare is broader and more diverse than most people realize.</p>"
@@ -864,6 +959,11 @@
           "blocks": [
             {
               "type": "callout",
+              "style": "info",
+              "content": "Woven notebook: open your notebook now. As you move through this phase, write your answers to every reflection, discussion, and clinical scenario question before moving on. Your notebook is the record of your thinking."
+            },
+            {
+              "type": "callout",
               "content": "The skills you practiced today - vital signs, suturing, laparoscopy, neurological assessment - are real entry points into real careers. The path starts with one step.",
               "style": "case"
             },
@@ -889,6 +989,11 @@
           "style": "teal",
           "title": "The Hook",
           "blocks": [
+            {
+              "type": "callout",
+              "style": "info",
+              "content": "Woven notebook: open your notebook now. As you move through this phase, write your answers to every reflection, discussion, and clinical scenario question before moving on. Your notebook is the record of your thinking."
+            },
             {
               "type": "text",
               "content": "When multiple patients arrive at the emergency room simultaneously, someone has to decide who gets treated first. That decision is called triage. It is not based on who is in the most pain or who arrived first. It is based on one question: who will get worse fastest without treatment? Welcome to the ultimate test."
@@ -918,6 +1023,11 @@
           "style": "coral",
           "title": "The Physical Lab",
           "blocks": [
+            {
+              "type": "callout",
+              "style": "info",
+              "content": "Woven notebook: open your notebook now. As you move through this phase, write your answers to every reflection, discussion, and clinical scenario question before moving on. Your notebook is the record of your thinking."
+            },
             {
               "type": "materials",
               "title": "Materials Needed",
@@ -975,6 +1085,11 @@
           "title": "AI & Digital Literacy",
           "blocks": [
             {
+              "type": "callout",
+              "style": "info",
+              "content": "Woven notebook: open your notebook now. As you move through this phase, write your answers to every reflection, discussion, and clinical scenario question before moving on. Your notebook is the record of your thinking."
+            },
+            {
               "type": "case",
               "label": "Case Study",
               "content": "<p>Triage is not a modern invention. The word comes from the French 'trier' meaning 'to sort.' It was first used systematically by Napoleon's chief surgeon, Dominique Jean Larrey, who sorted wounded soldiers on the battlefield by severity rather than rank. Today, the Emergency Severity Index (ESI) is the standard triage system used in most American emergency departments. Triage nurses make these decisions hundreds of times per shift. They are trained to look past the obvious (a screaming patient with a minor injury) and find the subtle (a quiet patient whose vital signs are silently crashing). It is one of the most cognitively demanding roles in healthcare.</p>"
@@ -1014,6 +1129,11 @@
           "style": "maroon",
           "title": "End of Station",
           "blocks": [
+            {
+              "type": "callout",
+              "style": "info",
+              "content": "Woven notebook: open your notebook now. As you move through this phase, write your answers to every reflection, discussion, and clinical scenario question before moving on. Your notebook is the record of your thinking."
+            },
             {
               "type": "text",
               "content": "One last decision. Re-run the simulator now that you've seen the clinical reasoning from every scenario. Based on everything you've learned today, what's your triage order this time - and how confident are you in each call?"
