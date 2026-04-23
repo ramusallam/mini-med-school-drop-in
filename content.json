@@ -14,6 +14,7 @@
       "sections": [
         {
           "type": "hook",
+          "style": "teal",
           "title": "The Hook",
           "blocks": [
             {
@@ -37,6 +38,7 @@
         },
         {
           "type": "lab",
+          "style": "coral",
           "title": "The Physical Lab",
           "blocks": [
             {
@@ -114,6 +116,7 @@
         },
         {
           "type": "digital",
+          "style": "gold",
           "title": "AI & Digital Literacy",
           "blocks": [
             {
@@ -153,8 +156,28 @@
         },
         {
           "type": "wrap",
+          "style": "maroon",
           "title": "End of Station",
           "blocks": [
+            {
+              "type": "text",
+              "content": "One last read. A community member at the screening table reports their vitals: BP 168/102, SpO2 97%, HR 88. Drop these into the interpreter - what would you flag, and how would you explain it to them without scaring them?"
+            },
+            {
+              "type": "app",
+              "url": "apps/vital-signs-interpreter.html",
+              "title": "Vital Signs Interpreter - Clinical Application",
+              "embed": true
+            },
+            {
+              "type": "step",
+              "content": "What would you flag for this patient, and what would you recommend as their next step?"
+            },
+            {
+              "type": "callout",
+              "content": "Career Spotlight: Paramedic / EMT\n\nParamedics are the first medical professionals on the scene in emergencies. They assess vital signs, provide life-saving treatment, and transport people to hospitals. Every skill you practiced at this station - BP, pulse ox, stethoscope - is exactly what paramedics do every shift. EMT certification takes about 150 hours of training. Paramedic certification requires 1,200-1,800 hours.",
+              "style": "case"
+            },
             {
               "type": "callout",
               "content": "Your vital signs data is the foundation of clinical assessment. These same three measurements are the first thing checked on every patient in every hospital.",
@@ -179,6 +202,7 @@
       "sections": [
         {
           "type": "hook",
+          "style": "teal",
           "title": "The Hook",
           "blocks": [
             {
@@ -202,6 +226,7 @@
         },
         {
           "type": "lab",
+          "style": "coral",
           "title": "The Physical Lab",
           "blocks": [
             {
@@ -276,6 +301,7 @@
         },
         {
           "type": "digital",
+          "style": "gold",
           "title": "AI & Digital Literacy",
           "blocks": [
             {
@@ -287,6 +313,17 @@
               "type": "step",
               "content": "Self-Assessment",
               "description": "Score yourself 1-5 on four criteria: spacing (even ~5mm apart), depth (consistent across stitches), tension (edges meet without blanching), and knot quality (flat and secure). Be honest - this assessment is for your own improvement."
+            },
+            {
+              "type": "step",
+              "content": "Re-run the Dexterity Trainer",
+              "description": "Now that your hands have practiced on banana and pad, go back to the digital trainer. Run the precision task one more time. Did practicing the real motions change your score?"
+            },
+            {
+              "type": "app",
+              "url": "apps/surgical-dexterity-trainer.html",
+              "title": "Surgical Dexterity Trainer - Self-Assessment",
+              "embed": true
             },
             {
               "type": "step",
@@ -315,8 +352,18 @@
         },
         {
           "type": "wrap",
+          "style": "maroon",
           "title": "End of Station",
           "blocks": [
+            {
+              "type": "step",
+              "content": "What was the hardest part of the technique - the needle angle, the knot, or the tension? What would you work on next time?"
+            },
+            {
+              "type": "callout",
+              "content": "Career Spotlight: Surgical PA / Trauma Surgeon\n\nSurgical physician assistants close incisions, manage wound care, and often perform the actual suturing while the attending surgeon moves to the next case. PA programs take 2-3 years after a bachelor's degree. Trauma surgeons do this under pressure - gunshot wounds, car accidents, falls - and make life-or-death decisions in seconds. Surgical PA salary: $110K-140K. Trauma surgeon salary: $350K-500K after 13-15 years of training.",
+              "style": "case"
+            },
             {
               "type": "callout",
               "content": "Suturing is a skill that improves with repetition. The difference between your first stitch and your hundredth will be dramatic.",
@@ -341,6 +388,7 @@
       "sections": [
         {
           "type": "hook",
+          "style": "teal",
           "title": "The Hook",
           "blocks": [
             {
@@ -369,6 +417,7 @@
         },
         {
           "type": "lab",
+          "style": "coral",
           "title": "The Physical Lab",
           "blocks": [
             {
@@ -433,6 +482,7 @@
         },
         {
           "type": "digital",
+          "style": "gold",
           "title": "AI & Digital Literacy",
           "blocks": [
             {
@@ -444,6 +494,17 @@
               "type": "step",
               "content": "Performance Review",
               "description": "Record your times for each challenge. Did you improve between your first and last attempts? What does this tell you about how the brain adapts to reversed spatial mapping?"
+            },
+            {
+              "type": "step",
+              "content": "Digital Trainer - Laparoscopy Mode",
+              "description": "Return to the precision trainer. Now that you've actually felt the fulcrum effect in the box, does the 2D screen-only challenge feel different? Run it one more time and compare your score to your warm-up round."
+            },
+            {
+              "type": "app",
+              "url": "apps/surgical-dexterity-trainer.html",
+              "title": "Surgical Dexterity Trainer - Laparoscopy Self-Assessment",
+              "embed": true
             },
             {
               "type": "step",
@@ -472,8 +533,18 @@
         },
         {
           "type": "wrap",
+          "style": "maroon",
           "title": "End of Station",
           "blocks": [
+            {
+              "type": "step",
+              "content": "If you had to convince a hospital to invest $2M in a da Vinci robot versus 20 more training hours for each resident, which would you choose and why?"
+            },
+            {
+              "type": "callout",
+              "content": "Career Spotlight: Minimally Invasive Surgeon\n\nMinimally invasive surgeons perform procedures through incisions the size of a pencil eraser using laparoscopic and robotic tools. Patients recover in days instead of weeks. The training path: 4 years undergrad, 4 years medical school, 5-7 years of general surgery residency, then 1-2 years of MIS fellowship. Salary range: $350K-600K. The field is one of the fastest-growing specialties - every new hospital system is investing in robotic surgical platforms.",
+              "style": "case"
+            },
             {
               "type": "callout",
               "content": "The frustration you felt is real - and it is exactly what every surgeon experiences during training. The difference is practice. Thousands of hours of it.",
@@ -498,6 +569,7 @@
       "sections": [
         {
           "type": "hook",
+          "style": "teal",
           "title": "The Hook",
           "blocks": [
             {
@@ -521,6 +593,7 @@
         },
         {
           "type": "lab",
+          "style": "coral",
           "title": "The Physical Lab",
           "blocks": [
             {
@@ -591,6 +664,7 @@
         },
         {
           "type": "digital",
+          "style": "gold",
           "title": "AI & Digital Literacy",
           "blocks": [
             {
@@ -625,8 +699,18 @@
         },
         {
           "type": "wrap",
+          "style": "maroon",
           "title": "End of Station",
           "blocks": [
+            {
+              "type": "step",
+              "content": "If a quick bedside neuro check takes 60 seconds and a CT scan takes 30 minutes, why would the exam still come first? What does that tell you about clinical judgment?"
+            },
+            {
+              "type": "callout",
+              "content": "Career Spotlight: Neurologist / Neurocritical Care\n\nNeurologists diagnose and treat diseases of the brain, spinal cord, and nerves. Neurocritical care specialists focus exclusively on patients in neurological crisis - strokes, traumatic brain injuries, seizures. Training takes 12-14 years total (undergrad, medical school, neurology residency, critical care fellowship). Salary range: $275K-450K. Every skill you practiced here - pupils, reflexes, patient observation - is used dozens of times per shift.",
+              "style": "case"
+            },
             {
               "type": "callout",
               "content": "You just performed the same neurological assessments used in every emergency room in the world. A 30-second test that can save a life.",
@@ -651,6 +735,7 @@
       "sections": [
         {
           "type": "hook",
+          "style": "teal",
           "title": "The Hook",
           "blocks": [
             {
@@ -679,6 +764,7 @@
         },
         {
           "type": "lab",
+          "style": "coral",
           "title": "The Physical Lab",
           "blocks": [
             {
@@ -728,6 +814,7 @@
         },
         {
           "type": "digital",
+          "style": "gold",
           "title": "AI & Digital Literacy",
           "blocks": [
             {
@@ -772,6 +859,7 @@
         },
         {
           "type": "wrap",
+          "style": "maroon",
           "title": "End of Station",
           "blocks": [
             {
@@ -798,6 +886,7 @@
       "sections": [
         {
           "type": "hook",
+          "style": "teal",
           "title": "The Hook",
           "blocks": [
             {
@@ -806,8 +895,8 @@
             },
             {
               "type": "case",
-              "label": "Today's Case Briefing",
-              "content": "<p>It is a busy night in the ER. Four patients arrive within minutes of each other. Each has different symptoms, different vital signs, and different levels of urgency. You have limited resources - one doctor, one nurse, one treatment room available immediately. Your mission: use the 5-level triage system to rank each patient from most urgent (Level 1) to least urgent (Level 5), then test your decisions against the simulator's clinical reasoning.</p>"
+              "label": "Mass Casualty Briefing",
+              "content": "<p>A charter bus has rolled on the highway. Multiple victims are arriving at your ER simultaneously: a driver with chest pain and shortness of breath, a teenager with an obviously broken arm screaming in pain, a quiet elderly passenger who is pale and sweaty but not complaining, and a young adult with a bleeding scalp laceration. You have one doctor, one nurse, one trauma bay available right now. Who gets seen first? Who can wait? In the next few minutes, you will use the 5-level triage system to rank each patient and test your reasoning against the simulator.</p>"
             },
             {
               "type": "video",
@@ -826,6 +915,7 @@
         },
         {
           "type": "lab",
+          "style": "coral",
           "title": "The Physical Lab",
           "blocks": [
             {
@@ -881,6 +971,7 @@
         },
         {
           "type": "digital",
+          "style": "gold",
           "title": "AI & Digital Literacy",
           "blocks": [
             {
@@ -920,8 +1011,28 @@
         },
         {
           "type": "wrap",
+          "style": "maroon",
           "title": "End of Station",
           "blocks": [
+            {
+              "type": "text",
+              "content": "One last decision. Re-run the simulator now that you've seen the clinical reasoning from every scenario. Based on everything you've learned today, what's your triage order this time - and how confident are you in each call?"
+            },
+            {
+              "type": "app",
+              "url": "apps/triage-simulator.html",
+              "title": "Triage Simulator - Clinical Decision Mode",
+              "embed": true
+            },
+            {
+              "type": "step",
+              "content": "Which call did you change from your first attempt? What did the feedback teach you that shifted your reasoning?"
+            },
+            {
+              "type": "callout",
+              "content": "Career Spotlight: ER Triage Nurse / Emergency Medicine Physician\n\nER triage nurses make the first clinical decision for every patient who walks through the door. They combine vital signs, chief complaint, and gut instinct to assign priority. Salary range: $65K-95K with 4 years of nursing school plus ER experience. Emergency medicine physicians lead the team, manage mass casualty events, and make the final call in minutes. Training: 4 years undergrad, 4 years medical school, 3-4 years of EM residency. Salary range: $300K-450K.",
+              "style": "case"
+            },
             {
               "type": "callout",
               "content": "Triage combines everything: vital signs knowledge, clinical reasoning, calm under pressure, and the ability to make decisions with incomplete information. It is the ultimate test of a healthcare professional.",
