@@ -1,10 +1,11 @@
 {
   "meta": {
-    "title": "Mini Med School 2026",
+    "title": "Mini Med School",
     "program": "Drop-In Station Program",
     "dates": "",
     "storageKey": "woven-mms-dropin-2026",
-    "deployUrl": "https://mini-med-school-drop-in-seven.vercel.app"
+    "deployUrl": "https://mini-med-school-drop-in-seven.vercel.app",
+    "slug": "mini-med-school-drop-in"
   },
   "days": [
     {
@@ -15,11 +16,11 @@
         {
           "type": "hook",
           "style": "teal",
-          "title": "The Hook",
+          "title": "Phase 1: Introduce the Patient Case",
           "blocks": [
             {
               "type": "callout",
-              "style": "info",
+              "style": "notebook",
               "content": "Woven notebook: open your notebook now. As you move through this phase, write your answers to every reflection, discussion, and clinical scenario question before moving on. Your notebook is the record of your thinking."
             },
             {
@@ -44,11 +45,11 @@
         {
           "type": "lab",
           "style": "coral",
-          "title": "The Physical Lab",
+          "title": "Phase 2: Skills Station - Vital Signs",
           "blocks": [
             {
               "type": "callout",
-              "style": "info",
+              "style": "notebook",
               "content": "Woven notebook: open your notebook now. As you move through this phase, write your answers to every reflection, discussion, and clinical scenario question before moving on. Your notebook is the record of your thinking."
             },
             {
@@ -127,11 +128,11 @@
         {
           "type": "digital",
           "style": "gold",
-          "title": "AI & Digital Literacy",
+          "title": "Phase 3: Data Collection & Analysis",
           "blocks": [
             {
               "type": "callout",
-              "style": "info",
+              "style": "notebook",
               "content": "Woven notebook: open your notebook now. As you move through this phase, write your answers to every reflection, discussion, and clinical scenario question before moving on. Your notebook is the record of your thinking."
             },
             {
@@ -172,11 +173,11 @@
         {
           "type": "wrap",
           "style": "maroon",
-          "title": "End of Station",
+          "title": "Phase 4: Reflection & Career Connection",
           "blocks": [
             {
               "type": "callout",
-              "style": "info",
+              "style": "notebook",
               "content": "Woven notebook: open your notebook now. As you move through this phase, write your answers to every reflection, discussion, and clinical scenario question before moving on. Your notebook is the record of your thinking."
             },
             {
@@ -223,11 +224,11 @@
         {
           "type": "hook",
           "style": "teal",
-          "title": "The Hook",
+          "title": "Phase 1: Introduce the Patient Case",
           "blocks": [
             {
               "type": "callout",
-              "style": "info",
+              "style": "notebook",
               "content": "Woven notebook: open your notebook now. As you move through this phase, write your answers to every reflection, discussion, and clinical scenario question before moving on. Your notebook is the record of your thinking."
             },
             {
@@ -252,11 +253,11 @@
         {
           "type": "lab",
           "style": "coral",
-          "title": "The Physical Lab",
+          "title": "Phase 2: Suturing Lab",
           "blocks": [
             {
               "type": "callout",
-              "style": "info",
+              "style": "notebook",
               "content": "Woven notebook: open your notebook now. As you move through this phase, write your answers to every reflection, discussion, and clinical scenario question before moving on. Your notebook is the record of your thinking."
             },
             {
@@ -332,11 +333,11 @@
         {
           "type": "digital",
           "style": "gold",
-          "title": "AI & Digital Literacy",
+          "title": "Phase 3: Data Collection & Analysis",
           "blocks": [
             {
               "type": "callout",
-              "style": "info",
+              "style": "notebook",
               "content": "Woven notebook: open your notebook now. As you move through this phase, write your answers to every reflection, discussion, and clinical scenario question before moving on. Your notebook is the record of your thinking."
             },
             {
@@ -388,11 +389,11 @@
         {
           "type": "wrap",
           "style": "maroon",
-          "title": "End of Station",
+          "title": "Phase 4: Reflection & Career Connection",
           "blocks": [
             {
               "type": "callout",
-              "style": "info",
+              "style": "notebook",
               "content": "Woven notebook: open your notebook now. As you move through this phase, write your answers to every reflection, discussion, and clinical scenario question before moving on. Your notebook is the record of your thinking."
             },
             {
@@ -429,11 +430,11 @@
         {
           "type": "hook",
           "style": "teal",
-          "title": "The Hook",
+          "title": "Phase 1: Introduce the Patient Case",
           "blocks": [
             {
               "type": "callout",
-              "style": "info",
+              "style": "notebook",
               "content": "Woven notebook: open your notebook now. As you move through this phase, write your answers to every reflection, discussion, and clinical scenario question before moving on. Your notebook is the record of your thinking."
             },
             {
@@ -447,8 +448,8 @@
             },
             {
               "type": "video",
-              "url": "IB_NMkMF-qU",
-              "title": "What Is Laparoscopy?"
+              "url": "XOKJPfqznOI",
+              "title": "Introduction to Laparoscopic Surgery"
             },
             {
               "type": "checklist",
@@ -463,11 +464,11 @@
         {
           "type": "lab",
           "style": "coral",
-          "title": "The Physical Lab",
+          "title": "Phase 2: Laparoscopic Training Lab",
           "blocks": [
             {
               "type": "callout",
-              "style": "info",
+              "style": "notebook",
               "content": "Woven notebook: open your notebook now. As you move through this phase, write your answers to every reflection, discussion, and clinical scenario question before moving on. Your notebook is the record of your thinking."
             },
             {
@@ -533,11 +534,11 @@
         {
           "type": "digital",
           "style": "gold",
-          "title": "AI & Digital Literacy",
+          "title": "Phase 3: Data Collection & Analysis",
           "blocks": [
             {
               "type": "callout",
-              "style": "info",
+              "style": "notebook",
               "content": "Woven notebook: open your notebook now. As you move through this phase, write your answers to every reflection, discussion, and clinical scenario question before moving on. Your notebook is the record of your thinking."
             },
             {
@@ -589,11 +590,11 @@
         {
           "type": "wrap",
           "style": "maroon",
-          "title": "End of Station",
+          "title": "Phase 4: Reflection & Career Connection",
           "blocks": [
             {
               "type": "callout",
-              "style": "info",
+              "style": "notebook",
               "content": "Woven notebook: open your notebook now. As you move through this phase, write your answers to every reflection, discussion, and clinical scenario question before moving on. Your notebook is the record of your thinking."
             },
             {
@@ -630,11 +631,11 @@
         {
           "type": "hook",
           "style": "teal",
-          "title": "The Hook",
+          "title": "Phase 1: Introduce the Patient Case",
           "blocks": [
             {
               "type": "callout",
-              "style": "info",
+              "style": "notebook",
               "content": "Woven notebook: open your notebook now. As you move through this phase, write your answers to every reflection, discussion, and clinical scenario question before moving on. Your notebook is the record of your thinking."
             },
             {
@@ -659,11 +660,11 @@
         {
           "type": "lab",
           "style": "coral",
-          "title": "The Physical Lab",
+          "title": "Phase 2: Neurological Assessment Lab",
           "blocks": [
             {
               "type": "callout",
-              "style": "info",
+              "style": "notebook",
               "content": "Woven notebook: open your notebook now. As you move through this phase, write your answers to every reflection, discussion, and clinical scenario question before moving on. Your notebook is the record of your thinking."
             },
             {
@@ -735,11 +736,11 @@
         {
           "type": "digital",
           "style": "gold",
-          "title": "AI & Digital Literacy",
+          "title": "Phase 3: Data Collection & Analysis",
           "blocks": [
             {
               "type": "callout",
-              "style": "info",
+              "style": "notebook",
               "content": "Woven notebook: open your notebook now. As you move through this phase, write your answers to every reflection, discussion, and clinical scenario question before moving on. Your notebook is the record of your thinking."
             },
             {
@@ -775,11 +776,11 @@
         {
           "type": "wrap",
           "style": "maroon",
-          "title": "End of Station",
+          "title": "Phase 4: Reflection & Career Connection",
           "blocks": [
             {
               "type": "callout",
-              "style": "info",
+              "style": "notebook",
               "content": "Woven notebook: open your notebook now. As you move through this phase, write your answers to every reflection, discussion, and clinical scenario question before moving on. Your notebook is the record of your thinking."
             },
             {
@@ -816,11 +817,11 @@
         {
           "type": "hook",
           "style": "teal",
-          "title": "The Hook",
+          "title": "Phase 1: Introduce the Patient Case",
           "blocks": [
             {
               "type": "callout",
-              "style": "info",
+              "style": "notebook",
               "content": "Woven notebook: open your notebook now. As you move through this phase, write your answers to every reflection, discussion, and clinical scenario question before moving on. Your notebook is the record of your thinking."
             },
             {
@@ -850,11 +851,11 @@
         {
           "type": "lab",
           "style": "coral",
-          "title": "The Physical Lab",
+          "title": "Phase 2: Career Exploration Lab",
           "blocks": [
             {
               "type": "callout",
-              "style": "info",
+              "style": "notebook",
               "content": "Woven notebook: open your notebook now. As you move through this phase, write your answers to every reflection, discussion, and clinical scenario question before moving on. Your notebook is the record of your thinking."
             },
             {
@@ -905,11 +906,11 @@
         {
           "type": "digital",
           "style": "gold",
-          "title": "AI & Digital Literacy",
+          "title": "Phase 3: Data Collection & Analysis",
           "blocks": [
             {
               "type": "callout",
-              "style": "info",
+              "style": "notebook",
               "content": "Woven notebook: open your notebook now. As you move through this phase, write your answers to every reflection, discussion, and clinical scenario question before moving on. Your notebook is the record of your thinking."
             },
             {
@@ -955,11 +956,11 @@
         {
           "type": "wrap",
           "style": "maroon",
-          "title": "End of Station",
+          "title": "Phase 4: Reflection & Career Connection",
           "blocks": [
             {
               "type": "callout",
-              "style": "info",
+              "style": "notebook",
               "content": "Woven notebook: open your notebook now. As you move through this phase, write your answers to every reflection, discussion, and clinical scenario question before moving on. Your notebook is the record of your thinking."
             },
             {
@@ -987,11 +988,11 @@
         {
           "type": "hook",
           "style": "teal",
-          "title": "The Hook",
+          "title": "Phase 1: Introduce the Patient Case",
           "blocks": [
             {
               "type": "callout",
-              "style": "info",
+              "style": "notebook",
               "content": "Woven notebook: open your notebook now. As you move through this phase, write your answers to every reflection, discussion, and clinical scenario question before moving on. Your notebook is the record of your thinking."
             },
             {
@@ -1021,11 +1022,11 @@
         {
           "type": "lab",
           "style": "coral",
-          "title": "The Physical Lab",
+          "title": "Phase 2: Triage & Simulation Stations",
           "blocks": [
             {
               "type": "callout",
-              "style": "info",
+              "style": "notebook",
               "content": "Woven notebook: open your notebook now. As you move through this phase, write your answers to every reflection, discussion, and clinical scenario question before moving on. Your notebook is the record of your thinking."
             },
             {
@@ -1082,11 +1083,11 @@
         {
           "type": "digital",
           "style": "gold",
-          "title": "AI & Digital Literacy",
+          "title": "Phase 3: Data Collection & Analysis",
           "blocks": [
             {
               "type": "callout",
-              "style": "info",
+              "style": "notebook",
               "content": "Woven notebook: open your notebook now. As you move through this phase, write your answers to every reflection, discussion, and clinical scenario question before moving on. Your notebook is the record of your thinking."
             },
             {
@@ -1127,11 +1128,11 @@
         {
           "type": "wrap",
           "style": "maroon",
-          "title": "End of Station",
+          "title": "Phase 4: Reflection & Career Connection",
           "blocks": [
             {
               "type": "callout",
-              "style": "info",
+              "style": "notebook",
               "content": "Woven notebook: open your notebook now. As you move through this phase, write your answers to every reflection, discussion, and clinical scenario question before moving on. Your notebook is the record of your thinking."
             },
             {

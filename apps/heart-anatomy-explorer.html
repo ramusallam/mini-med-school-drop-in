@@ -1,0 +1,1218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Heart Anatomy Explorer - Woven Learning Mini Med School</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+--teal:#2A9D8F;--teal-dark:#1A6B6B;--gold:#D4A843;--navy:#1B3A5C;
+--coral:#E65C3C;--maroon:#7A2D4E;--bg:#F4F6F8;--card:#FFFFFF;
+--text:#333;--text-light:#667;--shadow:0 2px 12px rgba(0,0,0,.12);
+--radius:10px;
+}
+html,body{height:100%;overflow:hidden}
+body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column}
+
+/* Header */
+.lab-header{background:linear-gradient(135deg,var(--navy) 0%,var(--teal) 100%);color:#fff;padding:10px 20px;display:flex;align-items:center;gap:14px;flex-shrink:0;border-bottom:3px solid var(--gold)}
+.lab-header h1{font-size:1.15rem;font-weight:700;letter-spacing:.5px}
+.lab-header .subtitle{font-size:.72rem;color:rgba(255,255,255,.55);margin-top:1px}
+.ecg-mini{width:80px;height:24px;opacity:.5}
+
+/* Tabs */
+.tab-bar{display:flex;background:#fff;border-bottom:2px solid #e8ecf0;flex-shrink:0;overflow-x:auto}
+.tab-btn{flex:1;min-width:0;padding:10px 8px 8px;font-size:.78rem;font-weight:600;color:var(--text-light);background:none;border:none;cursor:pointer;position:relative;transition:color .2s;white-space:nowrap}
+.tab-btn:hover{color:var(--teal)}
+.tab-btn.active{color:var(--teal)}
+.tab-btn.active::after{content:'';position:absolute;bottom:-2px;left:10%;width:80%;height:3px;background:var(--teal);border-radius:3px 3px 0 0}
+
+/* Main Content */
+.content{flex:1;overflow:hidden;position:relative}
+.tab-panel{position:absolute;inset:0;display:none;overflow-y:auto;overflow-x:hidden}
+.tab-panel.active{display:flex}
+
+/* Tab 1 */
+.heart-explorer{display:flex;flex:1;min-height:0}
+.heart-svg-wrap{flex:1;display:flex;align-items:center;justify-content:center;position:relative;padding:10px;min-width:0}
+.heart-svg-wrap svg{width:100%;max-width:480px;height:auto}
+.info-panel{width:320px;background:#fff;border-left:1px solid #e8ecf0;padding:20px;overflow-y:auto;transition:transform .3s ease,opacity .3s ease;flex-shrink:0}
+.info-panel.hidden{transform:translateX(20px);opacity:0;pointer-events:none}
+.info-panel h2{font-size:1.2rem;color:var(--navy);margin-bottom:2px}
+.info-panel .clinical-role{font-size:.78rem;color:var(--teal);font-weight:600;margin-bottom:10px}
+.info-panel .description{font-size:.85rem;line-height:1.5;margin-bottom:12px}
+.info-panel .fun-fact{background:linear-gradient(135deg,#FFF8E8,#FFF3D6);border-left:3px solid var(--gold);padding:10px 12px;border-radius:0 var(--radius) var(--radius) 0;font-size:.8rem;line-height:1.45;margin-bottom:12px}
+.info-panel .fun-fact strong{color:var(--gold)}
+.blood-indicator{display:inline-flex;align-items:center;gap:6px;font-size:.75rem;font-weight:600;padding:4px 10px;border-radius:20px}
+.blood-indicator.oxy{background:#FDEAEA;color:#C0392B}
+.blood-indicator.deoxy{background:#E8F0FE;color:#2E5FA1}
+.blood-indicator.both{background:#F0E8FE;color:#6C3FA0}
+.label-toggle{position:absolute;top:12px;right:12px;z-index:5;display:flex;align-items:center;gap:6px;font-size:.72rem;font-weight:600;color:var(--text-light);background:rgba(255,255,255,.92);padding:5px 10px;border-radius:20px;border:1px solid #ddd;cursor:pointer;user-select:none}
+.label-toggle input{display:none}
+.toggle-track{width:32px;height:18px;background:#ccc;border-radius:9px;position:relative;transition:background .2s}
+.toggle-track::after{content:'';position:absolute;top:2px;left:2px;width:14px;height:14px;background:#fff;border-radius:50%;transition:transform .2s}
+.label-toggle input:checked+.toggle-track{background:var(--teal)}
+.label-toggle input:checked+.toggle-track::after{transform:translateX(14px)}
+.heart-structure{cursor:pointer;transition:filter .2s}
+.heart-structure:hover{filter:brightness(1.15)}
+.heart-structure.selected{animation:pulseGlow 1.2s ease-in-out infinite}
+@keyframes pulseGlow{0%,100%{filter:drop-shadow(0 0 4px rgba(42,157,143,.4))}50%{filter:drop-shadow(0 0 12px rgba(42,157,143,.8))}}
+
+/* Tab 2 */
+.flow-tab{flex-direction:column;display:flex;height:100%}
+.flow-main{flex:1;position:relative;display:flex;min-height:0}
+.flow-canvas-wrap{flex:1;position:relative}
+.flow-canvas-wrap canvas{width:100%;height:100%}
+.flow-controls{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(27,58,92,.95));padding:14px 20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.flow-controls button{background:var(--teal);color:#fff;border:none;padding:6px 14px;border-radius:6px;font-size:.78rem;font-weight:600;cursor:pointer;transition:background .2s}
+.flow-controls button:hover{background:var(--teal-dark)}
+.flow-controls button.active{background:var(--gold);color:var(--navy)}
+.flow-controls label{color:#fff;font-size:.72rem;display:flex;align-items:center;gap:6px}
+.flow-controls input[type=range]{width:100px;accent-color:var(--teal)}
+.bpm-display{position:absolute;top:12px;right:12px;background:rgba(15,36,64,.92);color:#fff;padding:10px 14px;border-radius:var(--radius);font-size:.8rem;display:flex;align-items:center;gap:10px;border:1px solid rgba(255,255,255,.1)}
+.bpm-num{font-size:1.6rem;font-weight:700;color:var(--coral);font-variant-numeric:tabular-nums}
+.ecg-trace{width:120px;height:36px}
+.narration-box{position:absolute;top:12px;left:12px;right:160px;background:rgba(15,36,64,.92);color:#fff;padding:10px 14px;border-radius:var(--radius);font-size:.8rem;line-height:1.4;border-left:3px solid var(--gold);display:none}
+.narration-box.visible{display:block}
+
+/* Tab 3 */
+.marco-tab{flex-direction:column;display:flex;height:100%}
+.marco-main{flex:1;display:flex;min-height:0;position:relative}
+.marco-canvas-wrap{flex:1;position:relative}
+.marco-canvas-wrap canvas{width:100%;height:100%}
+.marco-side{width:280px;background:#fff;border-left:1px solid #e8ecf0;padding:16px;overflow-y:auto;flex-shrink:0;display:flex;flex-direction:column;gap:12px}
+.marco-side h3{font-size:.95rem;color:var(--navy);margin-bottom:4px}
+.slider-wrap{padding:8px 0}
+.slider-wrap label{font-size:.75rem;font-weight:600;color:var(--text-light);display:block;margin-bottom:4px}
+.slider-wrap input[type=range]{width:100%;accent-color:var(--coral)}
+.slider-val{text-align:center;font-size:1.5rem;font-weight:800;color:var(--coral);font-variant-numeric:tabular-nums}
+.stat-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #f0f0f0;font-size:.8rem}
+.stat-row .stat-label{color:var(--text-light)}
+.stat-row .stat-value{font-weight:700;font-variant-numeric:tabular-nums}
+.urgency-badge{display:inline-block;padding:2px 10px;border-radius:10px;font-size:.72rem;font-weight:700;color:#fff}
+.urgency-green{background:#27ae60}
+.urgency-yellow{background:#f39c12}
+.urgency-red{background:var(--coral);animation:urgPulse 1s infinite}
+@keyframes urgPulse{0%,100%{opacity:1}50%{opacity:.7}}
+.marco-callout{background:linear-gradient(135deg,#FFF3E0,#FFE0B2);border:2px solid var(--gold);border-radius:var(--radius);padding:12px;font-size:.8rem;line-height:1.45;display:none}
+.marco-callout.visible{display:block}
+.marco-callout strong{color:var(--navy)}
+.stemi-alert{background:linear-gradient(135deg,#FFEBEE,#FFCDD2);border:3px solid var(--coral);border-radius:var(--radius);padding:14px;text-align:center;display:none;animation:stemiBorder 1s infinite}
+.stemi-alert.visible{display:block}
+.stemi-alert h3{color:var(--coral);font-size:1.1rem;margin-bottom:6px}
+@keyframes stemiBorder{0%,100%{border-color:var(--coral)}50%{border-color:#ff0000}}
+.ecg-marco{width:100%;height:60px;background:#0a1628;border-radius:6px}
+
+/* Tab 4 */
+.quiz-tab{flex-direction:column;padding:20px;align-items:center}
+.quiz-container{max-width:700px;width:100%;margin:0 auto}
+.quiz-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.quiz-progress{font-size:.8rem;color:var(--text-light)}
+.quiz-timer{font-size:1.1rem;font-weight:700;color:var(--navy);display:flex;align-items:center;gap:6px}
+.quiz-timer.warning{color:var(--coral);animation:timerPulse .5s infinite}
+@keyframes timerPulse{0%,100%{opacity:1}50%{opacity:.5}}
+.timer-circle{width:36px;height:36px}
+.quiz-question{background:#fff;border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:16px}
+.quiz-question h3{font-size:1rem;color:var(--navy);margin-bottom:14px;line-height:1.4}
+.quiz-mini-heart{width:200px;height:160px;margin:0 auto 14px;display:block}
+.quiz-options{display:flex;flex-direction:column;gap:8px}
+.quiz-opt{padding:10px 14px;border:2px solid #e0e4e8;border-radius:8px;font-size:.85rem;cursor:pointer;transition:all .2s;background:#fff;text-align:left;font-family:inherit;color:var(--text)}
+.quiz-opt:hover{border-color:var(--teal);background:#F0FAF9}
+.quiz-opt.correct{border-color:#27ae60;background:#E8F8F0;color:#1a7a42;font-weight:600}
+.quiz-opt.wrong{border-color:var(--coral);background:#FDEAEA;color:var(--coral)}
+.quiz-opt.reveal{border-color:#27ae60;background:#E8F8F0}
+.quiz-opt:disabled{cursor:default;opacity:.85}
+.quiz-feedback{margin-top:12px;padding:10px 14px;border-radius:8px;font-size:.82rem;line-height:1.45;display:none}
+.quiz-feedback.correct{display:block;background:#E8F8F0;border-left:3px solid #27ae60;color:#1a7a42}
+.quiz-feedback.wrong{display:block;background:#FDEAEA;border-left:3px solid var(--coral);color:var(--coral)}
+.quiz-next{margin-top:14px;background:var(--teal);color:#fff;border:none;padding:8px 20px;border-radius:6px;font-size:.85rem;font-weight:600;cursor:pointer;display:none}
+.quiz-next:hover{background:var(--teal-dark)}
+.quiz-results{text-align:center;padding:30px 20px}
+.quiz-results h2{font-size:1.6rem;color:var(--navy);margin-bottom:4px}
+.quiz-results .cert-title{font-size:1.1rem;color:var(--teal);font-weight:700;margin-bottom:16px}
+.quiz-results .score-big{font-size:3rem;font-weight:800;color:var(--gold);margin:10px 0}
+.review-btn{margin-top:14px;background:var(--navy);color:#fff;border:none;padding:8px 20px;border-radius:6px;font-size:.85rem;font-weight:600;cursor:pointer}
+.review-btn:hover{background:#0F2440}
+.restart-btn{margin-top:8px;background:none;color:var(--teal);border:2px solid var(--teal);padding:8px 20px;border-radius:6px;font-size:.85rem;font-weight:600;cursor:pointer}
+
+/* Responsive */
+@media(max-width:720px){
+  .heart-explorer{flex-direction:column}
+  .info-panel{width:100%;border-left:none;border-top:1px solid #e8ecf0;max-height:45%}
+  .marco-main{flex-direction:column}
+  .marco-side{width:100%;border-left:none;border-top:1px solid #e8ecf0;max-height:45%}
+  .flow-controls{flex-wrap:wrap;gap:8px}
+  .narration-box{right:12px}
+  .bpm-display{top:auto;bottom:70px}
+}
+@media(max-width:480px){
+  .tab-btn{font-size:.68rem;padding:8px 4px}
+  .lab-header h1{font-size:.95rem}
+}
+</style>
+</head>
+<body>
+
+<div class="lab-header">
+  <svg viewBox="0 0 40 40" width="24" height="24" style="flex-shrink:0"><polygon points="13,2 24,13 13,24 2,13" fill="#0ABAB5" opacity="0.85"/><polygon points="27,2 38,13 27,24 16,13" fill="#F5B731" opacity="0.85"/><polygon points="13,16 24,27 13,38 2,27" fill="#E65C3C" opacity="0.85"/><polygon points="27,16 38,27 27,38 16,27" fill="#7A2D4E" opacity="0.85"/></svg>
+  <div style="flex:1">
+    <h1>Mini Med School</h1>
+    <div class="subtitle">Session 2: Heart Anatomy Explorer</div>
+  </div>
+  <span style="font-size:20px">&#x2764;&#xFE0F;</span>
+</div>
+
+<div class="tab-bar">
+  <button class="tab-btn active" data-tab="explore" onclick="switchTab('explore')">The Heart</button>
+  <button class="tab-btn" data-tab="flow" onclick="switchTab('flow')">Blood Flow Journey</button>
+  <button class="tab-btn" data-tab="marco" onclick="switchTab('marco')">Marco's Blockage</button>
+  <button class="tab-btn" data-tab="quiz" onclick="switchTab('quiz')">Test Yourself</button>
+</div>
+
+<div class="content">
+
+<!-- TAB 1: THE HEART -->
+<div class="tab-panel active" id="panel-explore">
+<div class="heart-explorer">
+<div class="heart-svg-wrap">
+  <label class="label-toggle"><input type="checkbox" id="labelToggle" onchange="toggleLabels()"><span class="toggle-track"></span>Labels</label>
+  <svg id="heartSVG" viewBox="0 0 500 520" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="gRA" cx="45%" cy="40%"><stop offset="0%" stop-color="#D4626A"/><stop offset="70%" stop-color="#A03040"/><stop offset="100%" stop-color="#7A2030"/></radialGradient>
+      <radialGradient id="gLA" cx="55%" cy="40%"><stop offset="0%" stop-color="#C74B4B"/><stop offset="70%" stop-color="#982838"/><stop offset="100%" stop-color="#701828"/></radialGradient>
+      <radialGradient id="gRV" cx="40%" cy="45%"><stop offset="0%" stop-color="#D46A72"/><stop offset="70%" stop-color="#A83848"/><stop offset="100%" stop-color="#7A2030"/></radialGradient>
+      <radialGradient id="gLV" cx="60%" cy="45%"><stop offset="0%" stop-color="#C04040"/><stop offset="70%" stop-color="#8C2030"/><stop offset="100%" stop-color="#601020"/></radialGradient>
+      <linearGradient id="gAorta" x1="0" y1="1" x2="0" y2="0"><stop offset="0%" stop-color="#C83838"/><stop offset="100%" stop-color="#E85050"/></linearGradient>
+      <linearGradient id="gPA" x1="0" y1="1" x2="0" y2="0"><stop offset="0%" stop-color="#4A6FA5"/><stop offset="100%" stop-color="#6B8EC4"/></linearGradient>
+      <linearGradient id="gSVC" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#5B7EAD"/><stop offset="100%" stop-color="#3D5A80"/></linearGradient>
+      <linearGradient id="gIVC" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#3D5A80"/><stop offset="100%" stop-color="#5B7EAD"/></linearGradient>
+      <linearGradient id="gPV" x1="1" y1="0" x2="0" y2="0"><stop offset="0%" stop-color="#D45050"/><stop offset="100%" stop-color="#B83838"/></linearGradient>
+      <linearGradient id="gMuscle" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#9E3040"/><stop offset="50%" stop-color="#7A2030"/><stop offset="100%" stop-color="#601828"/></linearGradient>
+      <linearGradient id="gCoronary" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#E8A040"/><stop offset="100%" stop-color="#D08030"/></linearGradient>
+      <filter id="innerShadow"><feGaussianBlur in="SourceAlpha" stdDeviation="3" result="blur"/><feOffset dx="1" dy="2"/><feComposite in2="SourceAlpha" operator="arithmetic" k2="-1" k3="1" result="shadow"/><feFlood flood-color="#000" flood-opacity=".25"/><feComposite in2="shadow" operator="in"/><feComposite in="SourceGraphic" operator="over"/></filter>
+      <filter id="glow"><feGaussianBlur stdDeviation="4" result="g"/><feMerge><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    </defs>
+
+    <!-- Outer heart muscle wall -->
+    <path d="M250,480 C250,480 60,360 45,230 C30,130 80,60 155,55 C210,52 245,85 250,110 C255,85 290,52 345,55 C420,60 470,130 455,230 C440,360 250,480 250,480Z" fill="url(#gMuscle)" stroke="#501020" stroke-width="2" filter="url(#innerShadow)"/>
+
+    <!-- SVC -->
+    <path class="heart-structure" data-id="svc" d="M145,55 C145,40 135,10 130,0 L155,0 C155,10 160,40 160,55Z" fill="url(#gSVC)" stroke="#2E4A6B" stroke-width="1.5"/>
+    <!-- IVC -->
+    <path class="heart-structure" data-id="ivc" d="M160,430 C155,460 140,500 135,520 L165,520 C165,500 175,460 175,430Z" fill="url(#gIVC)" stroke="#2E4A6B" stroke-width="1.5"/>
+    <!-- PA -->
+    <path class="heart-structure" data-id="pa" d="M240,100 C230,70 200,35 180,20 L170,0 L200,0 C210,15 235,50 255,80Z" fill="url(#gPA)" stroke="#3A5A8A" stroke-width="1.5"/>
+    <path d="M200,0 C210,20 260,45 280,20 L295,0" fill="none" stroke="url(#gPA)" stroke-width="14" stroke-linecap="round" opacity=".7"/>
+    <!-- Aorta -->
+    <path class="heart-structure" data-id="aorta" d="M270,100 C275,60 290,25 310,10 C340,-10 380,-5 390,20 C400,45 395,80 370,110 L360,100 C380,75 382,45 375,25 C368,5 345,2 325,15 C305,28 290,65 285,100Z" fill="url(#gAorta)" stroke="#A02020" stroke-width="1.5"/>
+    <!-- PV -->
+    <path class="heart-structure" data-id="pv" d="M400,130 C430,115 470,105 500,100 L500,115 C475,118 440,128 415,140Z" fill="url(#gPV)" stroke="#A03030" stroke-width="1"/>
+    <path d="M400,155 C430,145 470,140 500,138 L500,150 C475,150 440,155 415,163Z" fill="url(#gPV)" stroke="#A03030" stroke-width="1"/>
+    <!-- RA -->
+    <path class="heart-structure" data-id="ra" d="M135,120 C100,130 80,170 85,210 C90,250 120,265 150,260 L160,180 C160,150 150,125 135,120Z" fill="url(#gRA)" stroke="#802838" stroke-width="1" filter="url(#innerShadow)"/>
+    <!-- LA -->
+    <path class="heart-structure" data-id="la" d="M365,120 C400,130 420,170 415,210 C410,250 380,265 350,260 L340,180 C340,150 350,125 365,120Z" fill="url(#gLA)" stroke="#701828" stroke-width="1" filter="url(#innerShadow)"/>
+    <!-- Tricuspid -->
+    <path class="heart-structure" data-id="tv" d="M120,265 C140,275 155,278 175,268" fill="none" stroke="#E8C8C8" stroke-width="4" stroke-linecap="round"/>
+    <ellipse cx="148" cy="270" rx="30" ry="5" fill="none" stroke="#D0A0A0" stroke-width="1.5" stroke-dasharray="3,2"/>
+    <!-- Mitral -->
+    <path class="heart-structure" data-id="mv" d="M325,265 C345,275 360,278 380,268" fill="none" stroke="#E8C8C8" stroke-width="4" stroke-linecap="round"/>
+    <ellipse cx="353" cy="270" rx="30" ry="5" fill="none" stroke="#D0A0A0" stroke-width="1.5" stroke-dasharray="3,2"/>
+    <!-- RV -->
+    <path class="heart-structure" data-id="rv" d="M100,275 C80,320 75,380 95,420 C120,455 180,475 240,478 L250,480 C250,480 230,400 220,340 C215,310 200,280 175,272Z" fill="url(#gRV)" stroke="#802838" stroke-width="1" filter="url(#innerShadow)"/>
+    <!-- Septum -->
+    <path class="heart-structure" data-id="septum" d="M245,270 C242,320 242,380 248,440 L255,440 C258,380 258,320 255,270Z" fill="#8A2838" stroke="#601020" stroke-width="1" opacity=".8"/>
+    <!-- LV -->
+    <path class="heart-structure" data-id="lv" d="M400,275 C420,320 425,380 405,420 C380,455 320,475 260,478 L250,480 C250,480 270,400 280,340 C285,310 300,280 325,272Z" fill="url(#gLV)" stroke="#601020" stroke-width="1" filter="url(#innerShadow)"/>
+    <!-- Aortic Valve -->
+    <path class="heart-structure" data-id="av" d="M258,112 C265,105 280,105 285,112" fill="none" stroke="#E8D0D0" stroke-width="3.5" stroke-linecap="round"/>
+    <circle cx="271" cy="108" r="8" fill="none" stroke="#D0A8A8" stroke-width="1.5" stroke-dasharray="2,2"/>
+    <!-- Pulmonary Valve -->
+    <path class="heart-structure" data-id="pulv" d="M228,108 C235,100 248,100 252,108" fill="none" stroke="#C8D8E8" stroke-width="3.5" stroke-linecap="round"/>
+    <circle cx="240" cy="104" r="8" fill="none" stroke="#A0B8D0" stroke-width="1.5" stroke-dasharray="2,2"/>
+    <!-- Coronary: LAD -->
+    <g class="heart-structure" data-id="lad">
+      <path d="M268,120 C265,160 260,220 255,290 C252,340 250,400 250,450" fill="none" stroke="url(#gCoronary)" stroke-width="3" stroke-linecap="round" opacity=".85"/>
+      <path d="M262,180 C245,195 230,205 218,210" fill="none" stroke="#D09040" stroke-width="1.8" stroke-linecap="round" opacity=".7"/>
+      <path d="M258,240 C240,252 225,258 215,260" fill="none" stroke="#D09040" stroke-width="1.5" stroke-linecap="round" opacity=".6"/>
+      <path d="M256,310 C242,320 230,325 222,326" fill="none" stroke="#D09040" stroke-width="1.2" stroke-linecap="round" opacity=".5"/>
+    </g>
+    <!-- Coronary: RCA -->
+    <g class="heart-structure" data-id="rca">
+      <path d="M232,120 C210,140 170,180 140,230 C120,270 115,320 125,370" fill="none" stroke="url(#gCoronary)" stroke-width="2.5" stroke-linecap="round" opacity=".75"/>
+      <path d="M175,190 C162,195 152,200 148,205" fill="none" stroke="#D09040" stroke-width="1.5" stroke-linecap="round" opacity=".5"/>
+    </g>
+    <!-- Coronary: LCx -->
+    <g class="heart-structure" data-id="lcx">
+      <path d="M280,125 C310,145 350,190 375,240 C395,280 400,330 390,370" fill="none" stroke="url(#gCoronary)" stroke-width="2.5" stroke-linecap="round" opacity=".75"/>
+      <path d="M340,185 C355,195 362,205 365,212" fill="none" stroke="#D09040" stroke-width="1.5" stroke-linecap="round" opacity=".5"/>
+    </g>
+
+    <!-- Labels (hidden by default) -->
+    <g id="heartLabels" opacity="0" style="transition:opacity .3s">
+      <line x1="105" y1="180" x2="60" y2="140" stroke="#555" stroke-width=".8"/><text x="55" y="136" fill="#333" font-size="10" font-weight="600" text-anchor="end">Right Atrium</text>
+      <line x1="395" y1="180" x2="440" y2="140" stroke="#555" stroke-width=".8"/><text x="445" y="136" fill="#333" font-size="10" font-weight="600">Left Atrium</text>
+      <line x1="150" y1="370" x2="60" y2="380" stroke="#555" stroke-width=".8"/><text x="55" y="384" fill="#333" font-size="10" font-weight="600" text-anchor="end">Right Ventricle</text>
+      <line x1="350" y1="370" x2="440" y2="380" stroke="#555" stroke-width=".8"/><text x="445" y="384" fill="#333" font-size="10" font-weight="600">Left Ventricle</text>
+      <line x1="320" y1="15" x2="400" y2="5" stroke="#555" stroke-width=".8"/><text x="405" y="9" fill="#333" font-size="10" font-weight="600">Aorta</text>
+      <line x1="185" y1="15" x2="120" y2="5" stroke="#555" stroke-width=".8"/><text x="115" y="9" fill="#333" font-size="10" font-weight="600" text-anchor="end">Pulmonary Artery</text>
+      <line x1="140" y1="30" x2="90" y2="20" stroke="#555" stroke-width=".8"/><text x="85" y="24" fill="#333" font-size="9" font-weight="600" text-anchor="end">SVC</text>
+      <line x1="150" y1="470" x2="80" y2="490" stroke="#555" stroke-width=".8"/><text x="75" y="494" fill="#333" font-size="9" font-weight="600" text-anchor="end">IVC</text>
+      <line x1="148" y1="268" x2="65" y2="268" stroke="#555" stroke-width=".8"/><text x="60" y="272" fill="#333" font-size="9" font-weight="600" text-anchor="end">Tricuspid</text>
+      <line x1="353" y1="268" x2="435" y2="268" stroke="#555" stroke-width=".8"/><text x="440" y="272" fill="#333" font-size="9" font-weight="600">Mitral</text>
+      <line x1="271" y1="107" x2="310" y2="80" stroke="#555" stroke-width=".8"/><text x="315" y="78" fill="#333" font-size="9" font-weight="600">Aortic Valve</text>
+      <line x1="240" y1="103" x2="200" y2="78" stroke="#555" stroke-width=".8"/><text x="195" y="76" fill="#333" font-size="9" font-weight="600" text-anchor="end">Pulmonary Valve</text>
+      <line x1="258" y1="200" x2="195" y2="170" stroke="#D09040" stroke-width=".8"/><text x="190" y="168" fill="#B07020" font-size="9" font-weight="600" text-anchor="end">LAD</text>
+      <line x1="150" y1="250" x2="80" y2="300" stroke="#D09040" stroke-width=".8"/><text x="75" y="304" fill="#B07020" font-size="9" font-weight="600" text-anchor="end">RCA</text>
+      <line x1="370" y1="230" x2="440" y2="250" stroke="#D09040" stroke-width=".8"/><text x="445" y="254" fill="#B07020" font-size="9" font-weight="600">LCx</text>
+      <line x1="250" y1="360" x2="190" y2="415" stroke="#555" stroke-width=".8"/><text x="185" y="419" fill="#333" font-size="9" font-weight="600" text-anchor="end">Septum</text>
+      <line x1="460" y1="120" x2="480" y2="108" stroke="#555" stroke-width=".8"/><text x="482" y="105" fill="#333" font-size="9" font-weight="600">Pulmonary Veins</text>
+    </g>
+  </svg>
+</div>
+
+<div class="info-panel hidden" id="infoPanel">
+  <h2 id="infoName">Select a Structure</h2>
+  <div class="clinical-role" id="infoRole"></div>
+  <div class="description" id="infoDesc">Click any part of the heart to learn about it.</div>
+  <div class="fun-fact" id="infoFact" style="display:none"><strong>Did You Know?</strong> <span id="infoFactText"></span></div>
+  <div id="infoBlood"></div>
+</div>
+</div>
+</div>
+
+<!-- TAB 2: BLOOD FLOW -->
+<div class="tab-panel" id="panel-flow">
+<div class="flow-tab">
+<div class="flow-main">
+  <div class="flow-canvas-wrap">
+    <canvas id="flowCanvas"></canvas>
+    <div class="bpm-display"><div><div style="font-size:.65rem;color:rgba(255,255,255,.6)">HEART RATE</div><div class="bpm-num" id="bpmNum">72</div></div><canvas class="ecg-trace" id="ecgCanvas"></canvas></div>
+    <div class="narration-box" id="narrationBox"></div>
+    <div class="flow-controls">
+      <button id="flowPlayBtn" onclick="toggleFlowPlay()">&#9654; Play</button>
+      <button id="followBtn" onclick="toggleFollow()">Follow a Red Blood Cell</button>
+      <label>Speed <input type="range" id="flowSpeed" min="0.2" max="3" step="0.1" value="1" oninput="flowSpeedMul=+this.value"></label>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
+<!-- TAB 3: MARCO'S BLOCKAGE -->
+<div class="tab-panel" id="panel-marco">
+<div class="marco-tab">
+<div class="marco-main">
+  <div class="marco-canvas-wrap">
+    <canvas id="marcoCanvas"></canvas>
+  </div>
+  <div class="marco-side">
+    <h3>Coronary Artery Blockage Simulator</h3>
+    <div class="slider-wrap">
+      <label>LAD Stenosis</label>
+      <input type="range" id="blockSlider" min="0" max="100" value="0" oninput="updateBlockage(+this.value)">
+      <div class="slider-val" id="blockVal">0%</div>
+    </div>
+    <div>
+      <div class="stat-row"><span class="stat-label">Blood Flow</span><span class="stat-value" id="statFlow">100%</span></div>
+      <div class="stat-row"><span class="stat-label">O&#8322; Delivery</span><span class="stat-value" id="statO2">100%</span></div>
+      <div class="stat-row"><span class="stat-label">Muscle at Risk</span><span class="stat-value" id="statRisk">0%</span></div>
+      <div class="stat-row"><span class="stat-label">Urgency</span><span class="stat-value" id="statUrgency"><span class="urgency-badge urgency-green">Stable</span></span></div>
+    </div>
+    <canvas class="ecg-marco" id="ecgMarco"></canvas>
+    <div class="marco-callout" id="marcoCallout"><strong>Marco's Case:</strong> At 85% stenosis, Marco experienced crushing chest pain during basketball practice. His LAD - the "widow-maker" artery - was nearly completely blocked. Emergency catheterization and stent placement saved the downstream heart muscle just in time.</div>
+    <div class="stemi-alert" id="stemiAlert"><h3>STEMI ALERT</h3><p style="font-size:.82rem;margin-bottom:8px">Complete occlusion of the LAD. ST-elevation myocardial infarction in progress.</p><p style="font-size:.75rem;color:var(--text-light)">Emergency interventions: Percutaneous Coronary Intervention (PCI), Thrombolysis, CABG Surgery</p></div>
+  </div>
+</div>
+</div>
+</div>
+
+<!-- TAB 4: QUIZ -->
+<div class="tab-panel" id="panel-quiz">
+<div class="quiz-tab">
+<div class="quiz-container" id="quizContainer"></div>
+</div>
+</div>
+
+</div>
+
+<script>
+// ═══════════════════════════════════════════
+//  STRUCTURE DATA
+// ═══════════════════════════════════════════
+const STRUCTURES = {
+  ra:{name:'Right Atrium',role:'Receives deoxygenated blood from the body',blood:'deoxy',
+    desc:'The right atrium is a thin-walled chamber that collects oxygen-depleted blood returning from the body through the superior and inferior vena cava. It contracts to push this blood through the tricuspid valve into the right ventricle.',
+    fact:'The right atrium contains the sinoatrial (SA) node \u2014 the heart\'s natural pacemaker \u2014 which fires 60\u2013100 electrical impulses per minute to keep your heart beating without you ever thinking about it.'},
+  la:{name:'Left Atrium',role:'Receives oxygenated blood from the lungs',blood:'oxy',
+    desc:'The left atrium receives freshly oxygenated blood from the four pulmonary veins after gas exchange in the lungs. It contracts to push this oxygen-rich blood through the mitral valve into the powerful left ventricle.',
+    fact:'The left atrium is the most common site where blood clots form in atrial fibrillation. That\'s why AFib patients often take blood thinners \u2014 to prevent strokes.'},
+  rv:{name:'Right Ventricle',role:'Pumps blood to the lungs for oxygenation',blood:'deoxy',
+    desc:'The right ventricle receives deoxygenated blood from the right atrium and pumps it through the pulmonary valve into the pulmonary artery toward the lungs. Its walls are thinner than the left ventricle because the lungs are a low-pressure system.',
+    fact:'The right ventricle only needs about 1/6 the pressure of the left ventricle to push blood through the lungs. Its walls are about 3\u20135 mm thick compared to the left ventricle\'s 13\u201315 mm.'},
+  lv:{name:'Left Ventricle',role:'The main pump \u2014 sends oxygenated blood to the entire body',blood:'oxy',
+    desc:'The left ventricle is the heart\'s powerhouse. Its thick, muscular walls generate enough pressure to propel oxygen-rich blood through the aortic valve, into the aorta, and out to every organ and tissue in your body. It\'s the chamber that determines your blood pressure.',
+    fact:'The left ventricle ejects blood at about 120 mmHg \u2014 enough force to shoot a stream of blood nearly 30 feet. Over a lifetime, it pumps enough blood to fill more than three supertankers.'},
+  tv:{name:'Tricuspid Valve',role:'Prevents backflow from right ventricle to right atrium',blood:'deoxy',
+    desc:'The tricuspid valve has three thin leaflets that open and close with each heartbeat. When the right ventricle contracts, the valve snaps shut to prevent blood from flowing backward into the right atrium. Chordae tendineae (tendon-like cords) anchor the leaflets to prevent them from flipping inside out.',
+    fact:'The "lub" in your heartbeat\'s "lub-dub" sound is actually the tricuspid and mitral valves slamming shut simultaneously as the ventricles begin to contract.'},
+  mv:{name:'Mitral Valve',role:'Guards the entrance to the left ventricle',blood:'oxy',
+    desc:'The mitral valve (or bicuspid valve) has two sturdy leaflets that control blood flow from the left atrium into the left ventricle. It must withstand the highest pressures in the heart. Mitral valve prolapse, where a leaflet bulges backward, is one of the most common heart valve abnormalities.',
+    fact:'The mitral valve is named after a bishop\'s mitre (hat) because its two leaflets resemble the shape of that headpiece. It opens and closes roughly 100,000 times per day.'},
+  av:{name:'Aortic Valve',role:'Controls blood flow from the heart to the aorta',blood:'oxy',
+    desc:'The aortic valve has three crescent-shaped cusps that open during systole to let oxygenated blood blast into the aorta, then snap shut during diastole to prevent backflow. It withstands enormous pressure changes with every single heartbeat.',
+    fact:'The coronary arteries that supply blood to the heart muscle itself branch off from the aorta just above the aortic valve. They fill during diastole \u2014 meaning your heart feeds itself when it\'s relaxing, not when it\'s pumping.'},
+  pulv:{name:'Pulmonary Valve',role:'Controls blood flow into the pulmonary artery',blood:'deoxy',
+    desc:'The pulmonary valve sits between the right ventricle and the pulmonary artery. Its three semilunar cusps prevent deoxygenated blood from flowing back into the right ventricle after each contraction.',
+    fact:'Pulmonary valve stenosis (narrowing) is one of the most common congenital heart defects, occurring in about 10% of all babies born with heart problems.'},
+  aorta:{name:'Aorta',role:'The body\'s largest artery \u2014 the main highway for oxygenated blood',blood:'oxy',
+    desc:'The aorta is the largest artery in the human body, about the diameter of a garden hose. It arches up from the left ventricle, curves over the heart, then descends through the chest and abdomen, branching into smaller arteries that supply every region of the body.',
+    fact:'The wall of the aorta is so elastic that it bulges with each heartbeat and then recoils, helping maintain blood pressure between beats. This is what you feel as your pulse.'},
+  pa:{name:'Pulmonary Artery',role:'Carries deoxygenated blood to the lungs',blood:'deoxy',
+    desc:'The pulmonary artery is unique \u2014 it\'s the only artery in the body that carries deoxygenated blood. It splits into left and right branches, each heading to its respective lung where CO\u2082 is exchanged for fresh oxygen in the alveoli.',
+    fact:'The pulmonary artery carries deoxygenated blood and the pulmonary veins carry oxygenated blood. This trips up first-year medical students all the time.'},
+  svc:{name:'Superior Vena Cava',role:'Returns deoxygenated blood from the upper body',blood:'deoxy',
+    desc:'The superior vena cava (SVC) is a large vein that collects deoxygenated blood from the head, neck, arms, and upper chest, draining it into the right atrium. It\'s formed by the junction of the left and right brachiocephalic veins.',
+    fact:'The SVC has no valves \u2014 blood flow is maintained purely by the pressure gradient and the suction effect of the right atrium during diastole.'},
+  ivc:{name:'Inferior Vena Cava',role:'Returns deoxygenated blood from the lower body',blood:'deoxy',
+    desc:'The inferior vena cava (IVC) is the largest vein in the body. It collects deoxygenated blood from everything below the diaphragm \u2014 your legs, kidneys, liver, and abdomen \u2014 and delivers it to the right atrium.',
+    fact:'The IVC can be compressed by a pregnant uterus if a woman lies flat on her back, reducing blood return to the heart. That\'s why pregnant women are advised to sleep on their left side.'},
+  pv:{name:'Pulmonary Veins',role:'Return freshly oxygenated blood from the lungs',blood:'oxy',
+    desc:'Four pulmonary veins (two from each lung) carry oxygen-rich blood from the lungs back to the left atrium. These are the only veins in the body that carry oxygenated blood, completing the pulmonary circuit.',
+    fact:'Abnormal electrical signals originating in the pulmonary veins are the #1 trigger for atrial fibrillation. Catheter ablation \u2014 burning tiny spots around the vein openings \u2014 can cure AFib in many patients.'},
+  septum:{name:'Interventricular Septum',role:'Wall separating the left and right ventricles',blood:'both',
+    desc:'The interventricular septum is a thick muscular wall that completely separates the left and right ventricles, preventing oxygen-rich and oxygen-poor blood from mixing. It contains part of the electrical conduction system (the Bundle of His) that coordinates ventricular contraction.',
+    fact:'A ventricular septal defect (VSD) \u2014 a hole in this wall \u2014 is the most common congenital heart defect, occurring in about 1 in 500 live births. Small ones often close on their own.'},
+  lad:{name:'Left Anterior Descending Artery (LAD)',role:'Supplies the front and bottom of the left ventricle',blood:'oxy',
+    desc:'The LAD is the largest and most critical coronary artery. It runs along the front of the heart in the interventricular groove, supplying blood to the anterior wall of the left ventricle, the apex, and the anterior two-thirds of the septum. A blockage here is catastrophic.',
+    fact:'The LAD is called the "widow-maker" because a complete blockage causes a massive heart attack affecting the left ventricle\'s main pumping wall. This is the artery involved in Marco\'s case.'},
+  rca:{name:'Right Coronary Artery (RCA)',role:'Supplies the right ventricle and inferior left ventricle',blood:'oxy',
+    desc:'The RCA runs along the right side of the heart in the coronary sulcus, supplying the right atrium, right ventricle, and in most people, the inferior wall of the left ventricle and the AV node.',
+    fact:'In about 85% of people, the RCA supplies the AV node. A blockage can cause heart block \u2014 where the electrical signal between the atria and ventricles is disrupted, potentially requiring a pacemaker.'},
+  lcx:{name:'Left Circumflex Artery (LCx)',role:'Supplies the lateral and posterior left ventricle',blood:'oxy',
+    desc:'The left circumflex wraps around the left side and back of the heart, supplying the lateral wall of the left ventricle and the left atrium. It branches off from the left main coronary artery alongside the LAD.',
+    fact:'The LCx supplies the mitral valve\'s papillary muscles. If it gets blocked, the mitral valve can malfunction, causing acute mitral regurgitation \u2014 a medical emergency on top of the heart attack.'}
+};
+
+// ═══════════════════════════════════════════
+//  QUIZ DATA
+// ═══════════════════════════════════════════
+const QUIZ = [
+  {q:'Which chamber of the heart has the thickest walls and generates the highest pressure?',highlight:'lv',opts:['Right Atrium','Right Ventricle','Left Atrium','Left Ventricle'],ans:3,
+    explain:'The left ventricle must generate enough pressure (~120 mmHg) to push blood through the entire systemic circulation, so its muscular wall is 3\u20134x thicker than the right ventricle.'},
+  {q:'The LAD coronary artery is nicknamed the "widow-maker." What area of the heart does it supply?',highlight:'lad',opts:['Right atrium and SVC','Posterior left ventricle','Anterior left ventricle and septum','Pulmonary valve region'],ans:2,
+    explain:'The LAD supplies the anterior wall of the left ventricle and the anterior two-thirds of the septum \u2014 a massive territory. Blockage here causes devastating heart attacks.'},
+  {q:'Which valve prevents blood from flowing back into the left atrium when the left ventricle contracts?',highlight:'mv',opts:['Tricuspid Valve','Pulmonary Valve','Aortic Valve','Mitral Valve'],ans:3,
+    explain:'The mitral (bicuspid) valve sits between the left atrium and left ventricle. Its two leaflets snap shut during ventricular systole to prevent backflow.'},
+  {q:'Where does deoxygenated blood go immediately after leaving the right ventricle?',highlight:'pa',opts:['Aorta','Superior Vena Cava','Pulmonary Artery','Pulmonary Veins'],ans:2,
+    explain:'Deoxygenated blood exits the right ventricle through the pulmonary valve into the pulmonary artery, which carries it to the lungs for gas exchange.'},
+  {q:'In Marco\'s case, his LAD was 85% blocked. What is this condition called?',highlight:'lad',opts:['Cardiac tamponade','Coronary stenosis','Aortic dissection','Mitral prolapse'],ans:1,
+    explain:'Coronary stenosis is the narrowing of a coronary artery, usually by atherosclerotic plaque buildup. At 85%, Marco had critical stenosis requiring emergency intervention.'},
+  {q:'The "lub-dub" heart sounds correspond to which events?',highlight:'tv',opts:['Blood hitting the aortic wall','AV valves closing, then semilunar valves closing','SA node firing, then AV node firing','Atrial contraction, then ventricular relaxation'],ans:1,
+    explain:'S1 ("lub") = mitral and tricuspid valves closing at the start of ventricular systole. S2 ("dub") = aortic and pulmonary valves closing at the start of diastole.'},
+  {q:'Which structure contains the SA node, the heart\'s natural pacemaker?',highlight:'ra',opts:['Left Ventricle','Interventricular Septum','Right Atrium','Aorta'],ans:2,
+    explain:'The sinoatrial (SA) node sits in the wall of the right atrium near the SVC opening. It generates 60\u2013100 electrical impulses per minute, setting the pace for the entire heart.'},
+  {q:'On an ECG, ST-segment elevation in the anterior leads most likely indicates a blockage in which artery?',highlight:'lad',opts:['Right Coronary Artery','Left Circumflex Artery','Left Anterior Descending Artery','Pulmonary Artery'],ans:2,
+    explain:'The LAD supplies the anterior wall. When it\'s acutely blocked, the injury current produces ST elevation in the anterior ECG leads (V1\u2013V4), signaling a STEMI.'}
+];
+
+// ═══════════════════════════════════════════
+//  TAB SWITCHING
+// ═══════════════════════════════════════════
+let activeTab = 'explore';
+function switchTab(t) {
+  activeTab = t;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === t));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'panel-' + t));
+  if (t === 'flow') initFlow();
+  if (t === 'marco') initMarco();
+  if (t === 'quiz' && !quizStarted) startQuiz();
+}
+
+// ═══════════════════════════════════════════
+//  TAB 1: HEART EXPLORER
+// ═══════════════════════════════════════════
+let selectedStructure = null;
+document.querySelectorAll('.heart-structure').forEach(el => {
+  el.addEventListener('click', e => {
+    e.stopPropagation();
+    const id = el.dataset.id;
+    if (!id || !STRUCTURES[id]) return;
+    document.querySelectorAll('.heart-structure.selected').forEach(s => s.classList.remove('selected'));
+    el.classList.add('selected');
+    selectedStructure = id;
+    showInfo(STRUCTURES[id]);
+  });
+});
+
+function showInfo(s) {
+  const p = document.getElementById('infoPanel');
+  p.classList.remove('hidden');
+  document.getElementById('infoName').textContent = s.name;
+  document.getElementById('infoRole').textContent = s.role;
+  document.getElementById('infoDesc').textContent = s.desc;
+  document.getElementById('infoFact').style.display = 'block';
+  document.getElementById('infoFactText').textContent = s.fact;
+  const b = document.getElementById('infoBlood');
+  if (s.blood === 'oxy') b.innerHTML = '<span class="blood-indicator oxy">\u25CF Oxygenated Blood</span>';
+  else if (s.blood === 'deoxy') b.innerHTML = '<span class="blood-indicator deoxy">\u25CF Deoxygenated Blood</span>';
+  else b.innerHTML = '<span class="blood-indicator both">\u25CF Both</span>';
+}
+
+function toggleLabels() {
+  document.getElementById('heartLabels').setAttribute('opacity', document.getElementById('labelToggle').checked ? '1' : '0');
+}
+
+// ═══════════════════════════════════════════
+//  TAB 2: BLOOD FLOW JOURNEY
+// ═══════════════════════════════════════════
+let flowCanvas, flowCtx, ecgCvs, ecgCtx;
+let flowRunning = false, flowInited = false, flowSpeedMul = 1;
+let flowParticles = [], followMode = false, followParticle = null;
+let heartPhase = 0;
+
+// Circulatory path: Body -> SVC -> RA -> RV -> PA -> Lungs -> PV -> LA -> LV -> Aorta -> Body
+const CIRCUIT_BLUE = [
+  {x:.50,y:.02},{x:.32,y:.06},{x:.26,y:.14},{x:.22,y:.24},{x:.20,y:.34},
+  {x:.22,y:.44},{x:.25,y:.54},{x:.30,y:.64},{x:.35,y:.72},{x:.37,y:.78},
+  {x:.34,y:.70},{x:.30,y:.58},{x:.28,y:.44},{x:.30,y:.30},{x:.34,y:.18},{x:.32,y:.10},{x:.28,y:.06}
+];
+const CIRCUIT_RED = [
+  {x:.28,y:.06},{x:.40,y:.04},{x:.55,y:.06},{x:.65,y:.10},{x:.72,y:.15},
+  {x:.75,y:.25},{x:.78,y:.35},{x:.75,y:.45},
+  {x:.72,y:.55},{x:.68,y:.65},{x:.63,y:.75},{x:.58,y:.80},
+  {x:.60,y:.70},{x:.65,y:.55},{x:.68,y:.40},{x:.65,y:.25},{x:.60,y:.14},{x:.55,y:.08},{x:.50,y:.02}
+];
+const CIRCUIT = [...CIRCUIT_BLUE, ...CIRCUIT_RED.slice(1)];
+
+const WAYPOINTS = [
+  {t:0, text:'Starting in the body tissues \u2014 this red blood cell has delivered its oxygen and is now deoxygenated (blue). It enters the Superior Vena Cava heading back to the heart.'},
+  {t:.12, text:'Entering the Right Atrium. This thin-walled chamber collects all the deoxygenated blood returning from the body before sending it forward.'},
+  {t:.22, text:'Passing through the Tricuspid Valve into the Right Ventricle. The valve\'s three leaflets open to let blood through, then snap shut to prevent backflow.'},
+  {t:.35, text:'The Right Ventricle contracts, pushing blood through the Pulmonary Valve into the Pulmonary Artery \u2014 heading to the lungs!'},
+  {t:.47, text:'Arriving at the lungs. Carbon dioxide diffuses out, fresh oxygen diffuses in. Watch the color change from blue to red as hemoglobin picks up O\u2082 molecules.'},
+  {t:.58, text:'Freshly oxygenated! Traveling through the Pulmonary Veins into the Left Atrium. This is the only vein in the body carrying oxygenated blood.'},
+  {t:.72, text:'Passing through the Mitral Valve into the Left Ventricle \u2014 the heart\'s most powerful chamber. Its thick walls will generate huge pressure.'},
+  {t:.88, text:'The Left Ventricle contracts forcefully, ejecting blood through the Aortic Valve into the Aorta. From here, it travels to the brain, muscles, organs \u2014 every cell in the body!'}
+];
+
+function initFlow() {
+  if (flowInited) return;
+  flowInited = true;
+  flowCanvas = document.getElementById('flowCanvas');
+  flowCtx = flowCanvas.getContext('2d');
+  ecgCvs = document.getElementById('ecgCanvas');
+  ecgCtx = ecgCvs.getContext('2d');
+  for (let i = 0; i < 80; i++) {
+    flowParticles.push({t: Math.random(), speed: .0003 + Math.random() * .0002});
+  }
+  resizeFlowCanvas();
+  window.addEventListener('resize', resizeFlowCanvas);
+  flowRunning = true;
+  document.getElementById('flowPlayBtn').innerHTML = '\u23F8 Pause';
+  requestAnimationFrame(flowLoop);
+}
+
+function resizeFlowCanvas() {
+  if (!flowCanvas) return;
+  const r = flowCanvas.parentElement.getBoundingClientRect();
+  flowCanvas.width = r.width * devicePixelRatio;
+  flowCanvas.height = r.height * devicePixelRatio;
+  ecgCvs.width = 120 * devicePixelRatio;
+  ecgCvs.height = 36 * devicePixelRatio;
+}
+
+function toggleFlowPlay() {
+  flowRunning = !flowRunning;
+  document.getElementById('flowPlayBtn').innerHTML = flowRunning ? '\u23F8 Pause' : '\u25B6 Play';
+  if (flowRunning) requestAnimationFrame(flowLoop);
+}
+
+function toggleFollow() {
+  followMode = !followMode;
+  document.getElementById('followBtn').classList.toggle('active', followMode);
+  if (followMode) {
+    followParticle = {t: 0, speed: .00025};
+  } else {
+    followParticle = null;
+    document.getElementById('narrationBox').classList.remove('visible');
+  }
+}
+
+function getCircuitPos(t) {
+  t = ((t % 1) + 1) % 1;
+  const n = CIRCUIT.length;
+  const idx = t * (n - 1);
+  const i = Math.floor(idx);
+  const f = idx - i;
+  const p0 = CIRCUIT[Math.min(i, n - 1)];
+  const p1 = CIRCUIT[Math.min(i + 1, n - 1)];
+  return {x: p0.x + (p1.x - p0.x) * f, y: p0.y + (p1.y - p0.y) * f};
+}
+
+function getParticleColor(t) {
+  t = ((t % 1) + 1) % 1;
+  const blueEnd = CIRCUIT_BLUE.length / CIRCUIT.length;
+  if (t < blueEnd - .03) return {r:60,g:100,b:210};
+  if (t < blueEnd + .03) {
+    const f = (t - (blueEnd - .03)) / .06;
+    return {r:60 + 170*f, g:100 - 60*f, b:210 - 160*f};
+  }
+  const redEnd = (CIRCUIT_BLUE.length + CIRCUIT_RED.length - 2) / CIRCUIT.length;
+  if (t < redEnd - .03) return {r:220,g:45,b:45};
+  const f = Math.min(1, (t - (redEnd - .03)) / .06);
+  return {r:220 - 160*f, g:45 + 55*f, b:45 + 165*f};
+}
+
+let lastFlowTS = 0;
+function flowLoop(ts) {
+  if (!flowRunning && !followMode) return;
+  if (activeTab !== 'flow') {requestAnimationFrame(flowLoop); return;}
+  const dt = lastFlowTS ? Math.min(ts - lastFlowTS, 50) : 16;
+  lastFlowTS = ts;
+  const W = flowCanvas.width, H = flowCanvas.height;
+  const dpr = devicePixelRatio;
+
+  flowCtx.clearRect(0, 0, W, H);
+  flowCtx.fillStyle = '#0D1B2A';
+  flowCtx.fillRect(0, 0, W, H);
+
+  // Grid dots for atmosphere
+  flowCtx.fillStyle = 'rgba(42,157,143,.04)';
+  for (let gx = 0; gx < W; gx += 30 * dpr) {
+    for (let gy = 0; gy < H; gy += 30 * dpr) {
+      flowCtx.fillRect(gx, gy, 1, 1);
+    }
+  }
+
+  // Circuit path glow
+  flowCtx.save();
+  flowCtx.strokeStyle = 'rgba(255,255,255,.05)';
+  flowCtx.lineWidth = 22 * dpr;
+  flowCtx.lineCap = 'round';
+  flowCtx.lineJoin = 'round';
+  flowCtx.beginPath();
+  CIRCUIT.forEach((p, i) => {i === 0 ? flowCtx.moveTo(p.x*W,p.y*H) : flowCtx.lineTo(p.x*W,p.y*H);});
+  flowCtx.stroke();
+  flowCtx.restore();
+
+  // Heart silhouette
+  drawFlowHeart(flowCtx, W, H, dpr);
+
+  // Heartbeat
+  heartPhase += dt * .003 * flowSpeedMul;
+
+  // Region labels
+  const labels = [
+    {x:.18,y:.34,t:'RIGHT\nATRIUM',c:'rgba(80,130,220,.4)'},
+    {x:.32,y:.72,t:'RIGHT\nVENTRICLE',c:'rgba(80,130,220,.4)'},
+    {x:.76,y:.34,t:'LEFT\nATRIUM',c:'rgba(220,70,70,.35)'},
+    {x:.66,y:.72,t:'LEFT\nVENTRICLE',c:'rgba(220,70,70,.35)'},
+    {x:.35,y:.04,t:'LUNGS',c:'rgba(180,140,200,.35)'},
+    {x:.50,y:.95,t:'BODY TISSUES',c:'rgba(200,200,150,.3)'}
+  ];
+  flowCtx.textAlign = 'center';
+  labels.forEach(l => {
+    flowCtx.font = `600 ${9*dpr}px 'Segoe UI',sans-serif`;
+    flowCtx.fillStyle = l.c;
+    l.t.split('\n').forEach((line,i) => flowCtx.fillText(line, l.x*W, l.y*H + i*12*dpr));
+  });
+
+  // Arrow indicators along path
+  const arrowPositions = [.05,.15,.25,.35,.45,.55,.65,.75,.85,.95];
+  arrowPositions.forEach(at => {
+    const p1 = getCircuitPos(at);
+    const p2 = getCircuitPos(at + .02);
+    const angle = Math.atan2((p2.y-p1.y)*H, (p2.x-p1.x)*W);
+    flowCtx.save();
+    flowCtx.translate(p1.x*W, p1.y*H);
+    flowCtx.rotate(angle);
+    flowCtx.fillStyle = 'rgba(255,255,255,.08)';
+    flowCtx.beginPath();
+    flowCtx.moveTo(6*dpr,0);
+    flowCtx.lineTo(-4*dpr,-4*dpr);
+    flowCtx.lineTo(-4*dpr,4*dpr);
+    flowCtx.closePath();
+    flowCtx.fill();
+    flowCtx.restore();
+  });
+
+  // Particles
+  flowParticles.forEach(p => {
+    p.t += p.speed * dt * flowSpeedMul;
+    if (p.t > 1) p.t -= 1;
+    const pos = getCircuitPos(p.t);
+    const col = getParticleColor(p.t);
+    const sz = 3 * dpr;
+    flowCtx.beginPath();
+    flowCtx.arc(pos.x*W, pos.y*H, sz, 0, Math.PI*2);
+    flowCtx.fillStyle = `rgb(${col.r},${col.g},${col.b})`;
+    flowCtx.fill();
+    flowCtx.beginPath();
+    flowCtx.arc(pos.x*W, pos.y*H, sz*2.5, 0, Math.PI*2);
+    flowCtx.fillStyle = `rgba(${col.r},${col.g},${col.b},.12)`;
+    flowCtx.fill();
+  });
+
+  // Follow particle
+  if (followMode && followParticle) {
+    followParticle.t += followParticle.speed * dt * flowSpeedMul;
+    if (followParticle.t > 1) followParticle.t -= 1;
+    const pos = getCircuitPos(followParticle.t);
+    const col = getParticleColor(followParticle.t);
+    // Trail
+    for (let tr = 1; tr <= 6; tr++) {
+      const tp = getCircuitPos(followParticle.t - tr*.008);
+      flowCtx.beginPath();
+      flowCtx.arc(tp.x*W, tp.y*H, (4-tr*.4)*dpr, 0, Math.PI*2);
+      flowCtx.fillStyle = `rgba(255,215,0,${.15 - tr*.02})`;
+      flowCtx.fill();
+    }
+    // Ring
+    flowCtx.beginPath();
+    flowCtx.arc(pos.x*W, pos.y*H, 10*dpr, 0, Math.PI*2);
+    flowCtx.strokeStyle = 'rgba(255,215,0,.6)';
+    flowCtx.lineWidth = 2*dpr;
+    flowCtx.stroke();
+    // Glow
+    flowCtx.beginPath();
+    flowCtx.arc(pos.x*W, pos.y*H, 14*dpr, 0, Math.PI*2);
+    flowCtx.fillStyle = 'rgba(255,215,0,.08)';
+    flowCtx.fill();
+    // Dot
+    flowCtx.beginPath();
+    flowCtx.arc(pos.x*W, pos.y*H, 5*dpr, 0, Math.PI*2);
+    flowCtx.fillStyle = `rgb(${col.r},${col.g},${col.b})`;
+    flowCtx.fill();
+    // Narration
+    const nb = document.getElementById('narrationBox');
+    let shown = false;
+    for (let i = WAYPOINTS.length - 1; i >= 0; i--) {
+      if (followParticle.t >= WAYPOINTS[i].t) {
+        nb.textContent = WAYPOINTS[i].text;
+        nb.classList.add('visible');
+        shown = true;
+        break;
+      }
+    }
+    if (!shown) nb.classList.remove('visible');
+  }
+
+  // ECG
+  drawECG(ecgCtx, ecgCvs.width, ecgCvs.height, heartPhase, 'normal');
+  document.getElementById('bpmNum').textContent = Math.round(72 * flowSpeedMul);
+
+  requestAnimationFrame(flowLoop);
+}
+
+function drawFlowHeart(ctx, W, H, dpr) {
+  ctx.save();
+  ctx.strokeStyle = 'rgba(255,255,255,.07)';
+  ctx.lineWidth = 2 * dpr;
+  const cx = W*.48, cy = H*.50, s = Math.min(W,H)*.28;
+  ctx.beginPath();
+  ctx.moveTo(cx, cy+s);
+  ctx.bezierCurveTo(cx-s*1.2,cy+s*.4,cx-s*1.2,cy-s*.6,cx,cy-s*.2);
+  ctx.bezierCurveTo(cx+s*1.2,cy-s*.6,cx+s*1.2,cy+s*.4,cx,cy+s);
+  ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx,cy-s*.2); ctx.lineTo(cx,cy+s*.85); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx-s*.85,cy+s*.15); ctx.lineTo(cx+s*.85,cy+s*.15); ctx.stroke();
+  ctx.restore();
+}
+
+function drawECG(ctx, W, H, phase, mode) {
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = '#0a1628';
+  ctx.fillRect(0, 0, W, H);
+  ctx.strokeStyle = 'rgba(42,157,143,.08)';
+  ctx.lineWidth = 1;
+  for (let y = 0; y < H; y += H/4) {
+    ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke();
+  }
+  const colors = {normal:'#2A9D8F',st_depression:'#f39c12',stemi:'#E65C3C',flatline:'#555'};
+  ctx.strokeStyle = colors[mode] || '#2A9D8F';
+  ctx.lineWidth = 1.5 * devicePixelRatio;
+  ctx.beginPath();
+  const cycles = 2.5;
+  for (let x = 0; x < W; x++) {
+    const t = ((x/W*cycles + phase) % 1);
+    let y = H*.5;
+    if (mode === 'normal') {
+      if (t<.08) y=H*.5-Math.sin(t/.08*Math.PI)*H*.08;
+      else if (t<.12) y=H*.5;
+      else if (t<.15) y=H*.5+H*.05;
+      else if (t<.20) y=H*.5-Math.sin((t-.15)/.05*Math.PI)*H*.35;
+      else if (t<.25) y=H*.5+Math.sin((t-.20)/.05*Math.PI)*H*.10;
+      else if (t<.45) y=H*.5;
+      else if (t<.55) y=H*.5-Math.sin((t-.45)/.10*Math.PI)*H*.10;
+    } else if (mode === 'st_depression') {
+      if (t<.08) y=H*.5-Math.sin(t/.08*Math.PI)*H*.08;
+      else if (t<.12) y=H*.5;
+      else if (t<.15) y=H*.5+H*.05;
+      else if (t<.20) y=H*.5-Math.sin((t-.15)/.05*Math.PI)*H*.35;
+      else if (t<.25) y=H*.5+Math.sin((t-.20)/.05*Math.PI)*H*.10;
+      else if (t<.45) y=H*.5+H*.12;
+      else if (t<.55) y=H*.5-Math.sin((t-.45)/.10*Math.PI)*H*.06;
+    } else if (mode === 'stemi') {
+      if (t<.08) y=H*.5-Math.sin(t/.08*Math.PI)*H*.06;
+      else if (t<.12) y=H*.5;
+      else if (t<.15) y=H*.5+H*.04;
+      else if (t<.20) y=H*.5-Math.sin((t-.15)/.05*Math.PI)*H*.30;
+      else if (t<.25) y=H*.5+Math.sin((t-.20)/.05*Math.PI)*H*.08;
+      else if (t<.50) y=H*.5-H*.20;
+      else if (t<.60) y=H*.5-H*.20+((t-.50)/.10)*H*.20;
+    } else if (mode === 'flatline') {
+      y = H*.5 + Math.sin(x*.03 + phase*20)*.8;
+    }
+    x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+}
+
+// ═══════════════════════════════════════════
+//  TAB 3: MARCO'S BLOCKAGE
+// ═══════════════════════════════════════════
+let marcoCanvas, marcoCtx, marcoInited = false;
+let blockageLevel = 0, marcoPhase = 0;
+let marcoParticles = [];
+let ecgMarcoCtx, ecgMarcoCanvas;
+
+function initMarco() {
+  if (marcoInited) return;
+  marcoInited = true;
+  marcoCanvas = document.getElementById('marcoCanvas');
+  marcoCtx = marcoCanvas.getContext('2d');
+  ecgMarcoCanvas = document.getElementById('ecgMarco');
+  ecgMarcoCtx = ecgMarcoCanvas.getContext('2d');
+  for (let i = 0; i < 30; i++) {
+    marcoParticles.push({t: Math.random(), speed: .0008 + Math.random() * .0004});
+  }
+  resizeMarcoCanvas();
+  window.addEventListener('resize', resizeMarcoCanvas);
+  requestAnimationFrame(marcoLoop);
+}
+
+function resizeMarcoCanvas() {
+  if (!marcoCanvas) return;
+  const r = marcoCanvas.parentElement.getBoundingClientRect();
+  marcoCanvas.width = r.width * devicePixelRatio;
+  marcoCanvas.height = r.height * devicePixelRatio;
+  ecgMarcoCanvas.width = ecgMarcoCanvas.offsetWidth * devicePixelRatio;
+  ecgMarcoCanvas.height = ecgMarcoCanvas.offsetHeight * devicePixelRatio;
+}
+
+const LAD_PATH = [
+  {x:.48,y:.12},{x:.475,y:.18},{x:.47,y:.25},{x:.465,y:.32},{x:.46,y:.40},
+  {x:.455,y:.48},{x:.45,y:.56},{x:.445,y:.64},{x:.44,y:.72},{x:.435,y:.80},{x:.43,y:.88}
+];
+const M_RCA = [{x:.50,y:.14},{x:.56,y:.20},{x:.61,y:.28},{x:.64,y:.36},{x:.65,y:.44},{x:.63,y:.52},{x:.60,y:.58}];
+const M_LCX = [{x:.48,y:.14},{x:.40,y:.20},{x:.34,y:.28},{x:.30,y:.36},{x:.28,y:.44},{x:.30,y:.52}];
+
+function getLADPos(t) {
+  t = Math.max(0, Math.min(1, t));
+  const n = LAD_PATH.length;
+  const idx = t*(n-1);
+  const i = Math.floor(idx);
+  const f = idx - i;
+  const p0 = LAD_PATH[Math.min(i,n-1)];
+  const p1 = LAD_PATH[Math.min(i+1,n-1)];
+  return {x:p0.x+(p1.x-p0.x)*f, y:p0.y+(p1.y-p0.y)*f};
+}
+
+function updateBlockage(val) {
+  blockageLevel = val;
+  document.getElementById('blockVal').textContent = val + '%';
+  const flow = Math.max(0, Math.round(val < 50 ? 100 - val*.4 : val < 80 ? 80 - (val-50)*1.5 : 35 - (val-80)*1.75));
+  const o2 = Math.max(0, Math.round(val < 50 ? 100 - val*.3 : val < 80 ? 85 - (val-50)*1.4 : 43 - (val-80)*2.15));
+  const risk = val < 40 ? 0 : Math.min(100, Math.round((val-40)*1.67));
+  document.getElementById('statFlow').textContent = Math.max(0,flow) + '%';
+  document.getElementById('statO2').textContent = Math.max(0,o2) + '%';
+  document.getElementById('statRisk').textContent = risk + '%';
+  const urg = document.getElementById('statUrgency');
+  if (val < 50) urg.innerHTML = '<span class="urgency-badge urgency-green">Stable</span>';
+  else if (val < 85) urg.innerHTML = '<span class="urgency-badge urgency-yellow">Concerning</span>';
+  else urg.innerHTML = '<span class="urgency-badge urgency-red">CRITICAL</span>';
+  document.getElementById('marcoCallout').classList.toggle('visible', val >= 85 && val < 98);
+  document.getElementById('stemiAlert').classList.toggle('visible', val >= 98);
+}
+
+let lastMarcoTS = 0;
+function marcoLoop(ts) {
+  if (activeTab !== 'marco') {requestAnimationFrame(marcoLoop); return;}
+  const dt = lastMarcoTS ? Math.min(ts - lastMarcoTS, 50) : 16;
+  lastMarcoTS = ts;
+  const W = marcoCanvas.width, H = marcoCanvas.height;
+  const dpr = devicePixelRatio;
+
+  marcoCtx.clearRect(0, 0, W, H);
+  marcoCtx.fillStyle = '#0D1B2A';
+  marcoCtx.fillRect(0, 0, W, H);
+  marcoPhase += dt * .003;
+
+  // Heart shape
+  const cx = W*.47, cy = H*.50, s = Math.min(W,H)*.33;
+  const beatCycle = marcoPhase % 1;
+  const pulse = 1 + (beatCycle<.12 ? Math.sin(beatCycle/.12*Math.PI)*.008 : 0);
+  marcoCtx.save();
+  marcoCtx.translate(cx, cy);
+  marcoCtx.scale(pulse, pulse);
+  marcoCtx.translate(-cx, -cy);
+
+  // Heart fill
+  marcoCtx.beginPath();
+  marcoCtx.moveTo(cx, cy+s);
+  marcoCtx.bezierCurveTo(cx-s*1.3,cy+s*.3,cx-s*1.3,cy-s*.7,cx,cy-s*.35);
+  marcoCtx.bezierCurveTo(cx+s*1.3,cy-s*.7,cx+s*1.3,cy+s*.3,cx,cy+s);
+  marcoCtx.closePath();
+
+  // Base tissue gradient
+  const tGrad = marcoCtx.createRadialGradient(cx,cy,0,cx,cy,s*1.1);
+  tGrad.addColorStop(0,'rgba(140,40,55,.35)');
+  tGrad.addColorStop(1,'rgba(90,25,40,.25)');
+  marcoCtx.fillStyle = tGrad;
+  marcoCtx.fill();
+  marcoCtx.strokeStyle = 'rgba(255,255,255,.08)';
+  marcoCtx.lineWidth = 2*dpr;
+  marcoCtx.stroke();
+
+  // Ischemic zone
+  if (blockageLevel > 40) {
+    const intensity = Math.min(1, (blockageLevel-40)/60);
+    marcoCtx.beginPath();
+    marcoCtx.moveTo(W*.46,H*.42);
+    marcoCtx.bezierCurveTo(W*.36,H*.52,W*.34,H*.68,W*.43,H*.84);
+    marcoCtx.lineTo(W*.47,H*.84);
+    marcoCtx.bezierCurveTo(W*.49,H*.70,W*.48,H*.54,W*.46,H*.42);
+    marcoCtx.closePath();
+    let iColor;
+    if (blockageLevel < 70) iColor = `rgba(220,200,60,${intensity*.25})`;
+    else if (blockageLevel < 90) iColor = `rgba(140,60,110,${intensity*.35})`;
+    else iColor = `rgba(90,90,100,${intensity*.45})`;
+    marcoCtx.fillStyle = iColor;
+    marcoCtx.fill();
+    // Border
+    marcoCtx.strokeStyle = `rgba(255,255,255,${intensity*.06})`;
+    marcoCtx.lineWidth = 1*dpr;
+    marcoCtx.stroke();
+  }
+
+  // RCA
+  marcoCtx.beginPath();
+  M_RCA.forEach((p,i) => {i===0?marcoCtx.moveTo(p.x*W,p.y*H):marcoCtx.lineTo(p.x*W,p.y*H);});
+  marcoCtx.strokeStyle = 'rgba(200,140,60,.45)';
+  marcoCtx.lineWidth = 3*dpr;
+  marcoCtx.lineCap = 'round';
+  marcoCtx.lineJoin = 'round';
+  marcoCtx.stroke();
+
+  // LCx
+  marcoCtx.beginPath();
+  M_LCX.forEach((p,i) => {i===0?marcoCtx.moveTo(p.x*W,p.y*H):marcoCtx.lineTo(p.x*W,p.y*H);});
+  marcoCtx.strokeStyle = 'rgba(200,140,60,.45)';
+  marcoCtx.stroke();
+
+  // LAD glow
+  marcoCtx.beginPath();
+  LAD_PATH.forEach((p,i) => {i===0?marcoCtx.moveTo(p.x*W,p.y*H):marcoCtx.lineTo(p.x*W,p.y*H);});
+  marcoCtx.strokeStyle = 'rgba(212,168,67,.2)';
+  marcoCtx.lineWidth = 14*dpr;
+  marcoCtx.stroke();
+  // LAD main
+  marcoCtx.beginPath();
+  LAD_PATH.forEach((p,i) => {i===0?marcoCtx.moveTo(p.x*W,p.y*H):marcoCtx.lineTo(p.x*W,p.y*H);});
+  marcoCtx.strokeStyle = '#D4A843';
+  marcoCtx.lineWidth = 5*dpr;
+  marcoCtx.stroke();
+
+  // LAD branches
+  [[{x:.47,y:.28},{x:.40,y:.33},{x:.36,y:.36}],[{x:.46,y:.44},{x:.39,y:.49},{x:.35,y:.52}],[{x:.45,y:.60},{x:.39,y:.64},{x:.36,y:.66}]].forEach(branch => {
+    marcoCtx.beginPath();
+    branch.forEach((p,i) => {i===0?marcoCtx.moveTo(p.x*W,p.y*H):marcoCtx.lineTo(p.x*W,p.y*H);});
+    marcoCtx.strokeStyle = 'rgba(212,168,67,.35)';
+    marcoCtx.lineWidth = 2*dpr;
+    marcoCtx.stroke();
+  });
+
+  // Plaque buildup
+  if (blockageLevel > 8) {
+    const bPos = getLADPos(.32);
+    const bx = bPos.x*W, by = bPos.y*H;
+    const sz = (blockageLevel/100)*20*dpr;
+    // Multi-layer plaque
+    for (let layer = 3; layer >= 0; layer--) {
+      const ls = sz * (1 + layer*.3);
+      const pGrad = marcoCtx.createRadialGradient(bx,by,0,bx,by,ls);
+      pGrad.addColorStop(0, `rgba(255,245,210,${.15 - layer*.03})`);
+      pGrad.addColorStop(.6, `rgba(240,215,130,${.25 - layer*.05})`);
+      pGrad.addColorStop(1, `rgba(200,170,60,${.05})`);
+      marcoCtx.beginPath();
+      marcoCtx.ellipse(bx-ls*.25, by, ls*.7, ls*.45, -.15, 0, Math.PI*2);
+      marcoCtx.fillStyle = pGrad;
+      marcoCtx.fill();
+    }
+    // Core
+    if (blockageLevel > 30) {
+      marcoCtx.beginPath();
+      marcoCtx.ellipse(bx, by, sz*.35, sz*.25, 0, 0, Math.PI*2);
+      marcoCtx.fillStyle = 'rgba(255,250,230,.5)';
+      marcoCtx.fill();
+    }
+    // Fibrous cap
+    if (blockageLevel > 55) {
+      marcoCtx.beginPath();
+      marcoCtx.arc(bx, by, sz*.55, 0, Math.PI*2);
+      marcoCtx.strokeStyle = `rgba(255,255,255,${.2 + blockageLevel*.003})`;
+      marcoCtx.lineWidth = 1.5*dpr;
+      marcoCtx.stroke();
+    }
+    // Label
+    marcoCtx.fillStyle = '#D4A843';
+    marcoCtx.font = `bold ${10*dpr}px 'Segoe UI',sans-serif`;
+    marcoCtx.textAlign = 'right';
+    marcoCtx.fillText('BLOCKAGE', bx-sz-10*dpr, by+3*dpr);
+    marcoCtx.font = `bold ${14*dpr}px 'Segoe UI',sans-serif`;
+    marcoCtx.fillText(blockageLevel+'%', bx-sz-10*dpr, by+18*dpr);
+  }
+
+  // LAD particles
+  const flowRate = blockageLevel < 50 ? 1 - blockageLevel*.008 : blockageLevel < 80 ? .6 - (blockageLevel-50)*.015 : Math.max(0, .15 - (blockageLevel-80)*.0075);
+  marcoParticles.forEach(p => {
+    p.t += p.speed * flowRate * dt;
+    if (p.t > 1) p.t -= 1;
+    if (flowRate < .02) return;
+    const pos = getLADPos(p.t);
+    const brightness = .4 + flowRate*.6;
+    const sz = 2.5*dpr;
+    marcoCtx.beginPath();
+    marcoCtx.arc(pos.x*W, pos.y*H, sz, 0, Math.PI*2);
+    marcoCtx.fillStyle = `rgba(${Math.round(220*brightness)},${Math.round(50*brightness)},${Math.round(50*brightness)},${.4+flowRate*.6})`;
+    marcoCtx.fill();
+    // Glow
+    marcoCtx.beginPath();
+    marcoCtx.arc(pos.x*W, pos.y*H, sz*2, 0, Math.PI*2);
+    marcoCtx.fillStyle = `rgba(220,50,50,${flowRate*.06})`;
+    marcoCtx.fill();
+  });
+
+  marcoCtx.restore();
+
+  // Static labels
+  marcoCtx.fillStyle = 'rgba(255,255,255,.45)';
+  marcoCtx.font = `600 ${10*dpr}px 'Segoe UI',sans-serif`;
+  marcoCtx.textAlign = 'left';
+  marcoCtx.fillText('LAD (Left Anterior Descending)', W*.50, H*.15);
+  marcoCtx.fillText('RCA', W*.66, H*.40);
+  marcoCtx.fillText('LCx', W*.20, H*.40);
+  marcoCtx.textAlign = 'center';
+  marcoCtx.fillStyle = 'rgba(255,255,255,.6)';
+  marcoCtx.font = `700 ${12*dpr}px 'Segoe UI',sans-serif`;
+  marcoCtx.fillText('Coronary Artery View', W*.47, H*.06);
+
+  // ECG
+  let ecgMode = 'normal';
+  if (blockageLevel >= 98) ecgMode = 'flatline';
+  else if (blockageLevel >= 90) ecgMode = 'stemi';
+  else if (blockageLevel >= 70) ecgMode = 'st_depression';
+  drawECG(ecgMarcoCtx, ecgMarcoCanvas.width, ecgMarcoCanvas.height, marcoPhase, ecgMode);
+
+  requestAnimationFrame(marcoLoop);
+}
+
+// ═══════════════════════════════════════════
+//  TAB 4: QUIZ
+// ═══════════════════════════════════════════
+let quizStarted = false, quizIdx = 0, quizScore = 0, quizAnswers = [];
+let quizTimer = null, quizTimeLeft = 30;
+
+function startQuiz() {
+  quizStarted = true;
+  quizIdx = 0;
+  quizScore = 0;
+  quizAnswers = [];
+  showQuestion();
+}
+
+function showQuestion() {
+  if (quizIdx >= QUIZ.length) {showResults(); return;}
+  const q = QUIZ[quizIdx];
+  quizTimeLeft = 30;
+  clearInterval(quizTimer);
+
+  document.getElementById('quizContainer').innerHTML = `
+    <div class="quiz-header">
+      <div class="quiz-progress">Question ${quizIdx+1} of ${QUIZ.length}</div>
+      <div class="quiz-timer" id="qTimer">
+        <svg class="timer-circle" viewBox="0 0 36 36">
+          <circle cx="18" cy="18" r="16" fill="none" stroke="#e0e4e8" stroke-width="3"/>
+          <circle cx="18" cy="18" r="16" fill="none" stroke="var(--teal)" stroke-width="3" stroke-dasharray="100.5" stroke-dashoffset="0" id="timerRing" transform="rotate(-90 18 18)" stroke-linecap="round"/>
+        </svg>
+        <span id="timerNum">30</span>
+      </div>
+    </div>
+    <div class="quiz-question">
+      <h3>${q.q}</h3>
+      <canvas class="quiz-mini-heart" id="qMiniHeart" width="400" height="320"></canvas>
+      <div class="quiz-options" id="qOpts">
+        ${q.opts.map((o,i) => `<button class="quiz-opt" onclick="answerQuiz(${i})">${o}</button>`).join('')}
+      </div>
+      <div class="quiz-feedback" id="qFeedback"></div>
+      <button class="quiz-next" id="qNext" onclick="nextQuestion()">Next Question \u2192</button>
+    </div>`;
+
+  drawQuizHeart(q.highlight);
+
+  quizTimer = setInterval(() => {
+    quizTimeLeft--;
+    const tn = document.getElementById('timerNum');
+    const tr = document.getElementById('timerRing');
+    if (tn) tn.textContent = quizTimeLeft;
+    if (tr) tr.setAttribute('stroke-dashoffset', ((30-quizTimeLeft)/30)*100.5);
+    if (quizTimeLeft <= 10) {
+      const te = document.getElementById('qTimer');
+      if (te) te.classList.add('warning');
+    }
+    if (quizTimeLeft <= 0) {clearInterval(quizTimer); answerQuiz(-1);}
+  }, 1000);
+}
+
+function drawQuizHeart(highlight) {
+  const cvs = document.getElementById('qMiniHeart');
+  if (!cvs) return;
+  const ctx = cvs.getContext('2d');
+  const W = cvs.width, H = cvs.height;
+  ctx.clearRect(0, 0, W, H);
+  const cx = W*.5, cy = H*.48, s = H*.35;
+
+  // Heart outline
+  ctx.beginPath();
+  ctx.moveTo(cx,cy+s);
+  ctx.bezierCurveTo(cx-s*1.3,cy+s*.3,cx-s*1.3,cy-s*.7,cx,cy-s*.35);
+  ctx.bezierCurveTo(cx+s*1.3,cy-s*.7,cx+s*1.3,cy+s*.3,cx,cy+s);
+  ctx.closePath();
+  ctx.fillStyle = 'rgba(122,45,78,.12)';
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(122,45,78,.25)';
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+
+  // Internal lines
+  ctx.strokeStyle = 'rgba(122,45,78,.15)';
+  ctx.beginPath(); ctx.moveTo(cx,cy-s*.3); ctx.lineTo(cx,cy+s*.85); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx-s*.85,cy+s*.1); ctx.lineTo(cx+s*.85,cy+s*.1); ctx.stroke();
+
+  // Highlight
+  const regions = {
+    ra:()=>{ctx.ellipse(cx-s*.45,cy-.1*s,s*.35,s*.3,0,0,Math.PI*2)},
+    la:()=>{ctx.ellipse(cx+s*.45,cy-.1*s,s*.35,s*.3,0,0,Math.PI*2)},
+    rv:()=>{ctx.ellipse(cx-s*.4,cy+s*.5,s*.4,s*.35,0,0,Math.PI*2)},
+    lv:()=>{ctx.ellipse(cx+s*.35,cy+s*.5,s*.4,s*.38,0,0,Math.PI*2)},
+    tv:()=>{ctx.ellipse(cx-s*.35,cy+s*.1,s*.15,s*.06,0,0,Math.PI*2)},
+    mv:()=>{ctx.ellipse(cx+s*.35,cy+s*.1,s*.15,s*.06,0,0,Math.PI*2)},
+    av:()=>{ctx.ellipse(cx+s*.15,cy-s*.35,s*.1,s*.08,0,0,Math.PI*2)},
+    pulv:()=>{ctx.ellipse(cx-s*.15,cy-s*.35,s*.1,s*.08,0,0,Math.PI*2)},
+    pa:()=>{ctx.moveTo(cx-s*.1,cy-s*.35);ctx.lineTo(cx-s*.5,cy-s*.8);ctx.lineTo(cx-s*.3,cy-s*.8);ctx.lineTo(cx+s*.05,cy-s*.35)},
+    aorta:()=>{ctx.moveTo(cx+s*.1,cy-s*.35);ctx.quadraticCurveTo(cx+s*.2,cy-s*.8,cx+s*.7,cy-s*.6);ctx.lineTo(cx+s*.6,cy-s*.5);ctx.quadraticCurveTo(cx+s*.15,cy-s*.65,cx+s*.2,cy-s*.35)},
+    lad:()=>{ctx.moveTo(cx,cy-s*.25);ctx.lineTo(cx-s*.05,cy+s*.8);ctx.lineTo(cx+s*.05,cy+s*.8);ctx.lineTo(cx+s*.05,cy-s*.25)},
+    svc:()=>{ctx.rect(cx-s*.55,cy-s*.9,s*.2,s*.5)},
+    septum:()=>{ctx.rect(cx-s*.05,cy-s*.2,s*.1,s*1)},
+    pv:()=>{ctx.moveTo(cx+s*.6,cy-s*.3);ctx.lineTo(cx+s*1,cy-s*.4);ctx.lineTo(cx+s*1,cy-s*.2);ctx.lineTo(cx+s*.6,cy-s*.15)},
+    rca:()=>{ctx.moveTo(cx-s*.1,cy-s*.3);ctx.quadraticCurveTo(cx-s*.8,cy,cx-s*.6,cy+s*.5);ctx.lineTo(cx-s*.5,cy+s*.45);ctx.quadraticCurveTo(cx-s*.7,cy,cx-s*.05,cy-s*.25)},
+    lcx:()=>{ctx.moveTo(cx+s*.05,cy-s*.25);ctx.quadraticCurveTo(cx+s*.8,cy,cx+s*.6,cy+s*.4);ctx.lineTo(cx+s*.5,cy+s*.35);ctx.quadraticCurveTo(cx+s*.7,cy,cx+s*.1,cy-s*.2)},
+    ivc:()=>{ctx.rect(cx-s*.45,cy+s*.6,s*.2,s*.35)}
+  };
+
+  if (regions[highlight]) {
+    ctx.beginPath();
+    regions[highlight]();
+    ctx.fillStyle = 'rgba(42,157,143,.2)';
+    ctx.fill();
+    ctx.strokeStyle = '#2A9D8F';
+    ctx.lineWidth = 2.5;
+    ctx.setLineDash([4,3]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  // Labels
+  ctx.fillStyle = 'rgba(0,0,0,.35)';
+  ctx.font = '10px Segoe UI,sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('RA',cx-s*.45,cy-s*.05);
+  ctx.fillText('LA',cx+s*.45,cy-s*.05);
+  ctx.fillText('RV',cx-s*.4,cy+s*.55);
+  ctx.fillText('LV',cx+s*.35,cy+s*.55);
+}
+
+function answerQuiz(idx) {
+  clearInterval(quizTimer);
+  const q = QUIZ[quizIdx];
+  const opts = document.querySelectorAll('.quiz-opt');
+  opts.forEach(o => o.disabled = true);
+  const correct = idx === q.ans;
+  if (correct) quizScore++;
+  quizAnswers.push({qIdx:quizIdx, chosen:idx, correct});
+  if (idx >= 0) opts[idx].classList.add(correct?'correct':'wrong');
+  if (!correct && q.ans >= 0) opts[q.ans].classList.add('reveal');
+  const fb = document.getElementById('qFeedback');
+  fb.className = 'quiz-feedback ' + (correct?'correct':'wrong');
+  fb.textContent = correct ? 'Correct! '+q.explain : (idx<0?'Time\'s up! ':'Not quite. ')+q.explain;
+  document.getElementById('qNext').style.display = 'inline-block';
+}
+
+function nextQuestion() {quizIdx++; showQuestion();}
+
+function showResults() {
+  clearInterval(quizTimer);
+  let title, subtitle;
+  if (quizScore===8){title='Chief Cardiologist';subtitle='Perfect score \u2014 you\'re ready to lead the cath lab.';}
+  else if (quizScore>=6){title='Cardiology Resident';subtitle='Excellent knowledge. A few more cases and you\'ll be attending.';}
+  else if (quizScore>=4){title='Medical Student';subtitle='Solid foundation. Keep studying those heart structures.';}
+  else{title='Keep Studying!';subtitle='Review the heart anatomy and try again.';}
+  document.getElementById('quizContainer').innerHTML = `
+    <div class="quiz-results">
+      <h2>Board Exam Results</h2>
+      <div class="score-big">${quizScore} / ${QUIZ.length}</div>
+      <div class="cert-title">${title}</div>
+      <p style="color:var(--text-light);font-size:.9rem;margin-bottom:16px">${subtitle}</p>
+      ${quizAnswers.some(a=>!a.correct)?'<button class="review-btn" onclick="showReview()">Review Missed Questions</button>':''}
+      <br><button class="restart-btn" onclick="startQuiz()">Retake Exam</button>
+    </div>`;
+}
+
+function showReview() {
+  const missed = quizAnswers.filter(a=>!a.correct);
+  let html = '<h2 style="color:var(--navy);margin-bottom:16px;text-align:center">Review: Missed Questions</h2>';
+  missed.forEach((m,mi) => {
+    const q = QUIZ[m.qIdx];
+    html += `<div class="quiz-question" style="margin-bottom:16px">
+      <h3 style="font-size:.9rem">${q.q}</h3>
+      <canvas class="quiz-mini-heart" id="revC${mi}" width="400" height="320"></canvas>
+      <p style="font-size:.82rem;margin-top:8px"><strong style="color:#27ae60">Correct:</strong> ${q.opts[q.ans]}</p>
+      ${m.chosen>=0?`<p style="font-size:.82rem;color:var(--coral)"><strong>Your answer:</strong> ${q.opts[m.chosen]}</p>`:'<p style="font-size:.82rem;color:var(--coral)">Time expired</p>'}
+      <p style="font-size:.8rem;color:var(--text-light);margin-top:6px">${q.explain}</p></div>`;
+  });
+  html += '<div style="text-align:center"><button class="restart-btn" onclick="startQuiz()">Retake Exam</button></div>';
+  document.getElementById('quizContainer').innerHTML = html;
+  // Draw review hearts
+  setTimeout(() => {
+    missed.forEach((m,mi) => {
+      const c = document.getElementById('revC'+mi);
+      if (!c) return;
+      const old = document.getElementById('qMiniHeart');
+      c.id = 'qMiniHeart';
+      drawQuizHeart(QUIZ[m.qIdx].highlight);
+      c.id = 'revC'+mi;
+    });
+  }, 60);
+}
+
+// Resize handler
+window.addEventListener('resize', () => {
+  if (flowInited) resizeFlowCanvas();
+  if (marcoInited) resizeMarcoCanvas();
+});
+</script>
+</body>
+</html>
+
