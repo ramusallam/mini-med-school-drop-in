@@ -9,11 +9,26 @@
 :root{
 --teal:#2A9D8F;--teal-dark:#1A6B6B;--gold:#D4A843;--navy:#1B3A5C;
 --coral:#E65C3C;--maroon:#7A2D4E;--bg:#F4F6F8;--card:#FFFFFF;
---text:#333;--text-light:#667;--shadow:0 2px 12px rgba(0,0,0,.12);
+--text:#333;--text-light:#667;--text-med:#5A6A7A;--border:#E4E9EF;
+--green:#27AE60;--red:#C0392B;--monitor:#0a0a0a;--neon:#0ABAB5;
+--shadow:0 2px 12px rgba(0,0,0,.12);
 --radius:10px;
 }
 html,body{height:100%;overflow:hidden}
 body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column}
+
+/* Shared animations (EKG-aligned) */
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pop{0%{transform:scale(.85);opacity:0}60%{transform:scale(1.06)}100%{transform:scale(1);opacity:1}}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+@keyframes pulseGlowRed{0%,100%{box-shadow:0 0 0 0 rgba(230,92,60,.55)}50%{box-shadow:0 0 0 12px rgba(230,92,60,0)}}
+@keyframes neonFlicker{0%,100%{text-shadow:0 0 6px rgba(10,186,181,.8),0 0 14px rgba(10,186,181,.35)}50%{text-shadow:0 0 9px rgba(10,186,181,.95),0 0 18px rgba(10,186,181,.5)}}
+@keyframes redBlink{0%,100%{opacity:1;text-shadow:0 0 8px rgba(255,40,40,.9),0 0 16px rgba(255,40,40,.5)}50%{opacity:.55;text-shadow:0 0 4px rgba(255,40,40,.5)}}
+.fade-in{animation:fadeIn .35s ease-out}
+.slide-up{animation:slideUp .45s ease-out}
+.pop{animation:pop .45s ease-out}
+.shake{animation:shake .4s ease-out}
 
 /* Header */
 .lab-header{background:linear-gradient(135deg,var(--navy) 0%,var(--teal) 100%);color:#fff;padding:10px 20px;display:flex;align-items:center;gap:14px;flex-shrink:0;border-bottom:3px solid var(--gold)}
@@ -37,13 +52,14 @@ body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:var(--bg
 .heart-explorer{display:flex;flex:1;min-height:0}
 .heart-svg-wrap{flex:1;display:flex;align-items:center;justify-content:center;position:relative;padding:10px;min-width:0}
 .heart-svg-wrap svg{width:100%;max-width:480px;height:auto}
-.info-panel{width:320px;background:#fff;border-left:1px solid #e8ecf0;padding:20px;overflow-y:auto;transition:transform .3s ease,opacity .3s ease;flex-shrink:0}
+.info-panel{width:320px;background:#fff;border-left:1px solid var(--border);padding:20px;overflow-y:auto;transition:transform .35s ease,opacity .35s ease;flex-shrink:0;box-shadow:inset 1px 0 0 rgba(27,58,92,.04)}
 .info-panel.hidden{transform:translateX(20px);opacity:0;pointer-events:none}
-.info-panel h2{font-size:1.2rem;color:var(--navy);margin-bottom:2px}
-.info-panel .clinical-role{font-size:.78rem;color:var(--teal);font-weight:600;margin-bottom:10px}
-.info-panel .description{font-size:.85rem;line-height:1.5;margin-bottom:12px}
-.info-panel .fun-fact{background:linear-gradient(135deg,#FFF8E8,#FFF3D6);border-left:3px solid var(--gold);padding:10px 12px;border-radius:0 var(--radius) var(--radius) 0;font-size:.8rem;line-height:1.45;margin-bottom:12px}
-.info-panel .fun-fact strong{color:var(--gold)}
+.info-panel.fade-active{animation:fadeIn .4s ease-out}
+.info-panel h2{font-size:1.2rem;color:var(--navy);margin-bottom:2px;letter-spacing:.2px}
+.info-panel .clinical-role{font-size:.78rem;color:var(--teal-dark);font-weight:700;margin-bottom:10px;text-transform:uppercase;letter-spacing:.6px}
+.info-panel .description{font-size:.85rem;line-height:1.55;margin-bottom:12px}
+.info-panel .fun-fact{background:linear-gradient(135deg,#FFF8E1 0%,#FEF3D1 100%);border-left:4px solid var(--gold);padding:11px 13px;border-radius:0 var(--radius) var(--radius) 0;font-size:.8rem;line-height:1.5;margin-bottom:12px;box-shadow:0 1px 4px rgba(212,168,67,.1)}
+.info-panel .fun-fact strong{color:#8B6914;font-weight:800;letter-spacing:.4px;text-transform:uppercase;font-size:.7rem;display:block;margin-bottom:3px}
 .blood-indicator{display:inline-flex;align-items:center;gap:6px;font-size:.75rem;font-weight:600;padding:4px 10px;border-radius:20px}
 .blood-indicator.oxy{background:#FDEAEA;color:#C0392B}
 .blood-indicator.deoxy{background:#E8F0FE;color:#2E5FA1}
@@ -54,10 +70,10 @@ body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:var(--bg
 .toggle-track::after{content:'';position:absolute;top:2px;left:2px;width:14px;height:14px;background:#fff;border-radius:50%;transition:transform .2s}
 .label-toggle input:checked+.toggle-track{background:var(--teal)}
 .label-toggle input:checked+.toggle-track::after{transform:translateX(14px)}
-.heart-structure{cursor:pointer;transition:filter .2s}
-.heart-structure:hover{filter:brightness(1.15)}
-.heart-structure.selected{animation:pulseGlow 1.2s ease-in-out infinite}
-@keyframes pulseGlow{0%,100%{filter:drop-shadow(0 0 4px rgba(42,157,143,.4))}50%{filter:drop-shadow(0 0 12px rgba(42,157,143,.8))}}
+.heart-structure{cursor:pointer;transition:filter .2s ease,transform .2s ease;transform-origin:center;transform-box:fill-box}
+.heart-structure:hover{filter:brightness(1.18) drop-shadow(0 0 6px rgba(42,157,143,.45))}
+.heart-structure.selected{animation:pulseGlow 1.3s ease-in-out infinite;filter:drop-shadow(0 0 8px rgba(42,157,143,.7))}
+@keyframes pulseGlow{0%,100%{filter:drop-shadow(0 0 5px rgba(42,157,143,.5))}50%{filter:drop-shadow(0 0 14px rgba(42,157,143,.9))}}
 
 /* Tab 2 */
 .flow-tab{flex-direction:column;display:flex;height:100%}
@@ -70,39 +86,51 @@ body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:var(--bg
 .flow-controls button.active{background:var(--gold);color:var(--navy)}
 .flow-controls label{color:#fff;font-size:.72rem;display:flex;align-items:center;gap:6px}
 .flow-controls input[type=range]{width:100px;accent-color:var(--teal)}
-.bpm-display{position:absolute;top:12px;right:12px;background:rgba(15,36,64,.92);color:#fff;padding:10px 14px;border-radius:var(--radius);font-size:.8rem;display:flex;align-items:center;gap:10px;border:1px solid rgba(255,255,255,.1)}
-.bpm-num{font-size:1.6rem;font-weight:700;color:var(--coral);font-variant-numeric:tabular-nums}
-.ecg-trace{width:120px;height:36px}
-.narration-box{position:absolute;top:12px;left:12px;right:160px;background:rgba(15,36,64,.92);color:#fff;padding:10px 14px;border-radius:var(--radius);font-size:.8rem;line-height:1.4;border-left:3px solid var(--gold);display:none}
-.narration-box.visible{display:block}
+.bpm-display{position:absolute;top:12px;right:12px;background:var(--monitor);color:#fff;padding:9px 13px 9px 14px;border-radius:var(--radius);font-size:.8rem;display:flex;align-items:center;gap:12px;border:1px solid #1a1a1a;box-shadow:0 0 18px rgba(10,186,181,.15),inset 0 0 0 1px rgba(10,186,181,.1)}
+.bpm-display .bpm-label{font-size:.6rem;color:var(--neon);font-family:'Courier New',monospace;font-weight:700;letter-spacing:1.6px;text-transform:uppercase;text-shadow:0 0 6px rgba(10,186,181,.55)}
+.bpm-num{font-size:1.85rem;font-weight:800;color:var(--neon);font-family:'Courier New',monospace;font-variant-numeric:tabular-nums;text-shadow:0 0 8px rgba(10,186,181,.75),0 0 16px rgba(10,186,181,.35);letter-spacing:1px;line-height:1}
+.bpm-num small{font-size:.55rem;opacity:.7;letter-spacing:1px;margin-left:2px}
+.ecg-trace{width:120px;height:36px;display:block}
+.canvas-status{position:absolute;top:12px;left:12px;font-size:.65rem;color:var(--neon);font-family:'Courier New',monospace;font-weight:700;letter-spacing:1.4px;text-shadow:0 0 6px rgba(10,186,181,.8);pointer-events:none;background:rgba(10,10,10,.55);padding:5px 10px;border-radius:6px;border:1px solid rgba(10,186,181,.2);z-index:3;animation:neonFlicker 3s ease-in-out infinite}
+.narration-box{position:absolute;top:48px;left:12px;right:160px;background:rgba(10,10,10,.92);color:#fff;padding:10px 14px;border-radius:var(--radius);font-size:.8rem;line-height:1.45;border-left:3px solid var(--gold);display:none;box-shadow:0 4px 16px rgba(0,0,0,.4)}
+.narration-box.visible{display:block;animation:fadeIn .35s ease-out}
 
 /* Tab 3 */
 .marco-tab{flex-direction:column;display:flex;height:100%}
 .marco-main{flex:1;display:flex;min-height:0;position:relative}
 .marco-canvas-wrap{flex:1;position:relative}
 .marco-canvas-wrap canvas{width:100%;height:100%}
-.marco-side{width:280px;background:#fff;border-left:1px solid #e8ecf0;padding:16px;overflow-y:auto;flex-shrink:0;display:flex;flex-direction:column;gap:12px}
-.marco-side h3{font-size:.95rem;color:var(--navy);margin-bottom:4px}
-.slider-wrap{padding:8px 0}
-.slider-wrap label{font-size:.75rem;font-weight:600;color:var(--text-light);display:block;margin-bottom:4px}
+.marco-side{width:300px;background:#fff;border-left:1px solid var(--border);padding:16px;overflow-y:auto;flex-shrink:0;display:flex;flex-direction:column;gap:12px}
+.marco-side h3{font-size:.95rem;color:var(--navy);margin-bottom:4px;letter-spacing:.2px}
+.slider-wrap{padding:6px 0}
+.slider-wrap label{font-size:.72rem;font-weight:700;color:var(--text-med);display:block;margin-bottom:6px;letter-spacing:.6px;text-transform:uppercase}
 .slider-wrap input[type=range]{width:100%;accent-color:var(--coral)}
-.slider-val{text-align:center;font-size:1.5rem;font-weight:800;color:var(--coral);font-variant-numeric:tabular-nums}
-.stat-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #f0f0f0;font-size:.8rem}
-.stat-row .stat-label{color:var(--text-light)}
-.stat-row .stat-value{font-weight:700;font-variant-numeric:tabular-nums}
-.urgency-badge{display:inline-block;padding:2px 10px;border-radius:10px;font-size:.72rem;font-weight:700;color:#fff}
-.urgency-green{background:#27ae60}
-.urgency-yellow{background:#f39c12}
-.urgency-red{background:var(--coral);animation:urgPulse 1s infinite}
-@keyframes urgPulse{0%,100%{opacity:1}50%{opacity:.7}}
-.marco-callout{background:linear-gradient(135deg,#FFF3E0,#FFE0B2);border:2px solid var(--gold);border-radius:var(--radius);padding:12px;font-size:.8rem;line-height:1.45;display:none}
+.slider-val{text-align:center;font-size:1.7rem;font-weight:800;color:var(--coral);font-variant-numeric:tabular-nums;font-family:'Courier New',monospace;letter-spacing:1px;margin-top:2px}
+/* Live HR monitor screen */
+.hr-monitor{margin-top:2px;background:var(--monitor);border:1px solid #1a1a1a;border-radius:8px;padding:9px 12px;display:flex;align-items:center;justify-content:space-between;gap:10px;box-shadow:inset 0 0 0 1px rgba(10,186,181,.12),0 0 14px rgba(10,186,181,.08)}
+.hr-monitor .hr-label{font-size:.55rem;color:var(--neon);font-family:'Courier New',monospace;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;text-shadow:0 0 5px rgba(10,186,181,.6)}
+.hr-monitor .hr-value{font-size:1.4rem;font-weight:800;color:var(--neon);font-family:'Courier New',monospace;font-variant-numeric:tabular-nums;text-shadow:0 0 7px rgba(10,186,181,.7),0 0 14px rgba(10,186,181,.3);line-height:1}
+.hr-monitor .hr-value small{font-size:.5rem;opacity:.7;letter-spacing:1px;margin-left:2px}
+.hr-monitor.critical .hr-label,.hr-monitor.critical .hr-value{color:#ff4040;text-shadow:0 0 8px rgba(255,64,64,.85),0 0 16px rgba(255,64,64,.4);animation:redBlink 1.1s ease-in-out infinite}
+.stat-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid #f0f0f0;font-size:.8rem}
+.stat-row .stat-label{color:var(--text-med);font-weight:600;letter-spacing:.2px}
+.stat-row .stat-value{font-weight:800;font-variant-numeric:tabular-nums;font-family:'Courier New',monospace;color:var(--navy)}
+.urgency-badge{display:inline-block;padding:3px 11px;border-radius:10px;font-size:.7rem;font-weight:800;color:#fff;letter-spacing:.6px;text-transform:uppercase;font-family:'Courier New',monospace}
+.urgency-green{background:linear-gradient(135deg,#27ae60,#1E8449);box-shadow:0 0 8px rgba(39,174,96,.35)}
+.urgency-yellow{background:linear-gradient(135deg,#f39c12,#d4880c);box-shadow:0 0 8px rgba(243,156,18,.35)}
+.urgency-red{background:linear-gradient(135deg,var(--coral),#a82a14);animation:urgPulse 1s infinite;box-shadow:0 0 10px rgba(230,92,60,.55),0 0 20px rgba(230,92,60,.25);text-shadow:0 0 4px rgba(255,40,40,.7)}
+@keyframes urgPulse{0%,100%{opacity:1;box-shadow:0 0 10px rgba(230,92,60,.55),0 0 20px rgba(230,92,60,.25)}50%{opacity:.6;box-shadow:0 0 6px rgba(230,92,60,.3)}}
+.marco-callout{background:linear-gradient(135deg,#FFF8E1 0%,#FEF3D1 100%);border-left:4px solid var(--gold);border-radius:0 var(--radius) var(--radius) 0;padding:12px 14px;font-size:.8rem;line-height:1.5;display:none;box-shadow:0 1px 6px rgba(212,168,67,.18);animation:fadeIn .4s ease-out}
 .marco-callout.visible{display:block}
-.marco-callout strong{color:var(--navy)}
-.stemi-alert{background:linear-gradient(135deg,#FFEBEE,#FFCDD2);border:3px solid var(--coral);border-radius:var(--radius);padding:14px;text-align:center;display:none;animation:stemiBorder 1s infinite}
+.marco-callout strong{color:#8B6914;font-weight:800;letter-spacing:.4px;text-transform:uppercase;font-size:.7rem;display:block;margin-bottom:4px}
+.stemi-alert{background:#0a0a0a;border:2px solid #ff2828;border-radius:var(--radius);padding:14px;text-align:center;display:none;animation:pulseGlowRed 1.1s ease-in-out infinite,pop .5s ease-out;box-shadow:0 0 24px rgba(255,40,40,.4)}
 .stemi-alert.visible{display:block}
-.stemi-alert h3{color:var(--coral);font-size:1.1rem;margin-bottom:6px}
-@keyframes stemiBorder{0%,100%{border-color:var(--coral)}50%{border-color:#ff0000}}
-.ecg-marco{width:100%;height:60px;background:#0a1628;border-radius:6px}
+.stemi-alert h3{color:#ff4040;font-size:1.05rem;margin-bottom:8px;letter-spacing:1.5px;font-family:'Courier New',monospace;font-weight:800;text-shadow:0 0 8px rgba(255,40,40,.95),0 0 16px rgba(255,40,40,.5);animation:redBlink 1s ease-in-out infinite}
+.stemi-alert h3::before{content:"\26A0  ";color:#ff4040}
+.stemi-alert .stemi-body{color:#fff;font-size:.78rem;line-height:1.5;margin-bottom:8px}
+.stemi-alert .stemi-rx{font-family:'Courier New',monospace;font-size:.7rem;color:var(--neon);background:rgba(10,186,181,.08);border:1px dashed rgba(10,186,181,.4);border-radius:6px;padding:7px 9px;line-height:1.55;letter-spacing:.4px;text-align:left;text-shadow:0 0 4px rgba(10,186,181,.4)}
+.stemi-alert .stemi-rx strong{color:#fff;letter-spacing:1px}
+.ecg-marco{width:100%;height:60px;background:#0a0a0a;border-radius:6px;border:1px solid #1a1a1a;box-shadow:inset 0 0 0 1px rgba(10,186,181,.1)}
 
 /* Tab 4 */
 .quiz-tab{flex-direction:column;padding:20px;align-items:center}
@@ -113,19 +141,21 @@ body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:var(--bg
 .quiz-timer.warning{color:var(--coral);animation:timerPulse .5s infinite}
 @keyframes timerPulse{0%,100%{opacity:1}50%{opacity:.5}}
 .timer-circle{width:36px;height:36px}
-.quiz-question{background:#fff;border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:16px}
-.quiz-question h3{font-size:1rem;color:var(--navy);margin-bottom:14px;line-height:1.4}
+.quiz-question{background:#fff;border-radius:14px;padding:20px;box-shadow:0 1px 6px rgba(0,0,0,.06);border:1px solid var(--border);margin-bottom:16px;animation:fadeIn .35s ease-out}
+.quiz-question h3{font-size:1rem;color:var(--navy);margin-bottom:14px;line-height:1.45}
 .quiz-mini-heart{width:200px;height:160px;margin:0 auto 14px;display:block}
 .quiz-options{display:flex;flex-direction:column;gap:8px}
-.quiz-opt{padding:10px 14px;border:2px solid #e0e4e8;border-radius:8px;font-size:.85rem;cursor:pointer;transition:all .2s;background:#fff;text-align:left;font-family:inherit;color:var(--text)}
-.quiz-opt:hover{border-color:var(--teal);background:#F0FAF9}
-.quiz-opt.correct{border-color:#27ae60;background:#E8F8F0;color:#1a7a42;font-weight:600}
-.quiz-opt.wrong{border-color:var(--coral);background:#FDEAEA;color:var(--coral)}
-.quiz-opt.reveal{border-color:#27ae60;background:#E8F8F0}
-.quiz-opt:disabled{cursor:default;opacity:.85}
-.quiz-feedback{margin-top:12px;padding:10px 14px;border-radius:8px;font-size:.82rem;line-height:1.45;display:none}
-.quiz-feedback.correct{display:block;background:#E8F8F0;border-left:3px solid #27ae60;color:#1a7a42}
-.quiz-feedback.wrong{display:block;background:#FDEAEA;border-left:3px solid var(--coral);color:var(--coral)}
+.quiz-opt{padding:11px 15px;border:2px solid var(--border);border-radius:10px;font-size:.85rem;cursor:pointer;transition:border-color .18s ease,background .18s ease,transform .12s ease,box-shadow .18s ease;background:#fff;text-align:left;font-family:inherit;color:var(--text);font-weight:500}
+.quiz-opt:hover{border-color:var(--teal);background:#F0FAF9;transform:translateY(-1px);box-shadow:0 2px 8px rgba(42,157,143,.15)}
+.quiz-opt.correct{border-color:var(--green);background:linear-gradient(135deg,#E8F8F0,#D4F1E0);color:#1a7a42;font-weight:700;animation:pop .45s ease-out;box-shadow:0 2px 10px rgba(39,174,96,.25)}
+.quiz-opt.wrong{border-color:var(--coral);background:linear-gradient(135deg,#FDEAEA,#FCD8D8);color:var(--coral);font-weight:700;animation:shake .4s ease-out;box-shadow:0 2px 10px rgba(230,92,60,.2)}
+.quiz-opt.reveal{border-color:var(--green);background:#E8F8F0;font-weight:600;animation:fadeIn .4s ease-out}
+.quiz-opt:disabled{cursor:default;opacity:.92}
+.quiz-feedback{margin-top:14px;padding:11px 14px;border-radius:8px;font-size:.82rem;line-height:1.5;display:none}
+.quiz-feedback.correct{display:block;background:#F0F8F4;border-left:3px solid var(--green);color:#1a7a42;animation:fadeIn .35s ease-out}
+.quiz-feedback.wrong{display:block;background:#FDEAEA;border-left:3px solid var(--coral);color:var(--coral);animation:fadeIn .35s ease-out}
+.quiz-progress-bar{height:6px;background:#EEF2F5;border-radius:3px;overflow:hidden;margin-bottom:14px;border:1px solid var(--border)}
+.quiz-progress-fill{height:100%;background:linear-gradient(90deg,var(--teal),var(--teal-dark));border-radius:3px;transition:width .4s ease;box-shadow:0 0 8px rgba(42,157,143,.4)}
 .quiz-next{margin-top:14px;background:var(--teal);color:#fff;border:none;padding:8px 20px;border-radius:6px;font-size:.85rem;font-weight:600;cursor:pointer;display:none}
 .quiz-next:hover{background:var(--teal-dark)}
 .quiz-results{text-align:center;padding:30px 20px}
@@ -288,7 +318,8 @@ body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:var(--bg
 <div class="flow-main">
   <div class="flow-canvas-wrap">
     <canvas id="flowCanvas"></canvas>
-    <div class="bpm-display"><div><div style="font-size:.65rem;color:rgba(255,255,255,.6)">HEART RATE</div><div class="bpm-num" id="bpmNum">72</div></div><canvas class="ecg-trace" id="ecgCanvas"></canvas></div>
+    <div class="canvas-status" id="flowStatus">PATIENT: MARCO TORRES &nbsp;|&nbsp; RHYTHM: NORMAL SINUS</div>
+    <div class="bpm-display"><div><div class="bpm-label">HEART RATE</div><div class="bpm-num" id="bpmNum">72<small>BPM</small></div></div><canvas class="ecg-trace" id="ecgCanvas"></canvas></div>
     <div class="narration-box" id="narrationBox"></div>
     <div class="flow-controls">
       <button id="flowPlayBtn" onclick="toggleFlowPlay()">&#9654; Play</button>
@@ -314,6 +345,10 @@ body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:var(--bg
       <input type="range" id="blockSlider" min="0" max="100" value="0" oninput="updateBlockage(+this.value)">
       <div class="slider-val" id="blockVal">0%</div>
     </div>
+    <div class="hr-monitor" id="hrMonitor">
+      <span class="hr-label">LIVE HR</span>
+      <span class="hr-value" id="hrValue">72<small>BPM</small></span>
+    </div>
     <div>
       <div class="stat-row"><span class="stat-label">Blood Flow</span><span class="stat-value" id="statFlow">100%</span></div>
       <div class="stat-row"><span class="stat-label">O&#8322; Delivery</span><span class="stat-value" id="statO2">100%</span></div>
@@ -321,8 +356,17 @@ body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:var(--bg
       <div class="stat-row"><span class="stat-label">Urgency</span><span class="stat-value" id="statUrgency"><span class="urgency-badge urgency-green">Stable</span></span></div>
     </div>
     <canvas class="ecg-marco" id="ecgMarco"></canvas>
-    <div class="marco-callout" id="marcoCallout"><strong>Marco's Case:</strong> At 85% stenosis, Marco experienced crushing chest pain during basketball practice. His LAD - the "widow-maker" artery - was nearly completely blocked. Emergency catheterization and stent placement saved the downstream heart muscle just in time.</div>
-    <div class="stemi-alert" id="stemiAlert"><h3>STEMI ALERT</h3><p style="font-size:.82rem;margin-bottom:8px">Complete occlusion of the LAD. ST-elevation myocardial infarction in progress.</p><p style="font-size:.75rem;color:var(--text-light)">Emergency interventions: Percutaneous Coronary Intervention (PCI), Thrombolysis, CABG Surgery</p></div>
+    <div class="marco-callout" id="marcoCallout"><strong>Marco's Case</strong> At 85% stenosis, Marco experienced crushing chest pain during basketball practice. His LAD - the "widow-maker" artery - was nearly completely blocked. Emergency catheterization and stent placement saved the downstream heart muscle just in time.</div>
+    <div class="stemi-alert" id="stemiAlert">
+      <h3>STEMI ALERT</h3>
+      <div class="stemi-body">Complete occlusion of the LAD. ST-elevation myocardial infarction in progress.</div>
+      <div class="stemi-rx">
+        <strong>RX / DOSING</strong><br>
+        ASA 325 mg PO chew<br>
+        Heparin 60 U/kg IV bolus<br>
+        Activate cath lab &mdash; door-to-balloon &lt; 90 min
+      </div>
+    </div>
   </div>
 </div>
 </div>
@@ -449,6 +493,10 @@ document.querySelectorAll('.heart-structure').forEach(el => {
 function showInfo(s) {
   const p = document.getElementById('infoPanel');
   p.classList.remove('hidden');
+  // retrigger fade animation on each click
+  p.classList.remove('fade-active');
+  void p.offsetWidth;
+  p.classList.add('fade-active');
   document.getElementById('infoName').textContent = s.name;
   document.getElementById('infoRole').textContent = s.role;
   document.getElementById('infoDesc').textContent = s.desc;
@@ -575,16 +623,19 @@ function flowLoop(ts) {
   const dpr = devicePixelRatio;
 
   flowCtx.clearRect(0, 0, W, H);
-  flowCtx.fillStyle = '#0D1B2A';
+  flowCtx.fillStyle = '#0a0a0a';
   flowCtx.fillRect(0, 0, W, H);
 
   // Grid dots for atmosphere
-  flowCtx.fillStyle = 'rgba(42,157,143,.04)';
+  flowCtx.fillStyle = 'rgba(10,186,181,.06)';
   for (let gx = 0; gx < W; gx += 30 * dpr) {
     for (let gy = 0; gy < H; gy += 30 * dpr) {
       flowCtx.fillRect(gx, gy, 1, 1);
     }
   }
+
+  // Top-strip EKG monitor trace (synced to BPM) — adapted from EKG-Reader sample logic
+  drawTopStripEKG(flowCtx, W, H, dpr, heartPhase);
 
   // Circuit path glow
   flowCtx.save();
@@ -718,6 +769,62 @@ function drawFlowHeart(ctx, W, H, dpr) {
   ctx.stroke();
   ctx.beginPath(); ctx.moveTo(cx,cy-s*.2); ctx.lineTo(cx,cy+s*.85); ctx.stroke();
   ctx.beginPath(); ctx.moveTo(cx-s*.85,cy+s*.15); ctx.lineTo(cx+s*.85,cy+s*.15); ctx.stroke();
+  ctx.restore();
+}
+
+// Top-strip EKG trace on flow canvas — neon teal, glow, synced to heartPhase.
+// Adapted from EKG-Reader's normal-sinus sample shape.
+function drawTopStripEKG(ctx, W, H, dpr, phase) {
+  const stripH = 44 * dpr;
+  const stripY = 0;
+  ctx.save();
+  // Strip background
+  ctx.fillStyle = 'rgba(0,0,0,.55)';
+  ctx.fillRect(0, stripY, W, stripH);
+  // Subtle horizontal grid
+  ctx.strokeStyle = 'rgba(10,186,181,.08)';
+  ctx.lineWidth = 1;
+  for (let y = stripY + 8*dpr; y < stripY + stripH; y += 10*dpr) {
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+  }
+  // Glow layer (wider stroke, faint)
+  ctx.strokeStyle = 'rgba(10,186,181,.35)';
+  ctx.lineWidth = 4 * dpr;
+  ctx.lineJoin = 'round';
+  ctx.lineCap = 'round';
+  ctx.beginPath();
+  const cycles = 3.5;
+  const baseY = stripY + stripH * .55;
+  for (let x = 0; x < W; x++) {
+    const t = ((x/W*cycles + phase) % 1);
+    let y = baseY;
+    if (t<.08) y = baseY - Math.sin(t/.08*Math.PI) * stripH*.10;
+    else if (t<.12) y = baseY;
+    else if (t<.15) y = baseY + stripH*.06;
+    else if (t<.20) y = baseY - Math.sin((t-.15)/.05*Math.PI) * stripH*.40;
+    else if (t<.25) y = baseY + Math.sin((t-.20)/.05*Math.PI) * stripH*.12;
+    else if (t<.45) y = baseY;
+    else if (t<.55) y = baseY - Math.sin((t-.45)/.10*Math.PI) * stripH*.13;
+    if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+  // Sharp neon teal trace
+  ctx.strokeStyle = '#0ABAB5';
+  ctx.lineWidth = 1.6 * dpr;
+  ctx.beginPath();
+  for (let x = 0; x < W; x++) {
+    const t = ((x/W*cycles + phase) % 1);
+    let y = baseY;
+    if (t<.08) y = baseY - Math.sin(t/.08*Math.PI) * stripH*.10;
+    else if (t<.12) y = baseY;
+    else if (t<.15) y = baseY + stripH*.06;
+    else if (t<.20) y = baseY - Math.sin((t-.15)/.05*Math.PI) * stripH*.40;
+    else if (t<.25) y = baseY + Math.sin((t-.20)/.05*Math.PI) * stripH*.12;
+    else if (t<.45) y = baseY;
+    else if (t<.55) y = baseY - Math.sin((t-.45)/.10*Math.PI) * stripH*.13;
+    if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  }
+  ctx.stroke();
   ctx.restore();
 }
 
@@ -1016,6 +1123,20 @@ function marcoLoop(ts) {
   else if (blockageLevel >= 70) ecgMode = 'st_depression';
   drawECG(ecgMarcoCtx, ecgMarcoCanvas.width, ecgMarcoCanvas.height, marcoPhase, ecgMode);
 
+  // Live HR monitor (drifts up with stenosis as the heart compensates)
+  const hrEl = document.getElementById('hrValue');
+  const hrMon = document.getElementById('hrMonitor');
+  if (hrEl) {
+    let baseHr = 72;
+    if (blockageLevel >= 98) baseHr = 0;
+    else if (blockageLevel >= 90) baseHr = 128 + Math.round(Math.sin(marcoPhase*4)*4);
+    else if (blockageLevel >= 70) baseHr = 105 + Math.round(Math.sin(marcoPhase*3)*3);
+    else if (blockageLevel >= 50) baseHr = 88 + Math.round(Math.sin(marcoPhase*2)*2);
+    else baseHr = 72 + Math.round(Math.sin(marcoPhase*2)*2);
+    hrEl.innerHTML = (baseHr === 0 ? '---' : baseHr) + '<small>BPM</small>';
+    if (hrMon) hrMon.classList.toggle('critical', blockageLevel >= 90);
+  }
+
   requestAnimationFrame(marcoLoop);
 }
 
@@ -1039,6 +1160,7 @@ function showQuestion() {
   quizTimeLeft = 30;
   clearInterval(quizTimer);
 
+  const pct = ((quizIdx) / QUIZ.length) * 100;
   document.getElementById('quizContainer').innerHTML = `
     <div class="quiz-header">
       <div class="quiz-progress">Question ${quizIdx+1} of ${QUIZ.length}</div>
@@ -1050,6 +1172,7 @@ function showQuestion() {
         <span id="timerNum">30</span>
       </div>
     </div>
+    <div class="quiz-progress-bar"><div class="quiz-progress-fill" style="width:${pct}%"></div></div>
     <div class="quiz-question">
       <h3>${q.q}</h3>
       <canvas class="quiz-mini-heart" id="qMiniHeart" width="400" height="320"></canvas>

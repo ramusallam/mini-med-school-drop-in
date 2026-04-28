@@ -8,6 +8,17 @@
   <script crossorigin src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone@7.23.9/babel.min.js"></script>
   <style>
+    :root {
+      --navy: #1B3A5C;
+      --teal: #2A9D8F;
+      --teal-dark: #1A6B6B;
+      --gold: #D4A843;
+      --coral: #E65C3C;
+      --maroon: #7A2D4E;
+      --green: #27AE60;
+      --red: #C0392B;
+      --yellow: #F39C12;
+    }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -24,12 +35,21 @@
       to { opacity: 1; transform: translateX(0); }
     }
     @keyframes slideUp {
-      from { opacity: 0; transform: translateY(20px); }
+      from { opacity: 0; transform: translateY(16px); }
       to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes pop {
+      0% { transform: scale(0.85); opacity: 0; }
+      60% { transform: scale(1.06); }
+      100% { transform: scale(1); opacity: 1; }
     }
     @keyframes pulse {
       0%, 100% { transform: scale(1); opacity: 1; }
       50% { transform: scale(1.08); opacity: 0.7; }
+    }
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(230,92,60,0.45); }
+      50% { box-shadow: 0 0 0 10px rgba(230,92,60,0); }
     }
     @keyframes urgentPulse {
       0%, 100% { box-shadow: 0 0 0 0 rgba(192, 57, 43, 0); }
@@ -47,14 +67,71 @@
       0%, 100% { opacity: 1; }
       50% { opacity: 0.4; }
     }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-5px); }
+      40% { transform: translateX(5px); }
+      60% { transform: translateX(-3px); }
+      80% { transform: translateX(3px); }
+    }
     .fade-in { animation: fadeIn 0.4s ease-out; }
     .slide-in { animation: slideIn 0.4s ease-out; }
-    .slide-up { animation: slideUp 0.5s ease-out; }
+    .slide-up { animation: slideUp 0.4s ease-out; }
+    .pop { animation: pop 0.45s ease-out; }
     .pulse { animation: pulse 1s ease-in-out infinite; }
+    .pulse-glow { animation: pulseGlow 1.4s ease-in-out infinite; }
     .urgent-pulse { animation: urgentPulse 1s ease-in-out infinite; }
     .timer-pulse { animation: timerPulse 0.6s ease-in-out infinite; }
     .correct-reveal { animation: correctReveal 0.4s ease-out; }
     .dispatch-blink { animation: dispatchBlink 1.2s ease-in-out infinite; }
+    .shake { animation: shake 0.4s ease-in-out; }
+
+    /* Polished triage tag chips */
+    .triage-btn {
+      position: relative;
+      border-radius: 10px;
+      padding: 10px 10px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      letter-spacing: 0.4px;
+      font-family: inherit;
+    }
+    .triage-btn:hover { transform: translateY(-1px); }
+    .triage-btn.selected { animation: pop 0.45s ease-out; }
+    .triage-btn .tag-dot {
+      width: 12px; height: 12px; border-radius: 50%;
+      flex-shrink: 0;
+      box-shadow: 0 0 0 2px rgba(255,255,255,0.4) inset;
+    }
+
+    /* Monospace timer treatment (EKG-style) */
+    .timer-mono {
+      font-family: 'Courier New', monospace !important;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 1px;
+    }
+    .timer-mono.glow {
+      text-shadow: 0 0 6px rgba(10,186,181,0.55), 0 0 12px rgba(10,186,181,0.25);
+    }
+    .timer-mono.warn-glow {
+      text-shadow: 0 0 6px rgba(243,156,18,0.6), 0 0 12px rgba(243,156,18,0.3);
+    }
+    .timer-mono.crit-glow {
+      text-shadow: 0 0 8px rgba(192,57,43,0.7), 0 0 14px rgba(192,57,43,0.35);
+    }
+
+    /* Score / number monospace */
+    .score-mono {
+      font-family: 'Courier New', monospace;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 1px;
+    }
 
     /* Scrollbar styling */
     ::-webkit-scrollbar { width: 6px; }
@@ -527,9 +604,13 @@
       const isCorrect = showResult && selectedDecision === patient.correctTriage;
       const isIncorrect = showResult && selectedDecision && selectedDecision !== patient.correctTriage;
 
+      const cardClass = showResult
+        ? (isCorrect ? "pop" : "shake")
+        : "slide-up";
+
       return (
         <div
-          className={showResult ? "correct-reveal" : "fade-in"}
+          className={cardClass}
           style={{
             background: showResult ? (isCorrect ? "#f0faf5" : "#fef5f5") : WHITE,
             borderRadius: 14,
@@ -539,8 +620,10 @@
               ? `2.5px solid ${isCorrect ? GREEN : RED}`
               : `2.5px solid ${selectedDecision ? TEAL : borderColor}`,
             boxShadow: selectedDecision && !showResult
-              ? `0 0 0 3px ${TEAL}22`
-              : "0 1px 6px rgba(0,0,0,0.06)",
+              ? `0 4px 14px ${TEAL}33, 0 0 0 3px ${TEAL}22`
+              : showResult
+                ? (isCorrect ? `0 4px 14px ${GREEN}33` : `0 4px 14px ${RED}33`)
+                : "0 1px 6px rgba(0,0,0,0.06)",
             transition: "all 0.3s ease"
           }}
         >
@@ -563,7 +646,12 @@
               </div>
             </div>
             {alertLevel === "critical" && !showResult && (
-              <span className="pulse" style={{ fontSize: 18, lineHeight: 1 }}>&#x1F534;</span>
+              <span className="pulse pulse-glow" style={{
+                fontSize: 18,
+                lineHeight: 1,
+                borderRadius: "50%",
+                display: "inline-block"
+              }}>&#x1F534;</span>
             )}
             {showResult && (
               <span style={{
@@ -614,47 +702,50 @@
           {/* Triage buttons */}
           {showTriage && !showResult && (
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-              {Object.entries(TRIAGE_CATS).map(([key, cat]) => (
-                <button
-                  key={key}
-                  onClick={() => onTriageChoice(patient.id, key)}
-                  style={{
-                    background: selectedDecision === key ? cat.color : WHITE,
-                    color: selectedDecision === key ? WHITE : cat.color,
-                    border: `2.5px solid ${cat.color}`,
-                    borderRadius: 10,
-                    padding: "10px 10px",
-                    fontSize: 12,
-                    fontWeight: 700,
-                    cursor: "pointer",
-                    transition: "all 0.2s",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: 6,
-                    boxShadow: selectedDecision === key ? `0 2px 8px ${cat.color}44` : "none"
-                  }}
-                  onMouseOver={(e) => {
-                    if (selectedDecision !== key) {
-                      e.currentTarget.style.background = cat.bgColor;
-                      e.currentTarget.style.transform = "translateY(-1px)";
-                    }
-                  }}
-                  onMouseOut={(e) => {
-                    if (selectedDecision !== key) {
-                      e.currentTarget.style.background = WHITE;
-                      e.currentTarget.style.transform = "translateY(0)";
-                    }
-                  }}
-                >
-                  <div style={{
-                    width: 12, height: 12, borderRadius: "50%",
-                    background: selectedDecision === key ? WHITE : cat.color,
-                    flexShrink: 0
-                  }} />
-                  {key}
-                </button>
-              ))}
+              {Object.entries(TRIAGE_CATS).map(([key, cat]) => {
+                const isSel = selectedDecision === key;
+                const gradients = {
+                  RED: "linear-gradient(135deg, #E74C3C, #922B21)",
+                  YELLOW: "linear-gradient(135deg, #F5B041, #C87F0A)",
+                  GREEN: "linear-gradient(135deg, #2ECC71, #1E8449)",
+                  BLACK: "linear-gradient(135deg, #555555, #2C3E50)"
+                };
+                return (
+                  <button
+                    key={key}
+                    className={isSel ? "triage-btn selected" : "triage-btn"}
+                    onClick={() => onTriageChoice(patient.id, key)}
+                    style={{
+                      background: isSel ? gradients[key] : WHITE,
+                      color: isSel ? WHITE : cat.color,
+                      border: `2.5px solid ${cat.color}`,
+                      boxShadow: isSel
+                        ? `0 4px 14px ${cat.color}55, 0 0 0 3px ${cat.color}22`
+                        : `0 1px 3px ${cat.color}1A`,
+                      textShadow: isSel ? "0 1px 2px rgba(0,0,0,0.2)" : "none"
+                    }}
+                    onMouseOver={(e) => {
+                      if (!isSel) {
+                        e.currentTarget.style.background = cat.bgColor;
+                        e.currentTarget.style.transform = "translateY(-1px)";
+                        e.currentTarget.style.boxShadow = `0 3px 10px ${cat.color}33`;
+                      }
+                    }}
+                    onMouseOut={(e) => {
+                      if (!isSel) {
+                        e.currentTarget.style.background = WHITE;
+                        e.currentTarget.style.transform = "translateY(0)";
+                        e.currentTarget.style.boxShadow = `0 1px 3px ${cat.color}1A`;
+                      }
+                    }}
+                  >
+                    <div className="tag-dot" style={{
+                      background: isSel ? WHITE : cat.color
+                    }} />
+                    {key}
+                  </button>
+                );
+              })}
             </div>
           )}
 
@@ -695,7 +786,7 @@
       const incorrect = attempted - correct;
 
       return (
-        <div style={{
+        <div className="score-mono" style={{
           display: "flex", alignItems: "center", gap: 12,
           padding: "6px 12px",
           background: WHITE,
@@ -917,12 +1008,17 @@
                 border: `2px solid ${overallAccuracy >= 80 ? GREEN : overallAccuracy >= 60 ? GOLD : RED}`,
                 boxShadow: "0 2px 12px rgba(0,0,0,0.06)"
               }}>
-                <div style={{
-                  fontSize: 52,
+                <div className="score-mono pop" style={{
+                  fontSize: 56,
                   fontWeight: 800,
                   color: overallAccuracy >= 80 ? GREEN : overallAccuracy >= 60 ? GOLD : RED,
                   marginBottom: 4,
-                  lineHeight: 1
+                  lineHeight: 1,
+                  textShadow: overallAccuracy >= 80
+                    ? "0 0 16px rgba(39,174,96,0.35)"
+                    : overallAccuracy >= 60
+                      ? "0 0 16px rgba(212,168,67,0.35)"
+                      : "0 0 16px rgba(192,57,43,0.3)"
                 }}>
                   {overallAccuracy}%
                 </div>
@@ -1101,7 +1197,7 @@
             }}>
               <div>
                 <div style={{ fontSize: 10, color: MED, fontWeight: 600, textTransform: "uppercase", letterSpacing: 0.5 }}>Scenarios</div>
-                <div style={{ fontSize: 18, fontWeight: 800, color: TEAL }}>
+                <div className="score-mono" style={{ fontSize: 18, fontWeight: 800, color: TEAL }}>
                   {Math.min(roundsCompleted + 1, scenarios.length)}/{scenarios.length}
                 </div>
               </div>
@@ -1124,18 +1220,27 @@
                     textAlign: "center",
                     padding: "8px 14px",
                     borderRadius: 10,
-                    background: timeCritical ? "#FDE8E8" : timeWarning ? "#FFF3CD" : "#E8F8F1",
+                    background: timeCritical ? "#0a0a0a" : timeWarning ? "#FFF3CD" : "#E8F8F1",
                     border: `2px solid ${timeCritical ? RED : timeWarning ? YELLOW : GREEN}`,
                     transition: "all 0.3s"
                   }}
                 >
-                  <div style={{ fontSize: 10, color: MED, fontWeight: 600, textTransform: "uppercase", letterSpacing: 0.5 }}>Time Left</div>
                   <div style={{
-                    fontSize: 20,
-                    fontWeight: 800,
-                    color: timeCritical ? RED : timeWarning ? "#856404" : TEAL,
-                    fontVariantNumeric: "tabular-nums"
-                  }}>
+                    fontSize: 10,
+                    color: timeCritical ? "#ff8888" : MED,
+                    fontWeight: 700,
+                    textTransform: "uppercase",
+                    letterSpacing: 1.5,
+                    fontFamily: "'Courier New', monospace"
+                  }}>Time Left</div>
+                  <div
+                    className={`timer-mono ${timeCritical ? "crit-glow" : timeWarning ? "warn-glow" : "glow"}`}
+                    style={{
+                      fontSize: 22,
+                      fontWeight: 800,
+                      color: timeCritical ? "#ff5050" : timeWarning ? "#856404" : TEAL_DARK
+                    }}
+                  >
                     {formatTime(timeLeft)}
                   </div>
                 </div>
@@ -1314,13 +1419,18 @@
                   background: score >= 150 ? "linear-gradient(135deg, #e6f7ee, #d4f0e0)" : score >= 120 ? "linear-gradient(135deg, #FFF9E6, #fff3cd)" : "linear-gradient(135deg, #fef5f5, #feeeed)",
                   marginBottom: 16,
                   border: `2px solid ${score >= 150 ? GREEN : score >= 120 ? GOLD : RED}`,
-                  boxShadow: "0 2px 12px rgba(0,0,0,0.06)"
+                  boxShadow: "0 4px 18px rgba(0,0,0,0.08)"
                 }}>
-                  <div style={{
-                    fontSize: 44,
+                  <div className="score-mono pop" style={{
+                    fontSize: 46,
                     fontWeight: 800,
                     color: score >= 150 ? GREEN : score >= 120 ? GOLD : RED,
-                    lineHeight: 1
+                    lineHeight: 1,
+                    textShadow: score >= 150
+                      ? "0 0 14px rgba(39,174,96,0.35)"
+                      : score >= 120
+                        ? "0 0 14px rgba(212,168,67,0.35)"
+                        : "0 0 14px rgba(192,57,43,0.3)"
                   }}>
                     {score} pts
                   </div>

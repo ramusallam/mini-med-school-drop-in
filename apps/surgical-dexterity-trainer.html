@@ -9,11 +9,23 @@
   <script src="https://unpkg.com/@babel/standalone@7.23.9/babel.min.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --navy: #1B3A5C;
+      --teal: #2A9D8F;
+      --teal-dark: #1A6B6B;
+      --gold: #D4A843;
+      --coral: #E65C3C;
+      --monitor-bg: #0a0a0a;
+      --monitor-glow: #0ABAB5;
+    }
     body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #F0F4F8; min-height: 100vh; }
 
     @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
     @keyframes slideIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes pop { 0% { transform: scale(0.85); opacity: 0; } 60% { transform: scale(1.06); } 100% { transform: scale(1); opacity: 1; } }
+    @keyframes shake { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-6px); } 40% { transform: translateX(5px); } 60% { transform: translateX(-3px); } 80% { transform: translateX(2px); } }
     @keyframes scoreGlow { 0%, 100% { box-shadow: 0 0 0 0 rgba(42,157,143,0.3); } 50% { box-shadow: 0 0 0 12px rgba(42,157,143,0); } }
     @keyframes streakGlow { 0%, 100% { box-shadow: 0 0 0 0 rgba(212,168,67,0.4); } 50% { box-shadow: 0 0 0 10px rgba(212,168,67,0); } }
     @keyframes scorePop { 0% { transform: scale(0.8); opacity: 0; } 50% { transform: scale(1.15); } 100% { transform: scale(1); opacity: 1; } }
@@ -22,8 +34,58 @@
     @keyframes shimmer { 0% { background-position: -200% center; } 100% { background-position: 200% center; } }
     @keyframes ringProgress { from { stroke-dashoffset: 251; } }
     @keyframes gentleBob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+    @keyframes monitorFlicker { 0%, 100% { opacity: 1; } 50% { opacity: 0.92; } }
 
-    @media (max-width: 600px) { body { padding: 0; } }
+    /* EKG-style monitor readouts: dark canvas, monospace, neon-teal glow */
+    .or-monitor {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: var(--monitor-bg);
+      border: 1px solid #111;
+      border-radius: 10px;
+      padding: 6px 14px;
+      min-width: 76px;
+      font-family: 'Courier New', monospace;
+      box-shadow: inset 0 0 12px rgba(0,0,0,0.7), 0 1px 4px rgba(0,0,0,0.2);
+    }
+    .or-monitor-value {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--monitor-glow);
+      text-shadow: 0 0 6px rgba(10,186,181,0.6);
+      letter-spacing: 1px;
+      font-variant-numeric: tabular-nums;
+      line-height: 1.05;
+    }
+    .or-monitor-value.warn {
+      color: #FFB347;
+      text-shadow: 0 0 6px rgba(255,179,71,0.6);
+    }
+    .or-monitor-value.alert {
+      color: #FF6B5C;
+      text-shadow: 0 0 8px rgba(255,107,92,0.7);
+      animation: monitorFlicker 0.6s infinite;
+    }
+    .or-monitor-label {
+      font-size: 9px;
+      color: rgba(10,186,181,0.75);
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+
+    .pop-feedback { animation: pop 0.45s ease-out; }
+    .shake-feedback { animation: shake 0.45s ease-out; }
+    .slide-up { animation: slideUp 0.45s ease-out; }
+
+    @media (max-width: 600px) {
+      body { padding: 0; }
+      .or-monitor { min-width: 64px; padding: 5px 10px; }
+      .or-monitor-value { font-size: 17px; }
+    }
   </style>
 </head>
 <body>
@@ -235,14 +297,26 @@
 
     function ProgressBar({ value, max, color = TEAL }) {
       return (
-        <div style={{ height: 6, background: "#E0E0E0", borderRadius: 3, overflow: "hidden", marginBottom: 14 }}>
+        <div style={{ height: 8, background: "#E4E9EF", borderRadius: 12, overflow: "hidden", marginBottom: 14, border: "1px solid #DCE3EA" }}>
           <div style={{
             height: "100%",
             background: `linear-gradient(90deg, ${color} 0%, ${NAVY} 100%)`,
             width: `${Math.round((value / max) * 100)}%`,
-            transition: "width 0.15s linear",
-            borderRadius: 3,
+            transition: "width 0.25s ease-out",
+            borderRadius: 12,
+            boxShadow: `0 0 8px ${color}60`,
           }} />
+        </div>
+      );
+    }
+
+    // ========== OR MONITOR (EKG-style live data display) ==========
+    function OrMonitor({ value, label, tone = "ok", suffix = "" }) {
+      const valClass = "or-monitor-value" + (tone === "warn" ? " warn" : tone === "alert" ? " alert" : "");
+      return (
+        <div className="or-monitor">
+          <span className={valClass}>{value}{suffix}</span>
+          <span className="or-monitor-label">{label}</span>
         </div>
       );
     }
@@ -557,10 +631,10 @@
           )}
 
           {phase === "drawing" && (
-            <div style={{ display: "flex", justifyContent: "center", gap: 16, marginBottom: 12, fontSize: 13, flexWrap: "wrap", alignItems: "center" }}>
-              <StatRing value={Math.round(timer * 10) / 10} max={60} color={NAVY} label="Time" />
-              <StatRing value={errors} max={30} color={errors > 10 ? "#C0392B" : GOLD} label="Errors" />
-              <StatRing value={Math.round((progress / (pathRef.current.length - 1)) * 100)} max={100} color={TEAL} label="Progress" />
+            <div style={{ display: "flex", justifyContent: "center", gap: 10, marginBottom: 12, fontSize: 13, flexWrap: "wrap", alignItems: "center" }}>
+              <OrMonitor value={timer.toFixed(1)} suffix="s" label="OR Clock" tone={timer > 30 ? "warn" : "ok"} />
+              <OrMonitor value={errors} label="Errors" tone={errors > 15 ? "alert" : errors > 5 ? "warn" : "ok"} />
+              <OrMonitor value={Math.round((progress / Math.max(1, pathRef.current.length - 1)) * 100)} suffix="%" label="Progress" />
             </div>
           )}
 
@@ -596,9 +670,9 @@
           )}
 
           {phase === "finished" && (
-            <div style={{ marginTop: 16, animation: "slideIn 0.4s ease" }}>
+            <div style={{ marginTop: 16, animation: "slideUp 0.45s ease-out" }}>
               {isNewBest && <PersonalBestBanner />}
-              <div style={{
+              <div className={errors <= 15 ? "pop-feedback" : "shake-feedback"} style={{
                 textAlign: "center", padding: 18, borderRadius: CARD_RADIUS, marginBottom: 12,
                 background: errors <= 5 ? TEAL_BG : errors <= 15 ? CASE_BG : ALERT_BG,
                 border: `2px solid ${errors <= 5 ? TEAL : errors <= 15 ? GOLD : "#C0392B"}`
@@ -743,14 +817,10 @@
           )}
 
           {(active || finished) && (
-            <div style={{ display: "flex", justifyContent: "center", gap: 16, marginBottom: 12, fontSize: 13, flexWrap: "wrap", alignItems: "center" }}>
-              <span style={{
-                color: timer < 10 ? "#C0392B" : NAVY, fontWeight: 800, fontSize: 20,
-                fontVariantNumeric: "tabular-nums",
-                animation: timer < 10 && active ? "pulse 0.5s infinite" : "none"
-              }}>{timer.toFixed(1)}s</span>
-              <StatRing value={score} max={400} color={TEAL} label="Score" />
-              <StatRing value={hits} max={30} color={NAVY} label="Hits" />
+            <div style={{ display: "flex", justifyContent: "center", gap: 10, marginBottom: 12, fontSize: 13, flexWrap: "wrap", alignItems: "center" }}>
+              <OrMonitor value={timer.toFixed(1)} suffix="s" label="OR Clock" tone={timer < 10 ? "alert" : timer < 20 ? "warn" : "ok"} />
+              <OrMonitor value={score} label="Score" />
+              <OrMonitor value={hits} label="Hits" />
               {streak >= 3 && (
                 <span style={{
                   fontSize: 12, fontWeight: 700, color: GOLD,
@@ -802,9 +872,9 @@
           </div>
 
           {finished && (
-            <div style={{ marginTop: 16, animation: "slideIn 0.4s ease" }}>
+            <div style={{ marginTop: 16, animation: "slideUp 0.45s ease-out" }}>
               {isNewBest && <PersonalBestBanner />}
-              <div style={{
+              <div className={score >= 100 ? "pop-feedback" : "shake-feedback"} style={{
                 textAlign: "center", padding: 18, borderRadius: CARD_RADIUS, marginBottom: 12,
                 background: score >= 200 ? TEAL_BG : score >= 100 ? CASE_BG : ALERT_BG,
                 border: `2px solid ${score >= 200 ? TEAL : score >= 100 ? GOLD : "#C0392B"}`
@@ -925,9 +995,9 @@
           )}
 
           {phase !== "idle" && (
-            <div style={{ display: "flex", justifyContent: "center", gap: 16, marginBottom: 16, fontSize: 13, flexWrap: "wrap", alignItems: "center" }}>
-              <StatRing value={level} max={12} color={NAVY} label="Level" />
-              <StatRing value={score} max={200} color={TEAL} label="Score" />
+            <div style={{ display: "flex", justifyContent: "center", gap: 10, marginBottom: 16, fontSize: 13, flexWrap: "wrap", alignItems: "center" }}>
+              <OrMonitor value={level} label="Level" />
+              <OrMonitor value={score} label="Score" />
               <DifficultyBadge level={level <= 4 ? 1 : level <= 6 ? 2 : level <= 8 ? 3 : 4} />
               {streak > 0 && (
                 <span style={{ color: GOLD, fontWeight: 700, animation: "streakGlow 2s infinite", padding: "4px 12px", borderRadius: 12, background: CASE_BG, border: `1px solid ${GOLD}40` }}>
@@ -962,11 +1032,12 @@
           </div>
 
           {feedback && (
-            <div style={{
-              textAlign: "center", padding: 12, borderRadius: 10, fontSize: 14, fontWeight: 600,
+            <div className={phase === "correct" ? "pop-feedback" : "shake-feedback"} style={{
+              textAlign: "center", padding: 12, borderRadius: 12, fontSize: 14, fontWeight: 600,
               background: phase === "correct" ? TEAL_BG : ALERT_BG,
               color: phase === "correct" ? TEAL : "#C0392B",
-              marginBottom: 12, animation: "slideIn 0.3s ease"
+              marginBottom: 12,
+              border: `1px solid ${phase === "correct" ? TEAL + "40" : "#C0392B40"}`,
             }}>{feedback}</div>
           )}
 
@@ -1195,7 +1266,7 @@
                 )}
 
                 {activeChallenge && (
-                  <div style={{ animation: "fadeIn 0.3s ease" }}>
+                  <div key={activeChallenge} style={{ animation: "slideUp 0.45s ease-out" }}>
                     <div style={{
                       fontWeight: 800, color: NAVY, fontSize: 18, marginBottom: 14,
                       display: "flex", alignItems: "center", gap: 10,

@@ -14,45 +14,231 @@
     @keyframes slideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
     @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
     @keyframes pupilShrink{0%{r:18}100%{r:8}}
+    /* Monitor + EKG aesthetic */
+    @keyframes monitorPulse{0%{transform:scale(0.6);opacity:0.4}50%{transform:scale(1.0);opacity:1}100%{transform:scale(0.6);opacity:0.4}}
+    @keyframes statusPulseGreen{0%,100%{box-shadow:0 0 0 0 rgba(39,174,96,.6)}50%{box-shadow:0 0 0 6px rgba(39,174,96,0)}}
+    @keyframes statusPulseYellow{0%,100%{box-shadow:0 0 0 0 rgba(243,156,18,.7)}50%{box-shadow:0 0 0 7px rgba(243,156,18,0)}}
+    @keyframes statusPulseRed{0%,100%{box-shadow:0 0 0 0 rgba(192,57,43,.85)}50%{box-shadow:0 0 0 9px rgba(192,57,43,0)}}
+    @keyframes ekgScroll{from{stroke-dashoffset:0}to{stroke-dashoffset:-680}}
+    @keyframes monitorFlicker{0%,100%{opacity:1}48%{opacity:0.97}50%{opacity:0.92}52%{opacity:0.97}}
+    @keyframes loadingFlash{0%,100%{opacity:0.45}50%{opacity:1}}
+    @keyframes resultSlideUp{from{opacity:0;transform:translateY(14px) scale(0.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+    @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(5px)}60%{transform:translateX(-4px)}80%{transform:translateX(3px)}}
+    @keyframes correctPop{0%{transform:scale(1)}40%{transform:scale(1.04)}100%{transform:scale(1)}}
     .fade-in{animation:fadeIn .3s ease-out}
     .slide-up{animation:slideUp .4s ease-out}
+    .result-bar{animation:resultSlideUp .45s cubic-bezier(.2,.8,.2,1) both}
+    .quiz-correct{animation:correctPop .35s ease-out}
+    .quiz-wrong{animation:shake .4s ease-in-out}
+    .monitor-flicker{animation:monitorFlicker 4s infinite}
     input[type=range]{-webkit-appearance:none;appearance:none;height:6px;border-radius:3px;background:#E0E8EE;outline:none;cursor:pointer;width:100%}
     input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:linear-gradient(135deg,#2A9D8F,#1A6B6B);cursor:pointer;box-shadow:0 2px 6px rgba(42,157,143,.3)}
     input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:linear-gradient(135deg,#2A9D8F,#1A6B6B);cursor:pointer;border:none}
     input[type=number]{outline:none;transition:border-color .2s,box-shadow .2s}
     input[type=number]:focus{border-color:#2A9D8F !important;box-shadow:0 0 0 3px rgba(42,157,143,.12)}
+
+    /* Patient monitor styles */
+    .monitor{
+      position:relative;
+      background:#0a0a0a;
+      border-radius:14px;
+      padding:14px 14px 12px;
+      border:1px solid #161616;
+      box-shadow:0 6px 24px rgba(0,0,0,0.25), inset 0 0 30px rgba(10,186,181,0.04);
+      overflow:hidden;
+    }
+    .monitor::before{
+      content:"";
+      position:absolute;inset:0;
+      background:repeating-linear-gradient(0deg,rgba(255,255,255,0.012) 0px,rgba(255,255,255,0.012) 1px,transparent 1px,transparent 3px);
+      pointer-events:none;
+    }
+    .monitor-head{
+      display:flex;align-items:center;justify-content:space-between;
+      font-family:'Courier New',monospace;
+      font-size:10px;letter-spacing:1.5px;
+      color:#0ABAB5;text-shadow:0 0 6px rgba(10,186,181,0.7);
+      margin-bottom:10px;
+      text-transform:uppercase;font-weight:700;
+    }
+    .monitor-head .leadtag{display:flex;align-items:center;gap:6px}
+    .monitor-head .recdot{width:7px;height:7px;border-radius:50%;background:#E65C3C;box-shadow:0 0 6px rgba(230,92,60,0.9);animation:loadingFlash 1.4s infinite}
+    .monitor-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      grid-template-rows:auto auto;
+      gap:10px;
+      position:relative;
+      z-index:1;
+    }
+    .readout{
+      background:rgba(10,186,181,0.04);
+      border:1px solid rgba(10,186,181,0.18);
+      border-radius:10px;
+      padding:10px 12px;
+      position:relative;
+      min-height:78px;
+    }
+    .readout-label{
+      font-family:'Courier New',monospace;
+      font-size:10px;letter-spacing:1.4px;
+      color:rgba(10,186,181,0.85);
+      text-transform:uppercase;font-weight:700;
+      margin-bottom:2px;
+      display:flex;align-items:center;gap:6px;
+    }
+    .readout-value{
+      font-family:'Courier New',monospace;
+      font-weight:800;
+      font-size:30px;
+      line-height:1.05;
+      color:#0ABAB5;
+      text-shadow:0 0 10px rgba(10,186,181,0.55);
+      letter-spacing:0.5px;
+    }
+    .readout-unit{
+      font-size:11px;font-weight:700;
+      color:rgba(10,186,181,0.7);
+      letter-spacing:1px;
+      margin-left:4px;
+    }
+    .readout-sub{
+      font-family:'Courier New',monospace;
+      font-size:10px;color:rgba(255,255,255,0.45);
+      margin-top:3px;letter-spacing:0.6px;
+    }
+    .status-dot{
+      width:9px;height:9px;border-radius:50%;
+      display:inline-block;
+    }
+    .status-dot.green{background:#27AE60;box-shadow:0 0 6px rgba(39,174,96,0.8);}
+    .status-dot.yellow{background:#F39C12;box-shadow:0 0 6px rgba(243,156,18,0.85);animation:statusPulseYellow 1.4s infinite}
+    .status-dot.red{background:#E63946;box-shadow:0 0 8px rgba(230,57,70,0.95);animation:statusPulseRed 1s infinite}
+
+    /* HR pulse indicator */
+    .hr-pulse{
+      position:absolute;top:10px;right:12px;
+      width:14px;height:14px;border-radius:50%;
+      background:#E63946;
+      box-shadow:0 0 10px rgba(230,57,70,0.9);
+    }
+    .hr-pulse.beating{animation-name:monitorPulse;animation-iteration-count:infinite;animation-timing-function:ease-in-out}
+
+    /* Loading flash overlay (preset case load) */
+    .monitor-loading{
+      position:absolute;inset:0;
+      background:rgba(0,0,0,0.85);
+      display:flex;align-items:center;justify-content:center;
+      z-index:5;
+      font-family:'Courier New',monospace;
+      color:#0ABAB5;
+      font-size:13px;font-weight:800;
+      letter-spacing:2px;
+      text-shadow:0 0 8px rgba(10,186,181,0.7);
+      animation:loadingFlash 0.5s infinite;
+      border-radius:14px;
+    }
+
+    /* Mini EKG */
+    .mini-ekg{
+      width:100%;height:38px;display:block;
+      margin-top:6px;
+    }
+
+    /* Preset card */
+    .preset-card{
+      background:#0a0a0a;
+      border:1px solid #1a1a1a;
+      border-left:3px solid #0ABAB5;
+      border-radius:10px;
+      padding:10px 12px;
+      cursor:pointer;
+      transition:transform .15s, border-color .2s, box-shadow .2s;
+      font-family:'Courier New',monospace;
+      color:#0ABAB5;
+      text-shadow:0 0 4px rgba(10,186,181,0.4);
+    }
+    .preset-card:hover{
+      transform:translateY(-2px);
+      border-color:#0ABAB5;
+      box-shadow:0 4px 14px rgba(10,186,181,0.18);
+    }
+    .preset-card .pname{font-size:13px;font-weight:800;letter-spacing:0.8px;color:#0ABAB5}
+    .preset-card .pmeta{font-size:10px;color:rgba(255,255,255,0.55);margin-top:3px;letter-spacing:0.5px}
+
+    /* Result bar polish */
+    .result-bar-polished{
+      background:#FFFFFF;
+      border-radius:12px;
+      padding:14px 16px 12px 18px;
+      margin-bottom:8px;
+      box-shadow:0 2px 12px rgba(0,0,0,0.07);
+      position:relative;
+      overflow:hidden;
+    }
+    .result-bar-polished::before{
+      content:"";position:absolute;
+      top:0;bottom:0;left:0;width:6px;
+    }
+    .result-mono-value{
+      font-family:'Courier New',monospace;
+      font-size:22px;font-weight:800;
+      letter-spacing:0.5px;
+    }
+
+    /* Quiz polish */
+    .quiz-progress-rail{
+      height:8px;background:#E8EDF2;border-radius:4px;overflow:hidden;
+      box-shadow:inset 0 1px 2px rgba(0,0,0,0.05);
+    }
+    .quiz-progress-fill{
+      height:100%;
+      background:linear-gradient(90deg,#2A9D8F,#1A6B6B);
+      border-radius:4px;
+      transition:width .5s cubic-bezier(.4,0,.2,1);
+      box-shadow:0 0 8px rgba(42,157,143,0.4);
+    }
+
+    @media (max-width:520px){
+      .monitor-grid{gap:8px}
+      .readout-value{font-size:24px}
+      .readout{padding:9px 10px;min-height:68px}
+      .preset-card{padding:9px 10px}
+    }
   </style>
 </head>
 <body>
   <div id="root"></div>
   <script type="text/babel">
-    const{useState,useEffect,useMemo}=React;
+    const{useState,useEffect,useMemo,useRef}=React;
     const NAVY="#1B3A5C",TEAL="#2A9D8F",TEAL_DARK="#1A6B6B",GOLD="#D4A843",WHITE="#FFFFFF",RED="#C0392B",GREEN="#27AE60",YELLOW="#F39C12",DARK="#333",MED="#666",R=14,SHADOW="0 2px 10px rgba(0,0,0,.08)";
+    const MONITOR_TEAL="#0ABAB5";
 
     // ===== Classification Logic =====
     function classifyBP(sys,dia){
-      if(sys>=180||dia>=120)return{name:"Hypertensive Crisis",color:"#8B0000",bg:"#F5C6C6",note:"EMERGENCY. Call 911 if symptoms present."};
-      if(sys>=140||dia>=90)return{name:"Stage 2 Hypertension",color:RED,bg:"#FADBD8",note:"May need medication. See a doctor."};
-      if(sys>=130||dia>=80)return{name:"Stage 1 Hypertension",color:"#E67E22",bg:"#FFF0E0",note:"Lifestyle changes recommended."};
-      if(sys>=120)return{name:"Elevated",color:GOLD,bg:"#FFF9E6",note:"Monitor regularly. Reduce sodium."};
-      return{name:"Normal",color:GREEN,bg:"#E8F8F1",note:"Healthy blood pressure."};
+      if(sys>=180||dia>=120)return{name:"Hypertensive Crisis",color:"#8B0000",bg:"#F5C6C6",note:"EMERGENCY. Call 911 if symptoms present.",sev:"red"};
+      if(sys>=140||dia>=90)return{name:"Stage 2 Hypertension",color:RED,bg:"#FADBD8",note:"May need medication. See a doctor.",sev:"red"};
+      if(sys>=130||dia>=80)return{name:"Stage 1 Hypertension",color:"#E67E22",bg:"#FFF0E0",note:"Lifestyle changes recommended.",sev:"yellow"};
+      if(sys>=120)return{name:"Elevated",color:GOLD,bg:"#FFF9E6",note:"Monitor regularly. Reduce sodium.",sev:"yellow"};
+      return{name:"Normal",color:GREEN,bg:"#E8F8F1",note:"Healthy blood pressure.",sev:"green"};
     }
     function classifyHR(v){
-      if(v>120)return{label:"Tachycardia",color:RED,bg:"#FADBD8",note:"High at rest. Needs medical evaluation."};
-      if(v>100)return{label:"Elevated",color:YELLOW,bg:"#FFF9E6",note:"Could be from activity or stress."};
-      if(v>=60)return{label:"Normal",color:GREEN,bg:"#E8F8F1",note:"Healthy resting heart rate."};
-      return{label:"Bradycardia",color:"#2980B9",bg:"#EBF5FB",note:"Low rate. Normal in athletes."};
+      if(v>120)return{label:"Tachycardia",color:RED,bg:"#FADBD8",note:"High at rest. Needs medical evaluation.",sev:"red"};
+      if(v>100)return{label:"Elevated",color:YELLOW,bg:"#FFF9E6",note:"Could be from activity or stress.",sev:"yellow"};
+      if(v>=60)return{label:"Normal",color:GREEN,bg:"#E8F8F1",note:"Healthy resting heart rate.",sev:"green"};
+      if(v>=45)return{label:"Bradycardia",color:"#2980B9",bg:"#EBF5FB",note:"Low rate. Normal in athletes.",sev:"yellow"};
+      return{label:"Bradycardia",color:"#2980B9",bg:"#EBF5FB",note:"Low rate. Normal in athletes.",sev:"red"};
     }
     function classifySpo2(v){
-      if(v>=96)return{label:"Normal",color:GREEN,bg:"#E8F8F1",note:"Healthy oxygen saturation."};
-      if(v>=93)return{label:"Borderline",color:YELLOW,bg:"#FFF9E6",note:"Sit up and breathe deeply. Recheck."};
-      return{label:"Low",color:RED,bg:"#FADBD8",note:"Urgent. Seek medical attention."};
+      if(v>=96)return{label:"Normal",color:GREEN,bg:"#E8F8F1",note:"Healthy oxygen saturation.",sev:"green"};
+      if(v>=93)return{label:"Borderline",color:YELLOW,bg:"#FFF9E6",note:"Sit up and breathe deeply. Recheck.",sev:"yellow"};
+      return{label:"Low",color:RED,bg:"#FADBD8",note:"Urgent. Seek medical attention.",sev:"red"};
     }
     function classifyGlucose(v){
-      if(v>=126)return{label:"Diabetic Range",color:RED,bg:"#FADBD8",note:"Fasting glucose 126+ suggests diabetes. Needs follow-up testing."};
-      if(v>=100)return{label:"Prediabetic",color:YELLOW,bg:"#FFF9E6",note:"Fasting glucose 100-125 is prediabetic. Lifestyle changes can prevent progression."};
-      if(v>=70)return{label:"Normal",color:GREEN,bg:"#E8F8F1",note:"Healthy fasting glucose level."};
-      return{label:"Low (Hypoglycemia)",color:"#2980B9",bg:"#EBF5FB",note:"Below 70 is low blood sugar. Patient may feel shaky, dizzy, or confused."};
+      if(v>=126)return{label:"Diabetic Range",color:RED,bg:"#FADBD8",note:"Fasting glucose 126+ suggests diabetes. Needs follow-up testing.",sev:"red"};
+      if(v>=100)return{label:"Prediabetic",color:YELLOW,bg:"#FFF9E6",note:"Fasting glucose 100-125 is prediabetic. Lifestyle changes can prevent progression.",sev:"yellow"};
+      if(v>=70)return{label:"Normal",color:GREEN,bg:"#E8F8F1",note:"Healthy fasting glucose level.",sev:"green"};
+      return{label:"Low (Hypoglycemia)",color:"#2980B9",bg:"#EBF5FB",note:"Below 70 is low blood sugar. Patient may feel shaky, dizzy, or confused.",sev:"red"};
     }
     const clinicalPearls=[
       "Always look for patterns. Low BP + high HR might indicate shock.",
@@ -72,12 +258,12 @@
 
     // ===== Shared Components =====
     const WovenLogo=({size=20})=>(<svg viewBox="0 0 40 40" width={size} height={size} style={{flexShrink:0}}><polygon points="13,2 24,13 13,24 2,13" fill="#0ABAB5" opacity=".85"/><polygon points="27,2 38,13 27,24 16,13" fill="#F5B731" opacity=".85"/><polygon points="13,16 24,27 13,38 2,27" fill="#E65C3C" opacity=".85"/><polygon points="27,16 38,27 27,38 16,27" fill="#7A2D4E" opacity=".85"/></svg>);
-    const AppHeader=({subtitle})=>(<div style={{background:"linear-gradient(135deg,#1B3A5C 0%,#2A9D8F 100%)",padding:"12px 20px",display:"flex",alignItems:"center",gap:10,borderBottom:`3px solid ${GOLD}`}}><WovenLogo size={24}/><div style={{flex:1}}><div style={{fontSize:15,fontWeight:800,color:WHITE,letterSpacing:.3}}>Mini Med School</div><div style={{fontSize:11,color:"rgba(255,255,255,.75)",fontWeight:500}}>{subtitle||"Vital Signs Interpreter"}</div></div><span style={{fontSize:20}}>{"\u2764\uFE0F"}</span></div>);
+    const AppHeader=({subtitle})=>(<div style={{background:"linear-gradient(135deg,#1B3A5C 0%,#2A9D8F 100%)",padding:"12px 20px",display:"flex",alignItems:"center",gap:10,borderBottom:`3px solid ${GOLD}`}}><WovenLogo size={24}/><div style={{flex:1}}><div style={{fontSize:15,fontWeight:800,color:WHITE,letterSpacing:.3}}>Mini Med School</div><div style={{fontSize:11,color:"rgba(255,255,255,.75)",fontWeight:500}}>{subtitle||"Vital Signs Interpreter"}</div></div><span style={{fontSize:20}}>{"❤️"}</span></div>);
     const AppFooter=()=>(<div style={{textAlign:"center",padding:"14px 20px",borderTop:`3px solid ${GOLD}`,background:WHITE,fontSize:11,color:"#999",display:"flex",alignItems:"center",justifyContent:"center",gap:6,marginTop:24}}><WovenLogo size={14}/><span>Built by <strong style={{color:TEAL_DARK}}>Woven Learning & Technology</strong></span></div>);
     const Btn=({children,onClick,primary,style={}})=>(<button onClick={onClick} style={{background:primary?`linear-gradient(135deg,${TEAL},${TEAL_DARK})`:WHITE,color:primary?WHITE:NAVY,border:primary?"none":`2px solid ${TEAL}`,borderRadius:10,padding:"11px 24px",fontSize:14,fontWeight:700,cursor:"pointer",transition:"all .2s",boxShadow:primary?`0 2px 8px rgba(42,157,143,.25)`:SHADOW,fontFamily:"inherit",...style}}>{children}</button>);
     const Card=({children,style={}})=>(<div style={{background:WHITE,borderRadius:R,padding:20,boxShadow:"0 4px 20px rgba(0,0,0,.08)",marginBottom:16,...style}}>{children}</div>);
     const SectionLabel=({children})=>(<div style={{fontSize:10,fontWeight:700,color:MED,textTransform:"uppercase",letterSpacing:1.5,marginBottom:6}}>{children}</div>);
-    const StatusBadge=({label,color,bg})=>(<span style={{fontSize:12,fontWeight:700,color:WHITE,background:color,borderRadius:10,padding:"3px 12px"}}>{label}</span>);
+    const StatusBadge=({label,color})=>(<span style={{fontSize:12,fontWeight:700,color:WHITE,background:color,borderRadius:10,padding:"3px 12px",fontFamily:"'Courier New',monospace",letterSpacing:0.5}}>{label}</span>);
 
     const Toggle=({label,value,onChange})=>(<div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"12px 0",borderBottom:"1px solid #F0F2F4",cursor:"pointer"}} onClick={()=>onChange(!value)}>
       <span style={{fontSize:14,fontWeight:600,color:DARK}}>{label}</span>
@@ -87,9 +273,125 @@
 
     const VitalInput=({label,value,onChange,min,max,unit,step=1})=>(<div style={{marginBottom:14}}><div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}><label style={{fontSize:13,fontWeight:700,color:NAVY}}>{label}</label><span style={{fontSize:12,color:MED,fontWeight:500}}>{unit}</span></div><div style={{display:"flex",alignItems:"center",gap:12}}><input type="range" min={min} max={max} step={step} value={value} onChange={e=>onChange(Number(e.target.value))} style={{flex:1}}/><input type="number" min={min} max={max} step={step} value={value} onChange={e=>onChange(Number(e.target.value))} style={{width:70,padding:"8px 10px",border:"2px solid #D0D8E0",borderRadius:8,fontSize:15,fontWeight:700,color:NAVY,textAlign:"center",fontFamily:"inherit"}}/></div></div>);
 
+    // ===== Mini EKG Trace (SVG) =====
+    // Single P-QRS-T cycle drawn at 0..100 horizontally, baseline at y=20 in a 0..40 viewBox.
+    function buildEkgPath(){
+      // Build one beat as a polyline. We'll repeat it 6 times across width 600 to scroll.
+      const beats=6,w=100;
+      let d="M 0 20 ";
+      for(let b=0;b<beats;b++){
+        const x0=b*w;
+        // baseline lead-in
+        d+=`L ${x0+10} 20 `;
+        // P wave (small bump up)
+        d+=`Q ${x0+15} 14 ${x0+20} 20 `;
+        // PR segment
+        d+=`L ${x0+30} 20 `;
+        // Q (small dip)
+        d+=`L ${x0+33} 23 `;
+        // R (sharp tall spike up)
+        d+=`L ${x0+36} 2 `;
+        // S (sharp dip below baseline)
+        d+=`L ${x0+39} 30 `;
+        // back to baseline
+        d+=`L ${x0+44} 20 `;
+        // ST segment
+        d+=`L ${x0+55} 20 `;
+        // T wave (rounded bump)
+        d+=`Q ${x0+62} 12 ${x0+70} 20 `;
+        // tail to next beat
+        d+=`L ${x0+w} 20 `;
+      }
+      return d;
+    }
+    const EKG_PATH=buildEkgPath();
+
+    function MiniEkg({hr=75,sev="green"}){
+      // duration of one full scroll cycle scales with HR. 60bpm = 1s/beat. We have 6 beats in path.
+      const dur=Math.max(0.6, 60/hr);
+      const stroke=sev==="red"?"#E63946":sev==="yellow"?"#F5B731":MONITOR_TEAL;
+      const glow=sev==="red"?"rgba(230,57,70,0.7)":sev==="yellow"?"rgba(245,183,49,0.7)":"rgba(10,186,181,0.7)";
+      // Animate by keyframes via translateX of the path inside an svg (loop)
+      return(
+        <svg className="mini-ekg" viewBox="0 0 200 40" preserveAspectRatio="none">
+          <defs>
+            <filter id="ekgGlow" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="0.7" result="b"/>
+              <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+          {/* faint baseline grid */}
+          <line x1="0" y1="20" x2="200" y2="20" stroke="rgba(10,186,181,0.12)" strokeWidth="0.4" strokeDasharray="2,3"/>
+          <g style={{animation:`ekgScroll ${dur*6}s linear infinite`}}>
+            <path d={EKG_PATH} fill="none" stroke={stroke} strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" filter="url(#ekgGlow)" style={{filter:`drop-shadow(0 0 2px ${glow})`}}/>
+          </g>
+        </svg>
+      );
+    }
+
+    // ===== Patient Monitor View =====
+    function PatientMonitor({sys,dia,hr,spo2,glucose,leadTag="LEAD II - LIVE",loading=false}){
+      const bp=classifyBP(sys,dia),hrC=classifyHR(hr),spC=classifySpo2(spo2),glC=classifyGlucose(glucose);
+      const beatDur=Math.max(0.35, 60/Math.max(20,hr));
+      return(
+        <div className="monitor monitor-flicker">
+          <div className="monitor-head">
+            <div className="leadtag"><span className="recdot"/> <span>{leadTag}</span></div>
+            <div>VITAL MONITOR &middot; LIVE</div>
+          </div>
+          <div className="monitor-grid">
+            {/* BP top-left */}
+            <div className="readout">
+              <div className="readout-label">
+                <span className={`status-dot ${bp.sev}`}/> NIBP
+              </div>
+              <div className="readout-value">{sys}/{dia}<span className="readout-unit">mmHg</span></div>
+              <div className="readout-sub">{bp.name.toUpperCase()}</div>
+            </div>
+            {/* HR top-right */}
+            <div className="readout">
+              <div className="readout-label">
+                <span className={`status-dot ${hrC.sev}`}/> HEART RATE
+              </div>
+              <div className="readout-value">{hr}<span className="readout-unit">BPM</span></div>
+              <span className="hr-pulse beating" style={{animationDuration:`${beatDur}s`}}/>
+              <MiniEkg hr={hr} sev={hrC.sev}/>
+            </div>
+            {/* SpO2 bottom-left */}
+            <div className="readout">
+              <div className="readout-label">
+                <span className={`status-dot ${spC.sev}`}/> SpO2
+              </div>
+              <div className="readout-value">{spo2}<span className="readout-unit">%</span></div>
+              <div className="readout-sub">{spC.label.toUpperCase()}</div>
+            </div>
+            {/* Glucose bottom-right */}
+            <div className="readout">
+              <div className="readout-label">
+                <span className={`status-dot ${glC.sev}`}/> GLUCOSE
+              </div>
+              <div className="readout-value">{glucose}<span className="readout-unit">mg/dL</span></div>
+              <div className="readout-sub">{glC.label.toUpperCase()}</div>
+            </div>
+          </div>
+          {loading&&<div className="monitor-loading">LOADING PATIENT DATA...</div>}
+        </div>
+      );
+    }
+
+    // ===== Polished Result Bar =====
     const ResultBar=({title,value,classification})=>{
       const c=classification;
-      return(<div className="fade-in" style={{background:WHITE,borderRadius:R,padding:"12px 16px",marginBottom:8,borderLeft:`5px solid ${c.color||c.color}`,boxShadow:SHADOW}}><div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:4}}><div style={{fontWeight:700,color:DARK,fontSize:13}}>{title}</div><StatusBadge label={c.name||c.label} color={c.color} bg={c.bg}/></div><div style={{fontSize:18,fontWeight:800,color:c.color,marginBottom:2}}>{value}</div><p style={{fontSize:12,color:MED,margin:0,lineHeight:1.5}}>{c.note}</p></div>);
+      return(
+        <div className="result-bar result-bar-polished" style={{borderLeft:`6px solid ${c.color}`}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:4}}>
+            <div style={{fontWeight:800,color:NAVY,fontSize:12,textTransform:"uppercase",letterSpacing:1}}>{title}</div>
+            <StatusBadge label={c.name||c.label} color={c.color}/>
+          </div>
+          <div className="result-mono-value" style={{color:c.color}}>{value}</div>
+          <p style={{fontSize:12,color:MED,margin:"4px 0 0",lineHeight:1.5}}>{c.note}</p>
+        </div>
+      );
     };
 
     // ===== MY ASSESSMENT MODE =====
@@ -104,7 +406,6 @@
       const[pupilAccom,setPupilAccom]=useState(true);
       const[reflexLeft,setReflexLeft]=useState("normal");const[reflexRight,setReflexRight]=useState("normal");
       const[glucose,setGlucose]=useState(95);
-      const[showSummary,setShowSummary]=useState(false);
 
       const restBP=classifyBP(restSys,restDia);
       const stressBP=classifyBP(stressSys,stressDia);
@@ -115,6 +416,10 @@
       const perrla=pupilEqual&&pupilRound&&pupilLeftReact&&pupilRightReact&&pupilAccom;
       const reflexSym=reflexLeft===reflexRight;
 
+      // Pick a sensible "current" BP for the monitor display (resting if measure section, else most recent shown)
+      const monitorSys=section==="bp"?restSys:restSys;
+      const monitorDia=section==="bp"?restDia:restDia;
+
       const tabs=[
         {key:"bp",label:"Blood Pressure",icon:"\u{1FA7A}"},
         {key:"ox",label:"SpO2 & Pulse",icon:"\u{1F4A8}"},
@@ -123,11 +428,14 @@
         {key:"summary",label:"Summary",icon:"\u{1F4CB}"}
       ];
 
-      // Toggle and RefOption are defined at shared scope above
-
       return(<div>
-        <div style={{display:"flex",gap:4,marginBottom:16,background:WHITE,borderRadius:R,padding:4,boxShadow:SHADOW}}>
-          {tabs.map(t=>(<button key={t.key} onClick={()=>setSection(t.key)} style={{flex:1,padding:"10px 6px",borderRadius:10,border:"none",background:section===t.key?`linear-gradient(135deg,${TEAL},${TEAL_DARK})`:WHITE,color:section===t.key?WHITE:MED,fontWeight:700,fontSize:11,cursor:"pointer",fontFamily:"inherit",transition:"all .2s"}}><div style={{fontSize:16}}>{t.icon}</div>{t.label}</button>))}
+        {/* PATIENT MONITOR (always visible at top of My Assessment) */}
+        <div style={{marginBottom:16}}>
+          <PatientMonitor sys={monitorSys} dia={monitorDia} hr={pulse} spo2={spo2} glucose={glucose} leadTag="LEAD II - PATIENT (YOU)"/>
+        </div>
+
+        <div style={{display:"flex",gap:4,marginBottom:16,background:WHITE,borderRadius:R,padding:4,boxShadow:SHADOW,flexWrap:"wrap"}}>
+          {tabs.map(t=>(<button key={t.key} onClick={()=>setSection(t.key)} style={{flex:"1 1 90px",padding:"10px 6px",borderRadius:10,border:"none",background:section===t.key?`linear-gradient(135deg,${TEAL},${TEAL_DARK})`:WHITE,color:section===t.key?WHITE:MED,fontWeight:700,fontSize:11,cursor:"pointer",fontFamily:"inherit",transition:"all .2s"}}><div style={{fontSize:16}}>{t.icon}</div>{t.label}</button>))}
         </div>
 
         {section==="bp"&&(<div className="slide-up">
@@ -219,7 +527,7 @@
 
             <div style={{background:"#F8F9FA",borderRadius:R,padding:16,marginBottom:16}}>
               <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:12}}>
-                <span style={{fontSize:20}}>{"\u{1F441}\uFE0F"}</span>
+                <span style={{fontSize:20}}>{"\u{1F441}️"}</span>
                 <div style={{fontSize:14,fontWeight:800,color:NAVY}}>PERRLA Eye Exam</div>
               </div>
               <p style={{fontSize:12,color:MED,marginBottom:12,lineHeight:1.5}}>PERRLA: Pupils Equal, Round, Reactive to Light, Accommodation. Toggle each finding based on your observation.</p>
@@ -232,7 +540,7 @@
 
               <div style={{marginTop:12,padding:"10px 14px",borderRadius:10,background:perrla?"#E8F8F1":"#FADBD8",borderLeft:`4px solid ${perrla?GREEN:RED}`}}>
                 <div style={{fontSize:13,fontWeight:700,color:perrla?GREEN:RED}}>
-                  {perrla?"\u2705 PERRLA Normal - All pupil responses intact":"\u26A0\uFE0F Abnormal Finding Detected"}
+                  {perrla?"✅ PERRLA Normal - All pupil responses intact":"⚠️ Abnormal Finding Detected"}
                 </div>
                 {!perrla&&<p style={{fontSize:12,color:DARK,margin:"4px 0 0",lineHeight:1.5}}>
                   {!pupilEqual&&"Unequal pupils (anisocoria) can indicate brain injury or nerve damage. "}
@@ -271,10 +579,10 @@
 
               <div style={{padding:"10px 14px",borderRadius:10,background:reflexSym&&reflexLeft==="normal"?"#E8F8F1":!reflexSym?"#FADBD8":"#FFF9E6",borderLeft:`4px solid ${reflexSym&&reflexLeft==="normal"?GREEN:!reflexSym?RED:YELLOW}`}}>
                 <div style={{fontSize:13,fontWeight:700,color:reflexSym&&reflexLeft==="normal"?GREEN:!reflexSym?RED:YELLOW}}>
-                  {reflexSym&&reflexLeft==="normal"&&"\u2705 Normal symmetric reflexes"}
-                  {reflexSym&&reflexLeft==="diminished"&&"\u26A0\uFE0F Both sides diminished - may indicate peripheral neuropathy"}
-                  {reflexSym&&reflexLeft==="exaggerated"&&"\u26A0\uFE0F Both sides exaggerated - may indicate upper motor neuron issue"}
-                  {!reflexSym&&"\u274C Asymmetric reflexes - possible nerve damage on one side"}
+                  {reflexSym&&reflexLeft==="normal"&&"✅ Normal symmetric reflexes"}
+                  {reflexSym&&reflexLeft==="diminished"&&"⚠️ Both sides diminished - may indicate peripheral neuropathy"}
+                  {reflexSym&&reflexLeft==="exaggerated"&&"⚠️ Both sides exaggerated - may indicate upper motor neuron issue"}
+                  {!reflexSym&&"❌ Asymmetric reflexes - possible nerve damage on one side"}
                 </div>
               </div>
             </div>
@@ -308,9 +616,9 @@
                     {name:"Reflexes",val:`L: ${reflexLeft}, R: ${reflexRight}`,norm:"Normal, symmetric",status:{name:reflexSym&&reflexLeft==="normal"?"Normal":!reflexSym?"Asymmetric":"Abnormal",label:reflexSym&&reflexLeft==="normal"?"Normal":!reflexSym?"Asymmetric":"Abnormal",color:reflexSym&&reflexLeft==="normal"?GREEN:!reflexSym?RED:YELLOW,note:reflexSym&&reflexLeft==="normal"?"Symmetric normal reflexes.":"Reflex findings need further evaluation."}}
                   ].map((r,i)=>(<tr key={i} style={{background:i%2===0?"#F8F9FA":WHITE}}>
                     <td style={{padding:"10px 12px",fontWeight:700,color:NAVY}}>{r.name}</td>
-                    <td style={{padding:"10px 12px",textAlign:"center",fontWeight:700,color:DARK}}>{r.val}</td>
+                    <td style={{padding:"10px 12px",textAlign:"center",fontWeight:700,color:DARK,fontFamily:"'Courier New',monospace"}}>{r.val}</td>
                     <td style={{padding:"10px 12px",textAlign:"center",color:MED}}>{r.norm}</td>
-                    <td style={{padding:"10px 12px",textAlign:"center"}}><span style={{fontSize:11,fontWeight:700,color:WHITE,background:r.status.color,borderRadius:10,padding:"3px 10px"}}>{r.status.name||r.status.label}</span></td>
+                    <td style={{padding:"10px 12px",textAlign:"center"}}><span style={{fontSize:11,fontWeight:700,color:WHITE,background:r.status.color,borderRadius:10,padding:"3px 10px",fontFamily:"'Courier New',monospace"}}>{r.status.name||r.status.label}</span></td>
                   </tr>))}
                 </tbody>
               </table>
@@ -325,12 +633,12 @@
               if(!reflexSym)concerns.push("Asymmetric reflexes need evaluation");
               return concerns.length>0?(
                 <div className="fade-in" style={{background:"#FFF5F5",borderLeft:`5px solid ${RED}`,borderRadius:R,padding:14,marginTop:16}}>
-                  <div style={{fontWeight:700,color:RED,fontSize:14,marginBottom:8}}>{"\u26A0\uFE0F"} Clinical Concerns</div>
-                  {concerns.map((c,i)=>(<p key={i} style={{fontSize:13,color:DARK,margin:"4px 0",lineHeight:1.4}}>{"\u2022"} {c}</p>))}
+                  <div style={{fontWeight:700,color:RED,fontSize:14,marginBottom:8}}>{"⚠️"} Clinical Concerns</div>
+                  {concerns.map((c,i)=>(<p key={i} style={{fontSize:13,color:DARK,margin:"4px 0",lineHeight:1.4}}>{"•"} {c}</p>))}
                 </div>
               ):(
                 <div className="fade-in" style={{background:"#F0FBF5",borderLeft:`5px solid ${GREEN}`,borderRadius:R,padding:14,marginTop:16,textAlign:"center"}}>
-                  <div style={{fontWeight:700,color:GREEN,fontSize:14}}>{"\u2705"} All Vitals Within Normal Range</div>
+                  <div style={{fontWeight:700,color:GREEN,fontSize:14}}>{"✅"} All Vitals Within Normal Range</div>
                 </div>
               );
             })()}
@@ -354,6 +662,8 @@
       const[pupilAccom,setPupilAccom]=useState(true);
       const[reflexLeft,setReflexLeft]=useState("normal");const[reflexRight,setReflexRight]=useState("normal");
       const[show,setShow]=useState(false);const[pearl,setPearl]=useState("");
+      const[loading,setLoading]=useState(false);
+      const[loadedName,setLoadedName]=useState("Self-entered values");
       const presets=[
         {name:"Marco Torres",age:"45 yrs",cat:"Session 1",sys:158,dia:94,hr:92,spo2:96,gluc:118,ctx:"Your patient from Mini Med School",perrla:true,rL:"normal",rR:"normal"},
         {name:"Healthy Teen",age:"15 yrs",cat:"Pediatric",sys:110,dia:68,hr:72,spo2:99,gluc:88,ctx:"Routine checkup",perrla:true,rL:"normal",rR:"normal"},
@@ -363,11 +673,17 @@
         {name:"Hypothermic Hiker",age:"52 yrs",cat:"Adult",sys:90,dia:58,hr:52,spo2:93,gluc:64,ctx:"Environmental exposure",perrla:true,rL:"diminished",rR:"diminished"},
       ];
       const load=(c)=>{
-        setSys(c.sys);setDia(c.dia);setHr(c.hr);setSpo2(c.spo2);setGlucose(c.gluc||95);
-        setPupilEqual(c.perrla!==false||c.pupilIssue!=="unequal");
-        setPupilRound(true);setPupilLeftReact(c.perrla!==false);setPupilRightReact(c.perrla!==false);setPupilAccom(true);
-        setReflexLeft(c.rL||"normal");setReflexRight(c.rR||"normal");
+        // Trigger monitor "loading" flash, then set values
+        setLoading(true);
         setShow(false);
+        setTimeout(()=>{
+          setSys(c.sys);setDia(c.dia);setHr(c.hr);setSpo2(c.spo2);setGlucose(c.gluc||95);
+          setPupilEqual(c.perrla!==false||c.pupilIssue!=="unequal");
+          setPupilRound(true);setPupilLeftReact(c.perrla!==false);setPupilRightReact(c.perrla!==false);setPupilAccom(true);
+          setReflexLeft(c.rL||"normal");setReflexRight(c.rR||"normal");
+          setLoadedName(c.name);
+          setLoading(false);
+        },650);
       };
       const interpret=()=>{setShow(true);setPearl(randomPearl());};
       const bp=classifyBP(sys,dia),hrC=classifyHR(hr),sp=classifySpo2(spo2),glucC=classifyGlucose(glucose);
@@ -375,13 +691,23 @@
       const reflexSym=reflexLeft===reflexRight;
 
       return(<div className="fade-in">
+        {/* PATIENT MONITOR */}
+        <div style={{marginBottom:16}}>
+          <PatientMonitor sys={sys} dia={dia} hr={hr} spo2={spo2} glucose={glucose} leadTag={`LEAD II - ${loadedName.toUpperCase()}`} loading={loading}/>
+        </div>
+
         <Card>
           <div style={{fontSize:15,fontWeight:800,color:NAVY,marginBottom:4}}>Explore Vital Signs</div>
           <p style={{fontSize:13,color:MED,lineHeight:1.6,marginBottom:14}}>Adjust values and toggle findings to see how they're classified. Load a preset patient case to practice interpreting real scenarios.</p>
 
           <SectionLabel>Patient Cases</SectionLabel>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(140px,1fr))",gap:8,marginBottom:16}}>
-            {presets.map(c=>(<button key={c.name} onClick={()=>load(c)} style={{background:WHITE,border:"2px solid #E0E8EE",borderRadius:10,padding:"10px 12px",fontSize:12,fontWeight:600,color:DARK,cursor:"pointer",transition:"all .2s",textAlign:"left",fontFamily:"inherit"}} onMouseOver={e=>{e.currentTarget.style.borderColor=TEAL;e.currentTarget.style.transform="translateY(-1px)"}} onMouseOut={e=>{e.currentTarget.style.borderColor="#E0E8EE";e.currentTarget.style.transform="none"}}><div style={{fontWeight:700}}>{c.name}</div><div style={{fontSize:11,color:MED,marginTop:2}}>{c.age} - {c.ctx}</div></button>))}
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(160px,1fr))",gap:8,marginBottom:16}}>
+            {presets.map(c=>(
+              <div key={c.name} className="preset-card" onClick={()=>load(c)}>
+                <div className="pname">{c.name.toUpperCase()}</div>
+                <div className="pmeta">{c.age.toUpperCase()} &middot; {c.ctx.toUpperCase()}</div>
+              </div>
+            ))}
           </div>
 
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,marginBottom:12}}>
@@ -396,7 +722,7 @@
 
           <div style={{background:"#F8F9FA",borderRadius:R,padding:16,marginBottom:12}}>
             <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10}}>
-              <span style={{fontSize:16}}>{"\u{1F441}\uFE0F"}</span>
+              <span style={{fontSize:16}}>{"\u{1F441}️"}</span>
               <div style={{fontSize:13,fontWeight:800,color:NAVY}}>PERRLA</div>
               <span style={{fontSize:11,fontWeight:700,color:perrla?GREEN:RED,background:perrla?"#E8F8F1":"#FADBD8",padding:"2px 10px",borderRadius:10,marginLeft:"auto"}}>{perrla?"Normal":"Abnormal"}</span>
             </div>
@@ -451,33 +777,50 @@
       ],[]);
       const[idx,setIdx]=useState(0);const[sel,setSel]=useState(null);const[answered,setAnswered]=useState(false);
       const[score,setScore]=useState(0);const[done,setDone]=useState(false);
+      const[lastResult,setLastResult]=useState(null); // "correct" | "wrong"
       const q=questions[idx];
 
-      const pick=(i)=>{if(answered)return;setSel(i);setAnswered(true);if(i===q.ans)setScore(s=>s+1);};
-      const next=()=>{if(idx>=questions.length-1){setDone(true);}else{setIdx(idx+1);setSel(null);setAnswered(false);}};
+      const pick=(i)=>{
+        if(answered)return;
+        setSel(i);
+        setAnswered(true);
+        if(i===q.ans){setScore(s=>s+1);setLastResult("correct");}
+        else{setLastResult("wrong");}
+      };
+      const next=()=>{
+        if(idx>=questions.length-1){setDone(true);}
+        else{setIdx(idx+1);setSel(null);setAnswered(false);setLastResult(null);}
+      };
 
       if(done){const pct=Math.round(score/questions.length*100);return(<div className="fade-in"><Card style={{textAlign:"center"}}>
         <div style={{fontSize:48,marginBottom:8}}>{pct>=80?"\u{1F3C6}":pct>=60?"\u{1F31F}":"\u{1F4AA}"}</div>
-        <div style={{fontSize:44,fontWeight:800,color:pct>=80?GREEN:pct>=60?GOLD:RED,lineHeight:1}}>{pct}%</div>
+        <div style={{fontSize:44,fontWeight:800,color:pct>=80?GREEN:pct>=60?GOLD:RED,lineHeight:1,fontFamily:"'Courier New',monospace"}}>{pct}%</div>
         <div style={{fontSize:15,fontWeight:700,color:NAVY,margin:"8px 0"}}>{score}/{questions.length} correct</div>
-        <div style={{display:"flex",gap:10,justifyContent:"center",marginTop:16}}><Btn primary onClick={()=>{setIdx(0);setSel(null);setAnswered(false);setScore(0);setDone(false);}}>Try Again</Btn><Btn onClick={onBack}>Menu</Btn></div>
+        <div style={{display:"flex",gap:10,justifyContent:"center",marginTop:16}}><Btn primary onClick={()=>{setIdx(0);setSel(null);setAnswered(false);setScore(0);setDone(false);setLastResult(null);}}>Try Again</Btn><Btn onClick={onBack}>Menu</Btn></div>
       </Card></div>);}
 
+      const pct=((idx+(answered?1:0))/questions.length)*100;
+
       return(<div>
-        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}><span style={{fontSize:13,fontWeight:700,color:MED}}>{idx+1}/{questions.length}</span><span style={{fontSize:13,fontWeight:700,color:TEAL}}>Score: {score}</span></div>
-        <div style={{height:6,background:"#E8EDF2",borderRadius:3,marginBottom:16,overflow:"hidden"}}><div style={{height:"100%",background:`linear-gradient(90deg,${TEAL},${TEAL_DARK})`,width:`${((idx+1)/questions.length)*100}%`,transition:"width .4s",borderRadius:3}}/></div>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
+          <span style={{fontSize:12,fontWeight:700,color:MED,fontFamily:"'Courier New',monospace",letterSpacing:1}}>QUESTION {idx+1} / {questions.length}</span>
+          <span style={{fontSize:12,fontWeight:700,color:TEAL,fontFamily:"'Courier New',monospace",letterSpacing:1}}>SCORE: {score}</span>
+        </div>
+        <div className="quiz-progress-rail" style={{marginBottom:16}}>
+          <div className="quiz-progress-fill" style={{width:`${pct}%`}}/>
+        </div>
         <Card>
           <p style={{fontSize:15,fontWeight:700,color:NAVY,marginBottom:16,lineHeight:1.5}}>{q.q}</p>
           <div style={{display:"grid",gap:8}}>
             {q.opts.map((o,i)=>{
-              let bg=WHITE,border="#E0E8EE";
-              if(answered&&i===q.ans){bg="#E8F8F1";border=GREEN;}
-              else if(answered&&i===sel){bg="#FFF5F5";border=RED;}
-              return(<button key={i} onClick={()=>pick(i)} style={{padding:"12px 16px",background:bg,border:`2px solid ${border}`,borderRadius:10,fontSize:14,fontWeight:600,color:DARK,cursor:answered?"default":"pointer",textAlign:"left",fontFamily:"inherit",transition:"all .2s"}}>{o}</button>);
+              let bg=WHITE,border="#E0E8EE",cls="";
+              if(answered&&i===q.ans){bg="#E8F8F1";border=GREEN;if(i===sel)cls="quiz-correct";}
+              else if(answered&&i===sel){bg="#FFF5F5";border=RED;cls="quiz-wrong";}
+              return(<button key={i} className={cls} onClick={()=>pick(i)} style={{padding:"12px 16px",background:bg,border:`2px solid ${border}`,borderRadius:10,fontSize:14,fontWeight:600,color:DARK,cursor:answered?"default":"pointer",textAlign:"left",fontFamily:"inherit",transition:"all .2s"}}>{o}</button>);
             })}
           </div>
           {answered&&<div className="fade-in" style={{marginTop:14,padding:"12px 16px",borderRadius:10,background:sel===q.ans?"#E8F8F1":"#FFF5F5",borderLeft:`4px solid ${sel===q.ans?GREEN:RED}`,fontSize:13,color:DARK,lineHeight:1.6}}>{q.exp}</div>}
-          {answered&&<div style={{textAlign:"right",marginTop:12}}><Btn primary onClick={next}>{idx<questions.length-1?"Next \u2192":"View Results"}</Btn></div>}
+          {answered&&<div style={{textAlign:"right",marginTop:12}}><Btn primary onClick={next}>{idx<questions.length-1?"Next →":"View Results"}</Btn></div>}
         </Card>
       </div>);
     }
@@ -515,8 +858,8 @@
       return(
         <div style={{fontFamily:"'Segoe UI',Tahoma,Geneva,Verdana,sans-serif",minHeight:"100vh",display:"flex",flexDirection:"column"}}>
           <AppHeader subtitle={screen==="assess"?"My Patient Findings":screen==="explore"?"Explore Mode":"Quiz Mode"}/>
-          <div style={{maxWidth:700,margin:"0 auto",padding:"16px 16px 24px",flex:1}}>
-            <div style={{marginBottom:14}}><button onClick={()=>setScreen("welcome")} style={{background:"none",border:`2px solid ${TEAL}`,color:TEAL,borderRadius:10,padding:"8px 16px",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"inherit"}}>{"\u2190"} Menu</button></div>
+          <div style={{maxWidth:700,margin:"0 auto",padding:"16px 16px 24px",flex:1,width:"100%"}}>
+            <div style={{marginBottom:14}}><button onClick={()=>setScreen("welcome")} style={{background:"none",border:`2px solid ${TEAL}`,color:TEAL,borderRadius:10,padding:"8px 16px",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"inherit"}}>{"←"} Menu</button></div>
             {screen==="assess"&&<MyAssessment onBack={()=>setScreen("welcome")}/>}
             {screen==="explore"&&<ExploreMode onBack={()=>setScreen("welcome")}/>}
             {screen==="quiz"&&<QuizMode onBack={()=>setScreen("welcome")}/>}
