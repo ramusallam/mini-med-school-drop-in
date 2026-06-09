@@ -471,6 +471,43 @@
               <ResultBar title="Recovery Classification" value={`${recSys}/${recDia} mmHg`} classification={recBP}/>
             </div>
 
+            <div style={{background:"#F4F7FB",borderRadius:R,padding:16,marginBottom:12}}>
+              <SectionLabel>Your Recovery Curve</SectionLabel>
+              {(()=>{
+                const pts=[
+                  {label:"Rest",sys:Number(restSys)||0,dia:Number(restDia)||0},
+                  {label:"Stress",sys:Number(stressSys)||0,dia:Number(stressDia)||0},
+                  {label:"Recovery",sys:Number(recSys)||0,dia:Number(recDia)||0}
+                ];
+                const ready=pts.every(p=>p.sys>0&&p.dia>0);
+                if(!ready)return(<p style={{fontSize:13,color:MED,margin:"4px 0 0",lineHeight:1.6}}>Enter all three readings above (Rest, Stress, Recovery) and your curve will appear here. Watch your pressure spike right after exercise, then drop back toward rest.</p>);
+                const W=320,H=190,padL=40,padR=16,padT=16,padB=34,ymin=40,ymax=200,ticks=[40,80,120,160,200];
+                const x=i=>padL+i*((W-padL-padR)/2);
+                const y=v=>padT+(ymax-Math.max(ymin,Math.min(ymax,v)))/(ymax-ymin)*(H-padT-padB);
+                const path=key=>pts.map((p,i)=>`${i?"L":"M"}${x(i).toFixed(1)},${y(p[key]).toFixed(1)}`).join(" ");
+                return(<div>
+                  <svg viewBox={`0 0 ${W} ${H}`} width="100%" style={{display:"block",height:"auto"}}>
+                    {ticks.map(t=>(<g key={t}>
+                      <line x1={padL} y1={y(t)} x2={W-padR} y2={y(t)} stroke="#E2E8F0" strokeWidth="1"/>
+                      <text x={padL-6} y={y(t)+3} textAnchor="end" fontSize="9" fill={MED}>{t}</text>
+                    </g>))}
+                    <path d={path("sys")} fill="none" stroke={RED} strokeWidth="2.5" strokeLinejoin="round"/>
+                    <path d={path("dia")} fill="none" stroke={TEAL} strokeWidth="2.5" strokeLinejoin="round"/>
+                    {pts.map((p,i)=>(<g key={i}>
+                      <circle cx={x(i)} cy={y(p.sys)} r="4" fill={RED}/>
+                      <circle cx={x(i)} cy={y(p.dia)} r="4" fill={TEAL}/>
+                      <text x={x(i)} y={H-padB+16} textAnchor="middle" fontSize="10" fontWeight="700" fill={DARK}>{p.label}</text>
+                    </g>))}
+                  </svg>
+                  <div style={{display:"flex",gap:16,justifyContent:"center",marginTop:6,flexWrap:"wrap"}}>
+                    <span style={{fontSize:11,color:DARK,display:"flex",alignItems:"center",gap:5}}><span style={{width:14,height:3,background:RED,borderRadius:2,display:"inline-block"}}/>Systolic (top number)</span>
+                    <span style={{fontSize:11,color:DARK,display:"flex",alignItems:"center",gap:5}}><span style={{width:14,height:3,background:TEAL,borderRadius:2,display:"inline-block"}}/>Diastolic (bottom number)</span>
+                  </div>
+                  <p style={{fontSize:12,color:MED,margin:"8px 0 0",lineHeight:1.6}}>A fit cardiovascular system spikes with exercise, then drops back near the resting line within a few minutes. A curve that stays high is still working to recover.</p>
+                </div>);
+              })()}
+            </div>
+
             <div style={{background:"#FFF9E6",borderRadius:R,padding:14,borderLeft:`4px solid ${GOLD}`}}>
               <div style={{fontSize:10,fontWeight:700,color:"#8B6914",textTransform:"uppercase",letterSpacing:1.5,marginBottom:4}}>{"\u{1F4A1}"} What to Look For</div>
               <p style={{fontSize:13,color:DARK,margin:0,lineHeight:1.6}}>

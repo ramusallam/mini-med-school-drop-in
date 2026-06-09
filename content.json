@@ -77,13 +77,28 @@
             },
             {
               "type": "step",
-              "content": "Measure Blood Pressure",
-              "description": "Sit quietly for 1 minute. Wrap the cuff snugly above the elbow. Press START and record both numbers. Normal for a young adult is around 110-120/70-80."
+              "content": "Learn Both Cuffs",
+              "description": "Two ways to measure BP: the MANUAL cuff (you pump it and listen through a stethoscope) and the AUTOMATIC cuff (you press Start). Watch both quick videos, then try each one."
             },
             {
               "type": "video",
-              "url": "llosVAoeojQ",
-              "title": "Blood Pressure Technique"
+              "url": "zzplQNiRQ0c",
+              "title": "Tool 1 - Manual Cuff + Stethoscope"
+            },
+            {
+              "type": "video",
+              "url": "-LF1PLOTwiQ",
+              "title": "Tool 2 - Automatic Cuff"
+            },
+            {
+              "type": "step",
+              "content": "Compare and Choose",
+              "description": "Take your BP once with each cuff. How closely did they agree (within 5 mmHg is great)? Pick the cuff you trust for the readings below."
+            },
+            {
+              "type": "step",
+              "content": "Measure Blood Pressure (3 readings)",
+              "description": "Sit quietly 1 minute, wrap the cuff snugly above the elbow, and take a RESTING reading with your chosen cuff. Then do 1 minute of jumping jacks and take a STRESS reading right away. Wait 2-3 minutes for a RECOVERY reading. Enter all three into the Interpreter above to see your recovery curve. Normal resting is around 110-120/70-80."
             },
             {
               "type": "step",
